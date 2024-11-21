@@ -5,25 +5,25 @@ require_once './global.php';
 
 global $db, $cache, $mybb, $lang, $templates, $theme, $header, $headerinclude, $footer;
 
-$lang->load('noticeboard');
+$lang->load('questboard');
 
 // ########### Seiten aufbauen ####################
 
 // Allgemeine Seite
 
-add_breadcrumb("Questtafel", "noticeboard.php");
+add_breadcrumb("Questtafel", "questboard.php");
 
 // ### NAVIGATION
 
 // CP nur für Gruppen mit Rechten sichtbar
-if(is_member($mybb->settings['noticeboard_allow_groups_see_all'])) {
-    eval("\$noticeboard_cp = \"". $templates->get("noticeboard_navigation_cp")."\";");
+if(is_member($mybb->settings['questboard_allow_groups_see_all'])) {
+    eval("\$questboard_cp = \"". $templates->get("questboard_navigation_cp")."\";");
 }
 else {
-    $noticeboard_cp = "";
+    $questboard_cp = "";
 }
 
-eval("\$navigation = \"".$templates->get("noticeboard_navigation")."\";");
+eval("\$navigation = \"".$templates->get("questboard_navigation")."\";");
 
 
 // Usernamen für Questersteller aufbauen
@@ -36,30 +36,30 @@ $username = format_name($user['username'], $user['usergroup'], $user['displaygro
 
 // Quests Status
 
-function noticeboard_status() {
+function questboard_status() {
     $status = "";
 
-    if($noticeboard['status'] == "0" && $noticeboard['players'] == "") {
-        eval("\$status = \"".$templates->get("noticeboard_status_free")."\";");
+    if($questboard['status'] == "0" && $questboard['players'] == "") {
+        eval("\$status = \"".$templates->get("questboard_status_free")."\";");
     }
-    elseif($noticeboard['status'] == "0" && $noticeboard['players'] != "") {
-        eval("\$status = \"".$templates->get("noticeboard_status_taken")."\";");
+    elseif($questboard['status'] == "0" && $questboard['players'] != "") {
+        eval("\$status = \"".$templates->get("questboard_status_taken")."\";");
     }
-    elseif($noticeboard['status'] == "1") {
-        eval("\$status = \"".$templates->get("noticeboard_status_finished")."\";");
+    elseif($questboard['status'] == "1") {
+        eval("\$status = \"".$templates->get("questboard_status_finished")."\";");
     }
 }
  
 // Standardseite mit Erklärung
 
-if(is_member($mybb->settings['noticeboard_allow_groups_access'])) {
+if(is_member($mybb->settings['questboard_allow_groups_access'])) {
 
 if(!$mybb->input['action']) {
 
     add_breadcrumb("Erklärung");
 
-    eval("\$description = \"".$templates->get("noticeboard_description")."\";");
-    eval("\$page = \"".$templates->get("noticeboard")."\";");
+    eval("\$description = \"".$templates->get("questboard_description")."\";");
+    eval("\$page = \"".$templates->get("questboard")."\";");
     output_page($page);
 }
 
@@ -67,23 +67,23 @@ if(!$mybb->input['action']) {
 
     if($mybb->input['action'] == "overview") {
 
-        if(is_member($mybb->settings['noticeboard_allow_groups_see'])) {
+        if(is_member($mybb->settings['questboard_allow_groups_see'])) {
 
         add_breadcrumb("Übersicht über die Quests");
 
-        eval("\$none = \"".$templates->get("noticeboard_quest_none")."\";");
+        eval("\$none = \"".$templates->get("questboard_quest_none")."\";");
         
 
-            $sql = "SELECT * FROM ".TABLE_PREFIX."noticeboard WHERE visible = 1";
+            $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1";
             $query = $db->query($sql);
-            while($noticeboard = $db->fetch_array($query)) { 
+            while($questboard = $db->fetch_array($query)) { 
 
                 $none = "";
 
-                $keywords = '<div>'.str_replace(', ', '</div><div>', $noticeboard['keywords']).'</div>';
+                $keywords = '<div>'.str_replace(', ', '</div><div>', $questboard['keywords']).'</div>';
 
                 
-                $skill = '<div>'.str_replace(', ', '</div><div>', $noticeboard['skills']).'</div>';
+                $skill = '<div>'.str_replace(', ', '</div><div>', $questboard['skills']).'</div>';
                 $skills = str_replace(
                     array("1", "0"),
                     array(
@@ -99,49 +99,49 @@ if(!$mybb->input['action']) {
                 $finished = "";
                 
 
-                    if($noticeboard['status'] == "0" && $noticeboard['players'] == "") {
-                        if(is_member($mybb->settings['noticeboard_allow_groups_take'])) {
+                    if($questboard['status'] == "0" && $questboard['players'] == "") {
+                        if(is_member($mybb->settings['questboard_allow_groups_take'])) {
                             $take = "";
-                            eval("\$take = \"".$templates->get("noticeboard_quest_take")."\";");
+                            eval("\$take = \"".$templates->get("questboard_quest_take")."\";");
                         }
                         else {
                             $take = "";
                         }
-                        eval("\$status = \"".$templates->get("noticeboard_status_free")."\";");
+                        eval("\$status = \"".$templates->get("questboard_status_free")."\";");
 
                     }
-                    elseif($noticeboard['status'] == "0" && $noticeboard['players'] != "") {
-                        eval("\$status = \"".$templates->get("noticeboard_status_taken")."\";");
-                        eval("\$take = \"".$templates->get("noticeboard_quest_taken")."\";");
+                    elseif($questboard['status'] == "0" && $questboard['players'] != "") {
+                        eval("\$status = \"".$templates->get("questboard_status_taken")."\";");
+                        eval("\$take = \"".$templates->get("questboard_quest_taken")."\";");
                     }
-                    elseif($noticeboard['status'] == "1" && $noticeboard['players'] != "") {
-                        eval("\$status = \"".$templates->get("noticeboard_status_finished")."\";");
-                        eval("\$finished = \"".$templates->get("noticeboard_quest_finished")."\";");
+                    elseif($questboard['status'] == "1" && $questboard['players'] != "") {
+                        eval("\$status = \"".$templates->get("questboard_status_finished")."\";");
+                        eval("\$finished = \"".$templates->get("questboard_quest_finished")."\";");
                     }
 
-                if(is_member($mybb->settings['noticeboard_allow_groups_edit'])) {
+                if(is_member($mybb->settings['questboard_allow_groups_edit'])) {
                     $edit = "";
-                    eval("\$edit .= \"".$templates->get("noticeboard_edit_button")."\";");
+                    eval("\$edit .= \"".$templates->get("questboard_edit_button")."\";");
                 }
                 else {
                     $edit = "";
                 }
 
-                if(is_member($mybb->settings['noticeboard_allow_groups_lead'])) {
+                if(is_member($mybb->settings['questboard_allow_groups_lead'])) {
                     $sl_information = "";
-                    eval("\$sl_information .= \"".$templates->get("noticeboard_sl_information")."\";");
+                    eval("\$sl_information .= \"".$templates->get("questboard_sl_information")."\";");
                 }
                 else {
                     $sl_information = "";
                 }
-                eval("\$bit .= \"".$templates->get("noticeboard_quest")."\";");
+                eval("\$bit .= \"".$templates->get("questboard_quest")."\";");
     
             };  
         }
         else {
-                eval("\$bit = \"".$templates->get("noticeboard_no_permission")."\";");
+                eval("\$bit = \"".$templates->get("questboard_no_permission")."\";");
         }
-    eval("\$page = \"".$templates->get("noticeboard")."\";");
+    eval("\$page = \"".$templates->get("questboard")."\";");
         output_page($page);
 }
 
@@ -151,20 +151,20 @@ if(!$mybb->input['action']) {
 
     if($mybb->input['action'] == "free") {
 
-        if(is_member($mybb->settings['noticeboard_allow_groups_see'])) {
+        if(is_member($mybb->settings['questboard_allow_groups_see'])) {
 
         add_breadcrumb("Freie Quests");
 
-        eval("\$none = \"".$templates->get("noticeboard_quest_none")."\";");
+        eval("\$none = \"".$templates->get("questboard_quest_none")."\";");
 
-            $sql = "SELECT * FROM ".TABLE_PREFIX."noticeboard WHERE visible = 1 && (players IS NULL OR players = '')";
+            $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1 && (players IS NULL OR players = '')";
             $query = $db->query($sql);
-            while($noticeboard = $db->fetch_array($query)) {
+            while($questboard = $db->fetch_array($query)) {
                 $none = "";
 
-                $keywords = '<div>'.str_replace(', ', '</div><div>', $noticeboard['keywords']).'</div>';
+                $keywords = '<div>'.str_replace(', ', '</div><div>', $questboard['keywords']).'</div>';
 
-                $skill = '<div>'.str_replace(', ', '</div><div>', $noticeboard['skills']).'</div>';
+                $skill = '<div>'.str_replace(', ', '</div><div>', $questboard['skills']).'</div>';
                 $skills = str_replace(
                     array("0", "1"),
                     array(
@@ -178,44 +178,44 @@ if(!$mybb->input['action']) {
                 $take = "";
                 $finished = "";
 
-                if($noticeboard['players'] == "") {
-                    if(is_member($mybb->settings['noticeboard_allow_groups_take'])) {
+                if($questboard['players'] == "") {
+                    if(is_member($mybb->settings['questboard_allow_groups_take'])) {
                         $take = "";
-                        eval("\$take = \"".$templates->get("noticeboard_quest_take")."\";");
+                        eval("\$take = \"".$templates->get("questboard_quest_take")."\";");
                     }
                     else {
                         $take = "";
                     }
                 }
                 else {
-                    eval("\$take = \"".$templates->get("noticeboard_quest_taken")."\";");
+                    eval("\$take = \"".$templates->get("questboard_quest_taken")."\";");
                 }
 
-                if(is_member($mybb->settings['noticeboard_allow_groups_edit'])) {
+                if(is_member($mybb->settings['questboard_allow_groups_edit'])) {
                     $edit = "";
-                    eval("\$edit .= \"".$templates->get("noticeboard_edit_button")."\";");
+                    eval("\$edit .= \"".$templates->get("questboard_edit_button")."\";");
                 }
                 else {
                     $edit = "";
                 }
 
-                if(is_member($mybb->settings['noticeboard_allow_groups_lead'])) {
+                if(is_member($mybb->settings['questboard_allow_groups_lead'])) {
                     $sl_information = "";
-                    eval("\$sl_information .= \"".$templates->get("noticeboard_sl_information")."\";");
+                    eval("\$sl_information .= \"".$templates->get("questboard_sl_information")."\";");
                 }
                 else {
                     $sl_information = "";
                 }
                 
-                eval("\$bit .= \"".$templates->get("noticeboard_quest")."\";");
+                eval("\$bit .= \"".$templates->get("questboard_quest")."\";");
             };
 
         }
         else {
-                eval("\$bit = \"".$templates->get("noticeboard_no_permission")."\";");
+                eval("\$bit = \"".$templates->get("questboard_no_permission")."\";");
         }
 
-    eval("\$page = \"".$templates->get("noticeboard")."\";");
+    eval("\$page = \"".$templates->get("questboard")."\";");
         output_page($page);
 }
 
@@ -226,20 +226,20 @@ if(!$mybb->input['action']) {
 
         add_breadcrumb("Vergebene Quests");
 
-        if(is_member($mybb->settings['noticeboard_allow_groups_see'])) {
+        if(is_member($mybb->settings['questboard_allow_groups_see'])) {
 
-        eval("\$none = \"".$templates->get("noticeboard_quest_none")."\";");
+        eval("\$none = \"".$templates->get("questboard_quest_none")."\";");
 
 
-            $sql = "SELECT * FROM ".TABLE_PREFIX."noticeboard WHERE visible = 1 AND status = '0' AND players != ''";
+            $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1 AND status = '0' AND players != ''";
             $query = $db->query($sql);
-            while($noticeboard = $db->fetch_array($query)) {
+            while($questboard = $db->fetch_array($query)) {
 
                 $none = "";
 
-                $keywords = '<div>'.str_replace(', ', '</div><div>', $noticeboard['keywords']).'</div>';
+                $keywords = '<div>'.str_replace(', ', '</div><div>', $questboard['keywords']).'</div>';
 
-                $skill = '<div>'.str_replace(', ', '</div><div>', $noticeboard['skills']).'</div>';
+                $skill = '<div>'.str_replace(', ', '</div><div>', $questboard['skills']).'</div>';
                 $skills = str_replace(
                     array("0", "1"),
                     array(
@@ -249,17 +249,17 @@ if(!$mybb->input['action']) {
                     $skill
                 );
 
-                if(is_member($mybb->settings['noticeboard_allow_groups_edit'])) {
+                if(is_member($mybb->settings['questboard_allow_groups_edit'])) {
                     $edit = "";
-                    eval("\$edit .= \"".$templates->get("noticeboard_edit_button")."\";");
+                    eval("\$edit .= \"".$templates->get("questboard_edit_button")."\";");
                 }
                 else {
                     $edit = "";
                 }
 
-                if(is_member($mybb->settings['noticeboard_allow_groups_lead'])) {
+                if(is_member($mybb->settings['questboard_allow_groups_lead'])) {
                     $sl_information = "";
-                    eval("\$sl_information .= \"".$templates->get("noticeboard_sl_information")."\";");
+                    eval("\$sl_information .= \"".$templates->get("questboard_sl_information")."\";");
                 }
                 else {
                     $sl_information = "";
@@ -267,16 +267,16 @@ if(!$mybb->input['action']) {
                 
                 $take = "";
                 $finished = "";
-                eval("\$take = \"".$templates->get("noticeboard_quest_taken")."\";");
-                eval("\$bit .= \"".$templates->get("noticeboard_quest")."\";");
+                eval("\$take = \"".$templates->get("questboard_quest_taken")."\";");
+                eval("\$bit .= \"".$templates->get("questboard_quest")."\";");
             };
 
        }
         else {
-                eval("\$bit = \"".$templates->get("noticeboard_no_permission")."\";");
+                eval("\$bit = \"".$templates->get("questboard_no_permission")."\";");
         }
         
-    eval("\$page = \"".$templates->get("noticeboard")."\";");
+    eval("\$page = \"".$templates->get("questboard")."\";");
         output_page($page);
 }
 
@@ -285,21 +285,21 @@ if(!$mybb->input['action']) {
 
     if($mybb->input['action'] == "finished") {
 
-        if(is_member($mybb->settings['noticeboard_allow_groups_see'])) {
+        if(is_member($mybb->settings['questboard_allow_groups_see'])) {
 
         add_breadcrumb("Erledigt Quests");
 
-        eval("\$none = \"".$templates->get("noticeboard_quest_none")."\";");
+        eval("\$none = \"".$templates->get("questboard_quest_none")."\";");
 
-            $sql = "SELECT * FROM ".TABLE_PREFIX."noticeboard WHERE visible = 1 AND status = 1";
+            $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1 AND status = 1";
             $query = $db->query($sql);
-            while($noticeboard = $db->fetch_array($query)) {
+            while($questboard = $db->fetch_array($query)) {
 
                 $none = "";
 
-                $keywords = '<div>'.str_replace(', ', '</div><div>', $noticeboard['keywords']).'</div>';
+                $keywords = '<div>'.str_replace(', ', '</div><div>', $questboard['keywords']).'</div>';
 
-                $skill = '<div>'.str_replace(', ', '</div><div>', $noticeboard['skills']).'</div>';
+                $skill = '<div>'.str_replace(', ', '</div><div>', $questboard['skills']).'</div>';
                 $skills = str_replace(
                     array("0", "1"),
                     array(
@@ -309,17 +309,17 @@ if(!$mybb->input['action']) {
                     $skill
                 );
 
-                if(is_member($mybb->settings['noticeboard_allow_groups_edit'])) {
+                if(is_member($mybb->settings['questboard_allow_groups_edit'])) {
                     $edit = "";
-                    eval("\$edit .= \"".$templates->get("noticeboard_edit_button")."\";");
+                    eval("\$edit .= \"".$templates->get("questboard_edit_button")."\";");
                 }
                 else {
                     $edit = "";
                 }
 
-                if(is_member($mybb->settings['noticeboard_allow_groups_lead'])) {
+                if(is_member($mybb->settings['questboard_allow_groups_lead'])) {
                     $sl_information = "";
-                    eval("\$sl_information .= \"".$templates->get("noticeboard_sl_information")."\";");
+                    eval("\$sl_information .= \"".$templates->get("questboard_sl_information")."\";");
                 }
                 else {
                     $sl_information = "";
@@ -328,16 +328,16 @@ if(!$mybb->input['action']) {
                 $take = "";
                 $finished = "";
               
-                eval("\$finished.= \"".$templates->get("noticeboard_quest_finished")."\";");
-                eval("\$bit .= \"".$templates->get("noticeboard_quest")."\";");
+                eval("\$finished.= \"".$templates->get("questboard_quest_finished")."\";");
+                eval("\$bit .= \"".$templates->get("questboard_quest")."\";");
             };
 
         }
         else {
-                eval("\$bit = \"".$templates->get("noticeboard_no_permission")."\";");
+                eval("\$bit = \"".$templates->get("questboard_no_permission")."\";");
         }
         
-    eval("\$page = \"".$templates->get("noticeboard")."\";");
+    eval("\$page = \"".$templates->get("questboard")."\";");
         output_page($page);
 }
 
@@ -348,19 +348,19 @@ if(!$mybb->input['action']) {
 
         add_breadcrumb("Unveröffentlichte Quests");
 
-        if(is_member($mybb->settings['noticeboard_allow_groups_see_all'])) {
+        if(is_member($mybb->settings['questboard_allow_groups_see_all'])) {
 
-        eval("\$none = \"".$templates->get("noticeboard_quest_none")."\";");
+        eval("\$none = \"".$templates->get("questboard_quest_none")."\";");
 
-            $sql = "SELECT * FROM ".TABLE_PREFIX."noticeboard WHERE visible = 0";
+            $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 0";
             $query = $db->query($sql);
-            while($noticeboard = $db->fetch_array($query)) {
+            while($questboard = $db->fetch_array($query)) {
 
                 $none = "";
 
-                $keywords = '<div>'.str_replace(', ', '</div><div>', $noticeboard['keywords']).'</div>';
+                $keywords = '<div>'.str_replace(', ', '</div><div>', $questboard['keywords']).'</div>';
 
-                $skill = '<div>'.str_replace(', ', '</div><div>', $noticeboard['skills']).'</div>';
+                $skill = '<div>'.str_replace(', ', '</div><div>', $questboard['skills']).'</div>';
                 $skills = str_replace(
                     array("0", "1"),
                     array(
@@ -370,32 +370,32 @@ if(!$mybb->input['action']) {
                     $skill
                 );
 
-                if(is_member($mybb->settings['noticeboard_allow_groups_edit'])) {
+                if(is_member($mybb->settings['questboard_allow_groups_edit'])) {
                     $edit = "";
-                    eval("\$edit .= \"".$templates->get("noticeboard_edit_button")."\";");
+                    eval("\$edit .= \"".$templates->get("questboard_edit_button")."\";");
                 }
                 else {
                     $edit = "";
                 }
 
-                if(is_member($mybb->settings['noticeboard_allow_groups_lead'])) {
+                if(is_member($mybb->settings['questboard_allow_groups_lead'])) {
                     $sl_information = "";
-                    eval("\$sl_information .= \"".$templates->get("noticeboard_sl_information")."\";");
+                    eval("\$sl_information .= \"".$templates->get("questboard_sl_information")."\";");
                 }
                 else {
                     $sl_information = "";
                 }
                 
-                eval("\$bit .= \"".$templates->get("noticeboard_quest")."\";");
+                eval("\$bit .= \"".$templates->get("questboard_quest")."\";");
             };
         
         
         }
         else {
-                eval("\$bit = \"".$templates->get("noticeboard_no_permission")."\";");
+                eval("\$bit = \"".$templates->get("questboard_no_permission")."\";");
         }
         
-    eval("\$page = \"".$templates->get("noticeboard")."\";");
+    eval("\$page = \"".$templates->get("questboard")."\";");
         output_page($page);
 }
 
@@ -404,21 +404,21 @@ if(!$mybb->input['action']) {
 
     if($mybb->input['action'] == "all") {
 
-        if(is_member($mybb->settings['noticeboard_allow_groups_see_all'])) {
+        if(is_member($mybb->settings['questboard_allow_groups_see_all'])) {
 
         add_breadcrumb("Alle Quests");
 
-        eval("\$none = \"".$templates->get("noticeboard_quest_none")."\";");
+        eval("\$none = \"".$templates->get("questboard_quest_none")."\";");
 
-            $sql = "SELECT * FROM ".TABLE_PREFIX."noticeboard";
+            $sql = "SELECT * FROM ".TABLE_PREFIX."questboard";
             $query = $db->query($sql);
-            while($noticeboard = $db->fetch_array($query)) {
+            while($questboard = $db->fetch_array($query)) {
 
                 $none = "";
 
-                $keywords = '<div>'.str_replace(', ', '</div><div>', $noticeboard['keywords']).'</div>';
+                $keywords = '<div>'.str_replace(', ', '</div><div>', $questboard['keywords']).'</div>';
 
-                $skill = '<div>'.str_replace(', ', '</div><div>', $noticeboard['skills']).'</div>';
+                $skill = '<div>'.str_replace(', ', '</div><div>', $questboard['skills']).'</div>';
                 $skills = str_replace(
                     array("0", "1"),
                     array(
@@ -432,46 +432,46 @@ if(!$mybb->input['action']) {
                 $take = "";
                 $finished = "";
 
-                    if($noticeboard['status'] == "0" && $noticeboard['players'] == "") {
-                        eval("\$status = \"".$templates->get("noticeboard_status_free")."\";");
+                    if($questboard['status'] == "0" && $questboard['players'] == "") {
+                        eval("\$status = \"".$templates->get("questboard_status_free")."\";");
 
                     }
-                    elseif($noticeboard['status'] == "0" && $noticeboard['players'] != "") {
-                        eval("\$status = \"".$templates->get("noticeboard_status_taken")."\";");
-                        eval("\$take = \"".$templates->get("noticeboard_quest_taken")."\";");
+                    elseif($questboard['status'] == "0" && $questboard['players'] != "") {
+                        eval("\$status = \"".$templates->get("questboard_status_taken")."\";");
+                        eval("\$take = \"".$templates->get("questboard_quest_taken")."\";");
                     }
-                    elseif($noticeboard['status'] == "1") {
-                        eval("\$status = \"".$templates->get("noticeboard_status_finished")."\";");
-                        eval("\$finished = \"".$templates->get("noticeboard_quest_finished")."\";");
+                    elseif($questboard['status'] == "1") {
+                        eval("\$status = \"".$templates->get("questboard_status_finished")."\";");
+                        eval("\$finished = \"".$templates->get("questboard_quest_finished")."\";");
                     }
 
-                    if(is_member($mybb->settings['noticeboard_allow_groups_edit'])) {
+                    if(is_member($mybb->settings['questboard_allow_groups_edit'])) {
                         $edit = "";
-                        eval("\$edit .= \"".$templates->get("noticeboard_edit_button")."\";");
+                        eval("\$edit .= \"".$templates->get("questboard_edit_button")."\";");
                     }
                     else {
                         $edit = "";
                     }
     
-                    if(is_member($mybb->settings['noticeboard_allow_groups_lead'])) {
+                    if(is_member($mybb->settings['questboard_allow_groups_lead'])) {
                         $sl_information = "";
-                        eval("\$sl_information .= \"".$templates->get("noticeboard_sl_information")."\";");
+                        eval("\$sl_information .= \"".$templates->get("questboard_sl_information")."\";");
                     }
                     else {
                         $sl_information = "";
                     }
                     $edit = ""; 
-                eval("\$edit .= \"".$templates->get("noticeboard_edit_button")."\";");
-                eval("\$bit .= \"".$templates->get("noticeboard_quest")."\";");
+                eval("\$edit .= \"".$templates->get("questboard_edit_button")."\";");
+                eval("\$bit .= \"".$templates->get("questboard_quest")."\";");
             };
 
         
         }
         else {
-                eval("\$bit = \"".$templates->get("noticeboard_no_permission")."\";");
+                eval("\$bit = \"".$templates->get("questboard_no_permission")."\";");
         }
         
-    eval("\$page = \"".$templates->get("noticeboard")."\";");
+    eval("\$page = \"".$templates->get("questboard")."\";");
         output_page($page);
 }
 
@@ -482,15 +482,15 @@ if(!$mybb->input['action']) {
 
     if($mybb->input['action'] == "add") {
 
-        add_breadcrumb ($lang->noticeboard, "noticeboard.php"); 
-        add_breadcrumb($lang->noticeboard_add, "noticeboard.php?action=add");
+        add_breadcrumb ($lang->questboard, "questboard.php"); 
+        add_breadcrumb($lang->questboard_add, "questboard.php?action=add");
 
-        if(is_member($mybb->settings['noticeboard_allow_groups_add'])) {
+        if(is_member($mybb->settings['questboard_allow_groups_add'])) {
 
             
             if ($mybb->input['submit']) {
 
-                $new_noticeboard = array(
+                $new_questboard = array(
                     "type" => $db->escape_string($mybb->get_input('type')),
                     "title" => $db->escape_string($mybb->get_input('title')),
                     "shortdescription" => $db->escape_string($mybb->get_input('shortdescription')),
@@ -513,31 +513,31 @@ if(!$mybb->input['action']) {
                     "status" => "0",
                 );
 
-                if($noticeboard['visible'] == "0") {
+                if($questboard['visible'] == "0") {
                     $checked_visible_0 = "checked";
                 }
-                elseif($noticeboard['visible'] == "1") {
+                elseif($questboard['visible'] == "1") {
                     $checked_visible_1 = "checked";
                 }
 
-                if($noticeboard['status'] == "0") {
+                if($questboard['status'] == "0") {
                     $checked_status_0 = "checked";
                 }
-                elseif($noticeboard['status'] == "1") {
+                elseif($questboard['status'] == "1") {
                     $checked_status_1 = "checked";
                 }
     
-                $db->insert_query("noticeboard", $new_noticeboard);
-                $db->query("UPDATE ".TABLE_PREFIX."users SET noticeboard_new ='0'");
-                redirect("noticeboard.php?action=overview");
+                $db->insert_query("questboard", $new_questboard);
+                $db->query("UPDATE ".TABLE_PREFIX."users SET questboard_new ='0'");
+                redirect("questboard.php?action=overview");
             }
             
-        eval("\$page = \"".$templates->get("noticeboard_add")."\";");
+        eval("\$page = \"".$templates->get("questboard_add")."\";");
         output_page($page);
             die();
     }
     else {
-        eval("\$bit = \"".$templates->get("noticeboard_no_permission")."\";");
+        eval("\$bit = \"".$templates->get("questboard_no_permission")."\";");
     }
 }
 
@@ -547,17 +547,17 @@ if(!$mybb->input['action']) {
 
     if($mybb->input['action'] == "edit") {
 
-        add_breadcrumb ($lang->noticeboard, "noticeboard.php"); 
-        add_breadcrumb($lang->noticeboard_edit, "noticeboard.php?action=edit");
+        add_breadcrumb ($lang->questboard, "questboard.php"); 
+        add_breadcrumb($lang->questboard_edit, "questboard.php?action=edit");
 
-        if(is_member($mybb->settings['noticeboard_allow_groups_edit'])) {
+        if(is_member($mybb->settings['questboard_allow_groups_edit'])) {
 
 
         $nid =  $mybb->input['nid'];
 
-        $sql = "SELECT * FROM ".TABLE_PREFIX."noticeboard WHERE nid = '".$nid."'";
+        $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE nid = '".$nid."'";
         $query = $db->query($sql);
-        $noticeboard = $db->fetch_array($query);
+        $questboard = $db->fetch_array($query);
 
             $nid = $mybb->input['nid'];
             $title    = $mybb->get_input('title');
@@ -586,7 +586,7 @@ if(!$mybb->input['action']) {
         
             if ($mybb->input['submit']) {
 
-                $edit_noticeboard = array(
+                $edit_questboard = array(
                     "type" => $db->escape_string($mybb->get_input('type')),
                     "title" => $db->escape_string($mybb->get_input('title')),
                     "shortdescription" => $db->escape_string($mybb->get_input('shortdescription')),
@@ -611,65 +611,65 @@ if(!$mybb->input['action']) {
                     "status" => $db->escape_string($mybb->get_input('status')),
                 );
 
-            $db->update_query("noticeboard", $edit_noticeboard, "nid = '".$nid."'");
-            redirect("noticeboard.php?action=overview"); 
+            $db->update_query("questboard", $edit_questboard, "nid = '".$nid."'");
+            redirect("questboard.php?action=overview"); 
         } 
 
-        if($noticeboard['visible'] == "0") {
+        if($questboard['visible'] == "0") {
         $checked_visible_0 = "checked";
         }
-        elseif($noticeboard['visible'] == "1") {
+        elseif($questboard['visible'] == "1") {
             $checked_visible_1 = "checked";
         }
 
-        if($noticeboard['status'] == "0") {
+        if($questboard['status'] == "0") {
             $checked_status_0 = "checked";
         }
-        elseif($noticeboard['status'] == "1") {
+        elseif($questboard['status'] == "1") {
             $checked_status_1 = "checked";
         }
 
         if($mybb->usergroup['cancp'] == 1) {
-            eval("\$edit_players = \"".$templates->get("noticeboard_edit_players")."\";");
+            eval("\$edit_players = \"".$templates->get("questboard_edit_players")."\";");
         }
 
 
-        eval("\$page = \"".$templates->get("noticeboard_edit")."\";");
+        eval("\$page = \"".$templates->get("questboard_edit")."\";");
         output_page($page);
         die();
     }
     else {
-        eval("\$bit = \"".$templates->get("noticeboard_no_permission")."\";");
+        eval("\$bit = \"".$templates->get("questboard_no_permission")."\";");
     }
 }
 
 // Quests reservieren
-if(is_member($mybb->settings['noticeboard_allow_groups_take'])) {
+if(is_member($mybb->settings['questboard_allow_groups_take'])) {
     if($mybb->input['action'] == "take") {
 
         $nid =  $mybb->input['nid'];
 
-        $take_noticeboard = array(
+        $take_questboard = array(
                         "players" => $db->escape_string($mybb->get_input('players')),
                         "scene" => $db->escape_string($mybb->get_input('scene')),
             );
 
-            $db->update_query("noticeboard", $take_noticeboard, "nid = '$nid'"); 
+            $db->update_query("questboard", $take_questboard, "nid = '$nid'"); 
 
-        redirect("noticeboard.php?action=taken"); 
+        redirect("questboard.php?action=taken"); 
 
     } 
 }
 
 // Quests löschen
 
-if(is_member($mybb->settings['noticeboard_allow_groups_edit'])) {
+if(is_member($mybb->settings['questboard_allow_groups_edit'])) {
     if($mybb->input['action'] == "delete") {
         $nid = $mybb->input['nid'];
 
-        $db->delete_query("noticeboard", "nid = '$nid'");
+        $db->delete_query("questboard", "nid = '$nid'");
 
-        redirect("noticeboard.php?action=all");
+        redirect("questboard.php?action=all");
     }
 }
 
@@ -681,12 +681,12 @@ $taken = $mybb->input['finished'];
 			"status" => "1",
         );
 
-        $db->update_query("noticeboard", $take, "nid = '".$taken."'");
-        redirect("noticeboard.php?action=quests");
+        $db->update_query("questboard", $take, "nid = '".$taken."'");
+        redirect("questboard.php?action=quests");
     }
 
 }
 
-// Index Alert bei neuen Quests in der inc/plugins/noticeboard.php
+// Index Alert bei neuen Quests in der inc/plugins/questboard.php
 
-// Wer ist online in der inc/plugins/noticeboard.php
+// Wer ist online in der inc/plugins/questboard.php
