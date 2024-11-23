@@ -53,6 +53,7 @@ function questboard_install()
         `players` VARCHAR(500),
         `scene` VARCHAR(500),
         `visible` INT(10) NOT NULL,
+        `reusable` INT(10) NOT NULL,
         PRIMARY KEY (`nid`),
         KEY `nid` (`nid`)
     )
@@ -251,6 +252,18 @@ $insert_array = array(
 
     <div class="questboard_formblock">
         <div class="questboard_formblock-label">
+            Soll die Quest mehrmals bespielbar sein?*
+        </div>
+        <div class="questboard_formblock-field-radio">
+            <input type="radio" id="1" name="reusable" value="1">
+                <label for="1">Ja</label>
+            <input type="radio" id="0" name="reusable" value="0">
+                <label for="0">Nein</label>
+        </div>
+    </div>
+
+    <div class="questboard_formblock">
+        <div class="questboard_formblock-label">
             Questtitel
         </div>
         <div class="questboard_formblock-field">
@@ -264,7 +277,7 @@ $insert_array = array(
             <br>Wähle aus der Liste aus, um welche Art von Quest es sich handelt.
         </div>
         <div class="questboard_formblock-field">
-            <select name="type" id="type"  style="width: 100%;" required>
+            <select name="type" id="type" style="width: 100%;" required>
                 <option value="">Wähle den Typ</option>
                 <option value="Allgemeine Quest">Allgemeine Quest</option>
                 <option value="Specialquest">Specialquest</option>
@@ -562,6 +575,18 @@ $insert_array = array(
 
     <div class="questboard_formblock">
         <div class="questboard_formblock-label">
+            Soll die Quest mehrmals bespielbar sein?* 
+        </div>
+        <div class="questboard_formblock-field-radio">
+            <input type="radio" id="1" name="reusable" value="1" {$checked_reusable_1}>
+                <label for="1">Ja</label>
+            <input type="radio" id="0" name="reusable" value="0" {$checked_reusable_0}>
+                <label for="0">Nein</label>
+        </div>
+    </div>
+
+    <div class="questboard_formblock">
+        <div class="questboard_formblock-label">
             Questtitel
         </div>
         <div class="questboard_formblock-field">
@@ -791,7 +816,7 @@ $insert_array = array(
     'title'	    => 'questboard_edit_button',
     'template'	=> $db->escape_string('
 <div class="questboard_buttons">
-    <div class="questboard_button"><a href="questboard.php?action=edit&nid={$questboard[\'nid\']}">Editieren</a> | <a href="questboard.php?action=delete&nid={$questboard[\'nid\']}">Löschen</a></div>
+    <div class="questboard_button"><a href="questboard.php?action=edit&nid={$questboard[\'nid\']}">Editieren</a> | <a href="questboard.php?action=archive&nid={$questboard[\'nid\']}">Archivieren</a> | <a href="questboard.php?action=delete&nid={$questboard[\'nid\']}">Löschen</a></div>
 </div>
     '),
     'sid'       => '-2',
@@ -804,14 +829,77 @@ $db->insert_query("templates", $insert_array);
 $insert_array = array(
     'title'	    => 'questboard_edit_players',
     'template'	=> $db->escape_string('
+
+    <link rel="stylesheet" href="{$mybb->asset_url}/jscripts/select2/select2.css?ver=1807">
+    <script type="text/javascript" src="{$mybb->asset_url}/jscripts/select2/select2.min.js?ver=1806"></script>
+    <script type="text/javascript">
+    $(document).ready(function () {
+        MyBB.select2();
+        if (use_xmlhttprequest == "1") {
+            function initializeSelect2() {
+                $(".players-select").each(function () {
+                    if (!$(this).hasClass("select2-hidden-accessible")) { // Verhindert doppelte Initialisierung
+                        $(this).select2({
+                            placeholder: "{$lang->search_user}",
+                            minimumInputLength: 2,
+                            maximumSelectionSize: \'\',
+                            multiple: true,
+                            ajax: {
+                                url: "xmlhttp.php?action=get_users",
+                                dataType: \'json\',
+                                data: function (term, page) {
+                                    return {
+                                        query: term, // search term
+                                    };
+                                },
+                                results: function (data, page) { // parse the results into the format expected by Select2.
+                                    // since we are using custom formatting functions we do not need to alter remote JSON data
+                                    return {results: data};
+                                }
+                            },
+                            width: "50%",
+                            initSelection: function (element, callback) {
+                                var query = $(element).val();
+                                if (query !== "") {
+                                    var newqueries = [];
+                                    exp_queries = query.split(",");
+                                    $.each(exp_queries, function (index, value) {
+                                        if (value.replace(/\s/g, \'\') != "") {
+                                            var newquery = {
+                                                id: value.replace(/,\s?/g, ","),
+                                                text: value.replace(/,\s?/g, ",")
+                                            };
+                                            newqueries.push(newquery);
+                                        }
+                                    });
+                                    callback(newqueries);
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+
+            // Initialisierung auf bestehenden Feldern
+            initializeSelect2();
+
+            // Optional: Initialisierung nach AJAX oder dynamischem Hinzufügen
+            $(document).on("contentUpdated", function () {
+                initializeSelect2();
+            });
+        }
+    });
+    </script>
+
+
 <div class="questboard_formblock">
     <div class="questboard_formblock-label">
         <b>Charaktere ändern</b>
     </div>
     <div class="questboard_formblock-field-radio">
-        <label>Charaktere</label>
-        <input type="text" name="players" id="players" value="{$questboard[\'players\']}">
-        <br><label>Szene</label>
+        <label>Charaktere: </label>
+        <input type="text" name="players[]" class="players-select" value="{$questboard[\'players\']}">
+        <br><label>Szene: </label>
         <input type="text" name="scene" id="scene" value="{$questboard[\'scene\']}">
     </div>
 </div>
@@ -832,7 +920,7 @@ $insert_array = array(
     <div class="questboard_navigation-links">
         <div><a href="questboard.php?action=overview"><i class="fa-regular fa-newspaper"></i> Alle Quests</a></div>
         <div><a href="questboard.php?action=free"><i class="fa-regular fa-circle"></i> freie Quests</a></div>
-        <div><a href="questboard.php?action=taken"><i class="fa-regular fa-circle-xmark"></i> vergebene Quests</a></div>
+        <div><a href="questboard.php?action=taken"><i class="fa-regular fa-hourglass"></i> bespielte Quests</a></div>
         <div><a href="questboard.php?action=finished"><i class="fa-solid fa-circle"></i> erledigte Quests</a></div>
     </div>
     {$questboard_cp}
@@ -850,7 +938,7 @@ $insert_array = array(
     'template'	=> $db->escape_string('
 <div class="questboard_navigation-title">Control Panel</div>
 <div class="questboard_navigation-links">
-    <div><a href="questboard.php?action=pending"><i class="fa-regular fa-hourglass"></i> nicht freigegebene Quests</a></div>
+    <div><a href="questboard.php?action=pending"><i class="fa-regular fa-circle-xmark"></i> nicht freigegebene Quests</a></div>
     <div><a href="questboard.php?action=all"><i class="fa-regular fa-note-sticky"></i> alle Quests</a></div>
     <div><a href="questboard.php?action=add"><i class="fa-solid fa-plus"></i> Quest hinzufügen</a></div>
 </div>
@@ -959,9 +1047,9 @@ $db->insert_query("templates", $insert_array);
 $insert_array = array(
     'title'	    => 'questboard_quest_finished',
     'template'	=> $db->escape_string('
-<div class="questboard_quest-content">
-    Diese Quest wurde von {$questboard[\'players\']} im Rahmen <a href="{$questboard[\'scene\']}">dieser Szene</a> erledigt.
-</div>        
+    <div class="questboard_quest-content">
+        Diese Quest wurde von {$questboard[\'players\']} im Rahmen <a href="{$questboard[\'scene\']}">dieser Szene</a> erledigt.
+    </div>        
     '),
     'sid'       => '-2',
     'dateline'  => TIME_NOW
@@ -973,9 +1061,9 @@ $db->insert_query("templates", $insert_array);
 $insert_array = array(
     'title'	    => 'questboard_quest_none',
     'template'	=> $db->escape_string('
-<div class="questboard_description">
-    Derzeit gibt es keine Quests, die auf diese Suchkriterien passen. Du musst warten, bis neue Quests auf der Tafel erscheinen!
-</div>       
+    <div class="questboard_description">
+        Derzeit gibt es keine Quests, die auf diese Suchkriterien passen. Du musst warten, bis neue Quests auf der Tafel erscheinen!
+    </div>       
     '),
     'sid'       => '-2',
     'dateline'  => TIME_NOW
@@ -1100,7 +1188,7 @@ $insert_array = array(
     </script>
 
     <div class="questboard_quest-take">
-        <h1>Quest annehmen</h1>
+        <h3>Quest annehmen</h3>
         <form action="questboard.php?action=take&nid={$questboard[\'nid\']}" method="post">
             <b>Charaktere: </b>
                 <input type="text" name="players[]" class="players-select" value="{$players}">
@@ -1120,9 +1208,9 @@ $db->insert_query("templates", $insert_array);
 $insert_array = array(
     'title'	    => 'questboard_quest_taken',
     'template'	=> $db->escape_string('
-<div class="questboard_quest-taken">
-Von <b>{$questboard[\'players\']}</b> wurde die Quest im Rahmen <a href="{$questboard[\'scene\']}">dieser Szene</a> angenommen.
-</div>
+    <div class="questboard_quest-taken">
+    Von <b>{$questboard[\'players\']}</b> wurde die Quest im Rahmen <a href="{$questboard[\'scene\']}">dieser Szene</a> angenommen.
+    </div>
     '),
     'sid'       => '-2',
     'dateline'  => TIME_NOW
@@ -1486,10 +1574,6 @@ $css = array(
   gap: 5px;
 }
 
-.questboard_quest-footer-item-bottom {
-}
-
-
 
 /* ################### Szene annehmen ###################### */
 
@@ -1506,8 +1590,8 @@ $css = array(
     text-decoration: underline;
 }
 
-.questboard_quest-take input {
-    width: 20%;
+.questboard_quest-take h3 {
+    text-transform: uppercase;
 }
 
     ',
@@ -1736,7 +1820,7 @@ global $mybb, $theme, $lang;
 		$plugin_array['location_name'] = "Sieht sich freie <a href=\"questboard.php?action=berufsbezogen\">Berufsbezogene Quests</a> an.";
 	}
     if($plugin_array['user_activity']['activity'] == "taken") {
-		$plugin_array['location_name'] = "Sieht sich vergebene <a href=\"questboard.php?action=taken\">Quests</a> an.";
+		$plugin_array['location_name'] = "Sieht sich die bespielten <a href=\"questboard.php?action=taken\">Quests</a> an.";
 	}
     if($plugin_array['user_activity']['activity'] == "finished") {
 		$plugin_array['location_name'] = "Sieht sich erledigte <a href=\"questboard.php?action=finished\">Quests</a> an.";
