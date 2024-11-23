@@ -1285,8 +1285,8 @@ $css = array(
 .questboard_hidden-sl-information {
   position: absolute;
   z-index: 1;
-  left: 25%;
-  top: 25%;
+  left: 50%;
+  transform: translate(-50%, 0);
   height: 400px;
   width: 1000px;
   overflow-y: scroll;
@@ -1303,7 +1303,6 @@ $css = array(
     opacity: 0;
   }
   to {
-    top: 50%;
     opacity: 1;
   }
 }
