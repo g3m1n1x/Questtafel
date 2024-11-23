@@ -1042,32 +1042,37 @@ $insert_array = array(
     <script type="text/javascript" src="{$mybb->asset_url}/jscripts/select2/select2.min.js?ver=1806"></script>
     <script type="text/javascript">
     $(document).ready(function () {
+        MyBB.select2();
         if (use_xmlhttprequest == "1") {
             function initializeSelect2() {
                 $(".players-select").each(function () {
                     if (!$(this).hasClass("select2-hidden-accessible")) { // Verhindert doppelte Initialisierung
                         $(this).select2({
-                            placeholder: "Benutzer suchen...",
+                            placeholder: "{$lang->search_user}",
                             minimumInputLength: 2,
+                            maximumSelectionSize: \'\',
                             multiple: true,
                             ajax: {
                                 url: "xmlhttp.php?action=get_users",
-                                dataType: "json",
-                                data: function (params) {
-                                    return { query: params.term };
+                                dataType: \'json\',
+                                data: function (term, page) {
+                                    return {
+                                        query: term, // search term
+                                    };
                                 },
-                                processResults: function (data) {
-                                    return { results: data };
+                                results: function (data, page) { // parse the results into the format expected by Select2.
+                                    // since we are using custom formatting functions we do not need to alter remote JSON data
+                                    return {results: data};
                                 }
                             },
-                            width: "200px",
+                            width: "20%",
                             initSelection: function (element, callback) {
                                 var query = $(element).val();
                                 if (query !== "") {
                                     var newqueries = [];
                                     exp_queries = query.split(",");
                                     $.each(exp_queries, function (index, value) {
-                                        if (value.replace(/\s/g, "") != "") {
+                                        if (value.replace(/\s/g, \'\') != "") {
                                             var newquery = {
                                                 id: value.replace(/,\s?/g, ","),
                                                 text: value.replace(/,\s?/g, ",")
