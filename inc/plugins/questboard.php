@@ -183,6 +183,17 @@ $insert_array = array(
             <div class="questboard">
                 {$navigation}
                 <div class="questboard_content">
+                <form>
+                    <label for="action">Wähle die Questart:</label>
+                    <select name="action" id="action">
+                        <option value="overview">Alle Quests</option>
+                        <option value="allgemein">Allgemeine Quests</option>
+                        <option value="special">Specialquests</option>
+                        <option value="single">Singlequests</option>
+                        <option value="berufsbezogen">Berufsbezogene Quests</option>
+                    </select>
+                    <input type="submit" value="Filtern">
+                </form>
                 {$description}
                 {$none}
                 {$bit}
@@ -255,10 +266,10 @@ $insert_array = array(
         <div class="questboard_formblock-field">
             <select name="type" id="type"  style="width: 100%;" required>
                 <option value="">Wähle den Typ</option>
-                <option value="AllgemeineQuest">Allgemeine Quest</option>
+                <option value="Allgemeine Quest">Allgemeine Quest</option>
                 <option value="Specialquest">Specialquest</option>
                 <option value="Singlequest">Singlequest</option>
-                <option value="BerufsbezogeneQuest">Berufsbezogene Quest</option>
+                <option value="Berufsbezogene Quest">Berufsbezogene Quest</option>
                 <option value="Sonstiges">Sonstiges</option>
             </select>
         </div>
@@ -290,7 +301,7 @@ $insert_array = array(
             <br>Trage ein, von welchem Charakter oder NPC im Inplay die Quest kommt.
         </div>
         <div class="questboard_formblock-field">
-            <input type="text" name="client" id="client">
+            <input type="text" name="client" id="client" value="n/a">
         </div>
     </div>
 
@@ -336,7 +347,7 @@ $insert_array = array(
             <br>Gib an, wie viel die Questgeber*innen der Gruppe an Entlohnung versprechen. Das muss nicht mit der Belohnung übereinstimmen, die Du für sie vorsiehst.
         </div>
         <div class="questboard_formblock-field">
-            <input type="text" name="reward" id="reward">
+            <input type="text" name="reward" id="reward" value="n/a">
         </div>
     </div>
 
@@ -348,9 +359,8 @@ $insert_array = array(
         <div class="questboard_formblock-field">
             <select name="lead" id="lead" style="width: 100%;">
                 <option>Wähle eine Leitung aus</option>
-                <option value="<i class=\'fa-solid fa-eye\'></i>">geleitet</option>
-                <option value="<i class=\'fa-regular fa-eye\'></i>">frei geleitet</option>
-                <option value="<i class=\'fa-solid fa-eye-slash\'></i>">nicht geleitet</option>
+                <option value="Ja">Ja</option>
+                <option value="Nein">Nein</option>
             </select>
         </div>
     </div>
@@ -377,7 +387,7 @@ $insert_array = array(
             <br>Gib an, mit welchem Monster die Charaktere zu rechnen haben - sofern es eines gibt. Sie können auch auf andere Monster treffen (insbesondere den Bossgegner).
         </div>
         <div class="questboard_formblock-field">
-            <input type="text" name="monster" id="monster">
+            <input type="text" name="monster" id="monster" value="n/a">
         </div>
     </div>
 
@@ -475,6 +485,20 @@ $insert_array = array(
 );
 $db->insert_query("templates", $insert_array);
 
+// ## Alert - questboard_alert_anmeldung
+$insert_array = array(
+    'title'	    => 'questboard_alert_anmeldung',
+    'template'	=> $db->escape_string('
+<div class="red_alert">
+    Jemand hat sich für eine Quest angemeldet!
+    {$questboard_read}
+</div>
+    '),
+    'sid'       => '-2',
+    'dateline'  => TIME_NOW
+);
+$db->insert_query("templates", $insert_array);
+
 
 // ## Beschreibung - questboard_description
 $insert_array = array(
@@ -482,7 +506,24 @@ $insert_array = array(
     'template'	=> $db->escape_string('
 <div class="questboard_description">
     <h1>Questtafel</h1>
-    Hier könnte Deine Werbung stehen!
+    Willkommen an der legendären Questtafel! Hier findest du alle aktuellen Aufträge, die für mutige Abenteurer wie dich bereitstehen. Die Questtafel dient als zentrale Anlaufstelle für alle, die sich nach Ruhm, Reichtum und Ehre sehnen – oder nach einer Herausforderung, die ihren Mut auf die Probe stellt.
+    <br/>
+    Die Quests sind nach Kategorien sortiert und umfassen verschiedenste Schwierigkeitsgrade und Belohnungen. Ob du nun ein erfahrener Held auf der Suche nach epischen Aufgaben bist oder ein Neuling, der seine ersten Schritte in der Welt wagen möchte – hier wirst du fündig!
+    <br/><br/>
+    So funktioniert es:
+    <br/>
+    <ul><li><b>Allgemeine Quests:</b> Diese Aufträge sind für Abenteurer aller Erfahrungsstufen geeignet. Sie bieten einfache Herausforderungen, die dir helfen, dich mit den Mechanismen des Spiels vertraut zu machen.</li>
+    <li><b>Specialquests:</b> Für jene, die etwas Besonderes suchen. Diese Quests bieten außergewöhnliche Belohnungen und sind nur für die tapfersten Helden gedacht.</li>
+    <li><b>Singlequests:</b> Einzelne, personalisierte Abenteuer, die dir die Möglichkeit geben, in deinem eigenen Tempo zu wachsen und einzigartige Belohnungen zu verdienen.</li>
+    <li><b>Berufsbezogene Quests:</b> Wenn du dich einer bestimmten Disziplin verschrieben hast, findest du hier spezialisierte Quests, die dir dabei helfen, deine Fähigkeiten und Fertigkeiten weiter auszubauen.</li></ul>
+    <br/>
+    Wie du mitmachst:
+    <br/>
+    <ol><li><b>Suche dir eine Quest aus:</b> Stöbere durch die Quests und finde jene, die deinem Charakter entsprechen.</li>
+    <li><b>Melde dich und mögliche andere Questteilnehmer*innen an:</b> Wenn du eine Quest gefunden hast, die du annehmen möchtest, melde dich unterhalb der Quest mit dem Link zu deinem/eurem Play an.</li>
+    <li><b>Schließe die Quest ab:</b> Arbeite dich durch die Aufgaben und Herausforderungen, die dir gestellt werden. Du wirst deine Belohnung erhalten, sobald du die Quest erfolgreich abgeschlossen hast!</li></ol>
+    <b>Hinweis:</b> Manche Quests erfordern eine bestimmte Anzahl an Mitstreitern oder eine spezielle Klasse, um erfolgreich abgeschlossen zu werden. Achte darauf, die Anforderungen genau zu prüfen, bevor du dich für eine Quest entscheidest.<br/><br/>
+    Viel Erfolg bei deinen Abenteuern – wir freuen uns, deine Fortschritte zu sehen!
 </div>
     '),
     'sid'       => '-2',
@@ -546,10 +587,10 @@ $insert_array = array(
         <div class="questboard_formblock-field">
             <select name="type" id="type"  style="width: 100%;" required>
                 <option value="">Wähle den Typ</option>
-                <option value="AllgemeineQuest">Allgemeine Quest</option>
+                <option value="Allgemeine Quest">Allgemeine Quest</option>
                 <option value="Specialquest">Specialquest</option>
                 <option value="Singlequest">Singlequest</option>
-                <option value="BerufsbezogeneQuest">Berufsbezogene Quest</option>
+                <option value="Berufsbezogene Quest">Berufsbezogene Quest</option>
                 <option value="Sonstiges">Sonstiges</option>
             </select>
         </div>
@@ -639,9 +680,8 @@ $insert_array = array(
         <div class="questboard_formblock-field">
             <select name="lead" id="lead" style="width: 100%;">
                 <option value="{$questboard[\'lead\']}">{$questboard[\'lead\']}</option>
-                <option value="<i class=\'fa-solid fa-eye\'></i>">geleitet</option>
-                <option value="<i class=\'fa-regular fa-eye\'></i>">frei geleitet</option>
-                <option value="<i class=\'fa-solid fa-eye-slash\'></i>">nicht geleitet</option>
+                <option value="Ja">Ja</option>
+                <option value="Nein">Nein</option>
             </select>
         </div>
     </div>
@@ -810,9 +850,9 @@ $insert_array = array(
     <div class="questboard_navigation-links"><a href="questboard.php">Über Quests</a></div>
     <div class="questboard_navigation-title">Übersicht</div>
     <div class="questboard_navigation-links">
-        <div><a href="questboard.php?action=overview"><i class="fa-light fa-calendar-lines"></i> Alle Quests</a></div>
+        <div><a href="questboard.php?action=overview"><i class="fa-regular fa-newspaper"></i> Alle Quests</a></div>
         <div><a href="questboard.php?action=free"><i class="fa-regular fa-circle"></i> freie Quests</a></div>
-        <div><a href="questboard.php?action=taken"><i class="fa-regular fa-circle-half-stroke"></i> vergebene Quests</a></div>
+        <div><a href="questboard.php?action=taken"><i class="fa-regular fa-circle-xmark"></i> vergebene Quests</a></div>
         <div><a href="questboard.php?action=finished"><i class="fa-solid fa-circle"></i> erledigte Quests</a></div>
     </div>
     {$questboard_cp}
@@ -830,8 +870,8 @@ $insert_array = array(
     'template'	=> $db->escape_string('
 <div class="questboard_navigation-title">Control Panel</div>
 <div class="questboard_navigation-links">
-    <div><a href="questboard.php?action=pending"><i class="fa-light fa-eye-low-vision"></i> nicht freigegebene Quests</a></div>
-    <div><a href="questboard.php?action=all"><i class="fa-light fa-list"></i> alle Quests</a></div>
+    <div><a href="questboard.php?action=pending"><i class="fa-regular fa-hourglass"></i> nicht freigegebene Quests</a></div>
+    <div><a href="questboard.php?action=all"><i class="fa-regular fa-note-sticky"></i> alle Quests</a></div>
     <div><a href="questboard.php?action=add"><i class="fa-solid fa-plus"></i> Quest hinzufügen</a></div>
 </div>
     '),
@@ -858,50 +898,50 @@ $insert_array = array(
     'title'	    => 'questboard_quest',
     'template'	=> $db->escape_string('
     <div class="questboard_quest">
-    <div class="questboard_header">{$questboard[\'type\']} {$status} 
-        {$sl_information}</div>
+    <div class="questboard_header">{$edit}<span class="questboard_header_status">{$questboard[\'type\']}{$status}{$sl_information}</span></div>
     <div class="questboard_quest-title">
     <div class="questboard_quest-title-title">{$questboard[\'title\']}</div>
-    <div class="questboard_quest-title-contributor">{$questboard[\'client\']}</div>
+    <div class="questboard_quest-title-contributor"><b>Questgeber*in:</b> {$questboard[\'client\']}</div>
     </div>
     <div class="questboard_quest-content switch">
         <div class="questboard_quest-content-short short{$questboard[\'nid\']}">{$questboard[\'shortdescription\']}</div>
-        <div class="questboard_quest-content-long long{$questboard[\'nid\']}">{$questboard[\'quest\']}</div>
+        <div class="questboard_quest-content-long long{$questboard[\'nid\']}">{$questboard[\'quest\']}
+        <div class="questboard_quest-footer-feats">
+            {$skills}
+        </div>
+        <div class="questboard_quest-keywords">
+            {$keywords}
+        </div>
     </div>
-            <button class="button{$questboard[\'nid\']}">Mehr</button>
-    <div class="questboard_quest-keywords">
-        {$keywords}
     </div>
+            <button class="button{$questboard[\'nid\']} mehr_anzeigen">» Mehr</button>
+  
     <div class="questboard_quest-footer">
-    <div class="questboard_quest-footer-feats">
-    {$skills}
-    </div>
-    <div class="questboard_quest-footer-right">
-        <div class="questboard_quest-footer-right-item">
-        <div class="questboard_quest-footer-right-item-top">{$questboard[\'location\']}</div>
-        <div class="questboard_quest-footer-right-item-bottom">Location</div>
+    <div class="questboard_quest-footer">
+        <div class="questboard_quest-footer-item">
+        <div class="questboard_quest-footer-item-top">{$questboard[\'location\']}</div>
+        <div class="questboard_quest-footer-item-bottom">Ort</div>
         </div>
-        <div class="questboard_quest-footer-right-item">
-        <div class="questboard_quest-footer-right-item-top">{$questboard[\'lead\']}</div>
-        <div class="questboard_quest-footer-right-item-bottom">Geleitet</div>
+        <div class="questboard_quest-footer-item">
+        <div class="questboard_quest-footer-item-top">{$questboard[\'lead\']}</div>
+        <div class="questboard_quest-footer-item-bottom">Geleitet</div>
         </div>
-        <div class="questboard_quest-footer-right-item">
-            <div class="questboard_quest-footer-right-item-top">{$questboard[\'monster\']}</div>
-            <div class="questboard_quest-footer-right-item-bottom">Monster</div>
+        <div class="questboard_quest-footer-item">
+            <div class="questboard_quest-footer-item-top">{$questboard[\'monster\']}</div>
+            <div class="questboard_quest-footer-item-bottom">Monster</div>
         </div>
-        <div class="questboard_quest-footer-right-item">
-        <div class="questboard_quest-footer-right-item-top">{$questboard[\'reward\']}</div>
-        <div class="questboard_quest-footer-right-item-bottom">Belohnung</div>
+        <div class="questboard_quest-footer-item">
+        <div class="questboard_quest-footer-item-top">{$questboard[\'reward\']}</div>
+        <div class="questboard_quest-footer-item-bottom">Belohnung</div>
         </div>
-        <div class="questboard_quest-footer-right-item">
-        <div class="questboard_quest-footer-right-item-top questboard_quest-footer-level">{$questboard[\'level\']}</div>
-        <div class="questboard_quest-footer-right-item-bottom">Level</div>
+        <div class="questboard_quest-footer-item">
+        <div class="questboard_quest-footer-item-top questboard_quest-footer-level">{$questboard[\'level\']}</div>
+        <div class="questboard_quest-footer-item-bottom">Level</div>
         </div>
     </div>
     
     </div>
     {$quest_status}
-    {$edit}
     {$take}
     {$finished}
     </div>
@@ -914,6 +954,14 @@ $insert_array = array(
       $(".button{$questboard[\'nid\']}").click(function(){
         $(".long{$questboard[\'nid\']}").toggle(\'slow\');	
         $(".short{$questboard[\'nid\']}").toggle(\'slow\');
+
+        if ($(".long{$questboard[\'nid\']}").is(":visible")) {
+            // Wenn die Langbeschreibung sichtbar ist, ändere den Button-Text auf \"Weniger"
+            $(this).text("» Weniger");
+        } else {
+            // Wenn die Langbeschreibung nicht sichtbar ist, ändere den Button-Text auf "Mehr"
+            $(this).text("» Mehr");
+        }
         });
     });
         
@@ -935,7 +983,7 @@ $insert_array = array(
     'title'	    => 'questboard_quest_finished',
     'template'	=> $db->escape_string('
 <div class="questboard_quest-content">
-    Diese Quest wurde von {$questboard[\'players\']} <a href="{$questboard[\'scene\']}">hier</a> erledigt.
+    Diese Quest wurde von {$questboard[\'players\']} im Rahmen <a href="{$questboard[\'scene\']}">dieser Szene</a> erledigt.
 </div>        
     '),
     'sid'       => '-2',
@@ -1013,16 +1061,72 @@ $db->insert_query("templates", $insert_array);
 $insert_array = array(
     'title'	    => 'questboard_quest_take',
     'template'	=> $db->escape_string('
-<div class="questboard_quest-take">
-	<h1>Quest annehmen</h1>
-	<form action="questboard.php?action=take&nid={$questboard[\'nid\']}" method="post">
-		<b>Charaktere</b>
-			<input type="text" name="players" id="players">
-		<b>Szene</b>
-		<input type="text" name="scene" id="scene">
-		<input type="submit" value="Quest annehmen" name="take_quest" />
-	</form>
-</div> 
+    <link rel="stylesheet" href="{$mybb->asset_url}/jscripts/select2/select2.css?ver=1807">
+    <script type="text/javascript" src="{$mybb->asset_url}/jscripts/select2/select2.min.js?ver=1806"></script>
+    <script type="text/javascript">
+    $(document).ready(function () {
+        if (use_xmlhttprequest == "1") {
+            function initializeSelect2() {
+                $(".players-select").each(function () {
+                    if (!$(this).hasClass("select2-hidden-accessible")) { // Verhindert doppelte Initialisierung
+                        $(this).select2({
+                            placeholder: "Benutzer suchen...",
+                            minimumInputLength: 2,
+                            multiple: true,
+                            ajax: {
+                                url: "xmlhttp.php?action=get_users",
+                                dataType: "json",
+                                data: function (params) {
+                                    return { query: params.term };
+                                },
+                                processResults: function (data) {
+                                    return { results: data };
+                                }
+                            },
+                            width: "200px",
+                            initSelection: function (element, callback) {
+                                var query = $(element).val();
+                                if (query !== "") {
+                                    var newqueries = [];
+                                    exp_queries = query.split(",");
+                                    $.each(exp_queries, function (index, value) {
+                                        if (value.replace(/\s/g, "") != "") {
+                                            var newquery = {
+                                                id: value.replace(/,\s?/g, ","),
+                                                text: value.replace(/,\s?/g, ",")
+                                            };
+                                            newqueries.push(newquery);
+                                        }
+                                    });
+                                    callback(newqueries);
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+
+            // Initialisierung auf bestehenden Feldern
+            initializeSelect2();
+
+            // Optional: Initialisierung nach AJAX oder dynamischem Hinzufügen
+            $(document).on("contentUpdated", function () {
+                initializeSelect2();
+            });
+        }
+    });
+    </script>
+
+    <div class="questboard_quest-take">
+        <h1>Quest annehmen</h1>
+        <form action="questboard.php?action=take&nid={$questboard[\'nid\']}" method="post">
+            <b>Charaktere: </b>
+                <input type="text" name="players[]" class="players-select" value="{$players}">
+            <b>Szene: </b>
+            <input type="text" name="scene" class="scene-input">
+            <input type="submit" value="Quest annehmen" name="take_quest" />
+        </form>
+    </div> 
     '),
     'sid'       => '-2',
     'dateline'  => TIME_NOW
@@ -1035,7 +1139,7 @@ $insert_array = array(
     'title'	    => 'questboard_quest_taken',
     'template'	=> $db->escape_string('
 <div class="questboard_quest-taken">
-    <b>{$questboard[\'players\']}</b> haben diese Quest <a href="{$questboard[\'scene\']}">hier</a> angenommen.
+Von <b>{$questboard[\'players\']}</b> wurde die Quest im Rahmen <a href="{$questboard[\'scene\']}">dieser Szene</a> angenommen.
 </div>
     '),
     'sid'       => '-2',
@@ -1048,7 +1152,7 @@ $db->insert_query("templates", $insert_array);
 $insert_array = array(
     'title'	    => 'questboard_sl_information',
     'template'	=> $db->escape_string('
-    <button class="sl_button{$questboard[\'nid\']}">SL-Infos</i></button>
+    <button class="sl_button{$questboard[\'nid\']}"><i class="fa-regular fa-lightbulb"></i></button>
     <div class="questboard_hidden-sl-information sl{$questboard[\'nid\']}"> 
     
     
@@ -1123,7 +1227,7 @@ $db->insert_query("templates", $insert_array);
 $insert_array = array(
     'title'	    => 'questboard_status_free',
     'template'	=> $db->escape_string('
-<div class="questboard_quest-head-finished" title="Die Quest ist noch frei!"><i class="fa-regular fa-circle"></i></div>
+<div class="questboard_quest-head-finished" title="Die Quest ist noch frei!">frei</i></div>
     '),
     'sid'       => '-2',
     'dateline'  => TIME_NOW
@@ -1150,15 +1254,26 @@ $css = array(
     'tid'   => 1,
     'attachedto' => '',
     "stylesheet" =>	'
-    .questboard button {
+
+:root {
+    --background-main: #2B2B2B;
+    --background: #161616;
+    --emphasis: #2ECC71;
+    --text: #ccc;
+}
+
+.questboard button {
     cursor: pointer;
-    width: 100px;
-    background: #294DA5;
+    width: auto;
+    background: transparent;
+    color: var(--emphasis);
     border: none;
+    display:flex;
+    padding: 0;
 }
 
 .questboard b {
-    color: #294DA5;
+    color: var(--emphasis);
 }
 
 /* Popup*/
@@ -1171,10 +1286,15 @@ $css = array(
   position: absolute;
   z-index: 1;
   left: 25%;
+  top: 25%;
+  height: 400px;
   width: 1000px;
-  background-color: rgba(190, 190, 190, 0.9);
+  overflow-y: scroll;
+  scrollbar-width: none;
+  background-color: var(--background);
+  border: solid 2px var(--emphasis);
   animation-name: animatetop;
-  animation-duration: 0.4s;
+  animation-duration: 0.5s;
 }
 
 @keyframes animatetop {
@@ -1183,7 +1303,7 @@ $css = array(
     opacity: 0;
   }
   to {
-    top: 0;
+    top: 50%;
     opacity: 1;
   }
 }
@@ -1197,24 +1317,23 @@ $css = array(
 
 .questboard {
   width: 100%;
-  background: #fff;
+  background: var(--background-main);
   display: flex;
- gap: 40px;
+  gap: 40px;
   align-items: flex-start;
-    
-    font-family: Roboto, sans-serif;
+  font-family: Roboto, sans-serif;
 }
 
 .questboard_navigation {
-    align-self: flex-start;
+  align-self: flex-start;
 }
 
 .questboard_navigation-title {
-    width: 200px;
-  background: #fafafa;
+  width: 200px;
+  background: var(--background);
   padding: 20px;
   text-transform: uppercase;
-  color: #294DA5;
+  color: var(--emphasis);
   font-weight: bold;
 }
 
@@ -1242,7 +1361,7 @@ $css = array(
 }
 
 .questboard_formblock-label b {
-    color: #294DA5;
+    color: var(--emphasis);
     text-transform: uppercase;
     font-size: 16px;
 }
@@ -1269,7 +1388,9 @@ $css = array(
 .questboard_content {
   display: flex;
   flex-wrap: wrap;
+  margin-top: 15px;
   gap: 10px;
+  justify-content: center;
 }
 
 .questboard_description {
@@ -1277,13 +1398,17 @@ $css = array(
     line-height: 180%;
 }
 
+.questboard_description h1 {
+    text-align: center;
+}
+
 .questboard_quest {
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 20px;
   width: 700px;
   margin: 30px auto;
-  background: #fafafa;
+  background: var(--background);
   padding: 30px;
   box-sizing: border-box;
 }
@@ -1291,34 +1416,45 @@ $css = array(
 .questboard_header {
     display: flex;
     gap: 20px;
-    justify-content: flex-end;
-    align-items: center;
+    justify-content: space-between;
+}
+
+.questboard_header_status{
+    display:flex;
+    flex-direction: row;
+    gap: 20px;
 }
 
 .questboard_quest-head-free,
 .questboard_quest-head-taken,
 .questboard_quest-head-finished
 {
-  align-self: flex-end;
-    font-size: 30px;
-    color: #294DA5;
+    font-size: 13px;
+    color: var(--emphasis);
+    font-weight:900;
 }
 
 .questboard_quest-title {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: center;
 }
 
 .questboard_quest-title-title {
   font-size: 25px;
+  width: 60%;
   text-transform: uppercase;
 }
 
 .questboard_quest-title-contributor {
-  color: #294DA5;
+  color: var(--emphasis);
   text-transform: uppercase;
 }
+
+.questboard_quest-title-contributor b {
+    color: var(--text);
+    text-transform: uppercase;
+  }
 
 .questboard_quest-content {
 }
@@ -1332,7 +1468,7 @@ $css = array(
 .questboard_quest-keywords div {
   background: #efefef;
   padding: 5px 20px;
-  color: #294DA5;
+  color: var(--emphasis);
   text-transform: uppercase;
 }
 
@@ -1343,26 +1479,25 @@ $css = array(
 
 .questboard_quest-footer-feats {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 10px;
 }
 
 .questboard_quest-footer-feats div {
-  background: #f8f8f8;
   padding: 5px 10px;
-  color: #294DA5;
+  color: var(--emphasis);
   font-size: 11px;
-    text-align: left;
+  text-align: left;
   text-transform: uppercase;
 }
 
-.questboard_quest-footer-right {
+.questboard_quest-footer {
   display: flex;
-  justify-content: flex-end;
-  gap: 30px;
+  justify-content: center;
+  gap: 40px;
 }
 
-.questboard_quest-footer-right-item {
+.questboard_quest-footer-item {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -1370,20 +1505,20 @@ $css = array(
   text-transform: uppercase;
 }
 
-.questboard_quest-footer-right-item-top {
-  color: #294DA5;
-    text-align: center;
-    font-size: 12px;
+.questboard_quest-footer-item-top {
+  color: var(--emphasis);
+  text-align: center;
+  font-size: 12px;
 }
 
 .questboard_quest-footer-level {
   display: flex;
   align-items: flex-end;
-    font-size: 30px;
+  font-size: 12px;
   gap: 5px;
 }
 
-.questboard_quest-footer-right-item-bottom {
+.questboard_quest-footer-item-bottom {
 }
 
 
@@ -1391,12 +1526,16 @@ $css = array(
 /* ################### Szene annehmen ###################### */
 
 .questboard_quest-take b {
-    color: #294DA5;
+    color: var(--emphasis);
 }
 
 .questboard_quest-taken b {
-    color: #294DA5;
+    color: var(--emphasis);
     text-transform: uppercase;
+}
+
+.questboard_quest-taken a {
+    text-decoration: underline;
 }
 
 .questboard_quest-take input {
@@ -1574,6 +1713,18 @@ global $parameters;
         if($parameters['action'] == "overview" && empty($parameters['site'])) {
             $user_activity['activity'] = "overview";
         }
+        if($parameters['action'] == "allgemein" && empty($parameters['site'])) {
+            $user_activity['activity'] = "allgemein";
+        }
+        if($parameters['action'] == "special" && empty($parameters['site'])) {
+            $user_activity['activity'] = "special";
+        }
+        if($parameters['action'] == "single" && empty($parameters['site'])) {
+            $user_activity['activity'] = "single";
+        }
+        if($parameters['action'] == "berufsbezogen" && empty($parameters['site'])) {
+            $user_activity['activity'] = "berufsbezogen";
+        }
         if($parameters['action'] == "free" && empty($parameters['site'])) {
             $user_activity['activity'] = "free";
         }
@@ -1603,6 +1754,18 @@ global $mybb, $theme, $lang;
 	}
     if($plugin_array['user_activity']['activity'] == "free") {
 		$plugin_array['location_name'] = "Sieht sich freie <a href=\"questboard.php?action=free\">Quests</a> an.";
+	}
+    if($plugin_array['user_activity']['activity'] == "allgemein") {
+		$plugin_array['location_name'] = "Sieht sich freie <a href=\"questboard.php?action=allgemein\">Allgemeine Quests</a> an.";
+	}
+    if($plugin_array['user_activity']['activity'] == "special") {
+		$plugin_array['location_name'] = "Sieht sich freie <a href=\"questboard.php?action=special\">Specialquests</a> an.";
+	}
+    if($plugin_array['user_activity']['activity'] == "single") {
+		$plugin_array['location_name'] = "Sieht sich freie <a href=\"questboard.php?action=single\">Singlequests</a> an.";
+	}
+    if($plugin_array['user_activity']['activity'] == "berufsbezogen") {
+		$plugin_array['location_name'] = "Sieht sich freie <a href=\"questboard.php?action=berufsbezogen\">Berufsbezogene Quests</a> an.";
 	}
     if($plugin_array['user_activity']['activity'] == "taken") {
 		$plugin_array['location_name'] = "Sieht sich vergebene <a href=\"questboard.php?action=taken\">Quests</a> an.";
