@@ -307,16 +307,6 @@ $insert_array = array(
 
     <div class="questboard_formblock">
         <div class="questboard_formblock-label">
-            <b>Keywords</b>
-            <br>Gib bis zu 5 Schlüsselbegriffe ein, die für die Quest relevant sind und trenne sie jeweils mit einem , (Komma).
-        </div>
-        <div class="questboard_formblock-field">
-            <input type="text" name="keywords" id="keywords">
-        </div>
-    </div>
-
-    <div class="questboard_formblock">
-        <div class="questboard_formblock-label">
             <b>Fähigkeiten</b>
             <br>Gib hier Eigenschaften an, die mindestens ein Mitglied der Gruppe benötigt. Trenne die Eigenschaften mit , ab. Wenn sie für den Quest von Nachteil sind, setze eine 1 davor. Wenn sie bei dem Quest nicht zugelassen sind, setze eine 0 davor.
         </div>
@@ -628,16 +618,6 @@ $insert_array = array(
 
     <div class="questboard_formblock">
         <div class="questboard_formblock-label">
-            <b>Keywords</b>
-            <br>Gib bis zu 5 Schlüsselbegriffe ein, die für die Quest relevant sind und trenne sie jeweils mit einem , (Komma).
-        </div>
-        <div class="questboard_formblock-field">
-            <input type="text" name="keywords" id="keywords" value="{$questboard[\'keywords\']}">
-        </div>
-    </div>
-
-    <div class="questboard_formblock">
-        <div class="questboard_formblock-label">
             <b>Fähigkeiten</b>
             <br>Gib hier Eigenschaften an, die mindestens ein Mitglied der Gruppe benötigt. Trenne die Eigenschaften mit , ab. Wenn sie für den Quest von Nachteil sind, setze eine 1 davor. Wenn sie bei dem Quest nicht zugelassen sind, setze eine 0 davor.
         </div>
@@ -908,9 +888,6 @@ $insert_array = array(
         <div class="questboard_quest-content-long long{$questboard[\'nid\']}">{$questboard[\'quest\']}
         <div class="questboard_quest-footer-feats">
             {$skills}
-        </div>
-        <div class="questboard_quest-keywords">
-            {$keywords}
         </div>
     </div>
     </div>
@@ -1456,19 +1433,6 @@ $css = array(
   }
 
 .questboard_quest-content {
-}
-
-.questboard_quest-keywords {
-  display: flex;
-  gap: 15px;
-  flex-wrap: wrap;
-}
-
-.questboard_quest-keywords div {
-  background: #efefef;
-  padding: 5px 20px;
-  color: var(--emphasis);
-  text-transform: uppercase;
 }
 
 .questboard_quest-footer {
