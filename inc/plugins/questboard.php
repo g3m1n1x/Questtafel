@@ -586,7 +586,7 @@ $insert_array = array(
         </div>
         <div class="questboard_formblock-field">
             <select name="type" id="type"  style="width: 100%;" required>
-                <option value="">Wähle den Typ</option>
+                <option value="{$questboard[\'type\']}">{$questboard[\'type\']}</option>
                 <option value="Allgemeine Quest">Allgemeine Quest</option>
                 <option value="Specialquest">Specialquest</option>
                 <option value="Singlequest">Singlequest</option>
@@ -914,7 +914,7 @@ $insert_array = array(
         </div>
     </div>
     </div>
-            <button class="button{$questboard[\'nid\']} mehr_anzeigen">» Mehr</button>
+            <button class="button{$questboard[\'nid\']} mehr_anzeigen">» Mehr anzeigen</button>
   
     <div class="questboard_quest-footer">
     <div class="questboard_quest-footer">
@@ -956,11 +956,11 @@ $insert_array = array(
         $(".short{$questboard[\'nid\']}").toggle(\'slow\');
 
         if ($(".long{$questboard[\'nid\']}").is(":visible")) {
-            // Wenn die Langbeschreibung sichtbar ist, ändere den Button-Text auf \"Weniger"
-            $(this).text("» Weniger");
+            // Wenn die Langbeschreibung sichtbar ist, ändere den Button-Text auf \"Weniger anzeigen"
+            $(this).text("» Weniger anzeigen");
         } else {
-            // Wenn die Langbeschreibung nicht sichtbar ist, ändere den Button-Text auf "Mehr"
-            $(this).text("» Mehr");
+            // Wenn die Langbeschreibung nicht sichtbar ist, ändere den Button-Text auf "Mehr anzeigen"
+            $(this).text("» Mehr anzeigen");
         }
         });
     });
