@@ -99,7 +99,7 @@ if(!$mybb->input['action']) {
                 $finished = "";
                 
 
-                    if($questboard['status'] == "0" && $questboard['players'] == "") {
+                    if(($questboard['status'] == "0" && $questboard['players'] == "") || $questboard['reusable'] == "1") {
                         if(is_member($mybb->settings['questboard_allow_groups_take'])) {
                             $take = "";
                             eval("\$take = \"".$templates->get("questboard_quest_take")."\";");
@@ -110,11 +110,11 @@ if(!$mybb->input['action']) {
                         eval("\$status = \"".$templates->get("questboard_status_free")."\";");
 
                     }
-                    elseif($questboard['status'] == "0" && $questboard['players'] != "") {
+                    elseif($questboard['status'] == "0" && $questboard['players'] != "" && $questboard['reusable'] == "0") {
                         eval("\$status = \"".$templates->get("questboard_status_taken")."\";");
                         eval("\$take = \"".$templates->get("questboard_quest_taken")."\";");
                     }
-                    elseif($questboard['status'] == "1" && $questboard['players'] != "") {
+                    elseif($questboard['status'] == "1" && $questboard['players'] != "" && $questboard['reusable'] == "0") {
                         eval("\$status = \"".$templates->get("questboard_status_finished")."\";");
                         eval("\$finished = \"".$templates->get("questboard_quest_finished")."\";");
                     }
@@ -178,7 +178,7 @@ if(!$mybb->input['action']) {
                 $take = "";
                 $finished = "";
 
-                if($questboard['players'] == "") {
+                if($questboard['players'] == "" || $questboard['reusable'] == "1") {
                     if(is_member($mybb->settings['questboard_allow_groups_take'])) {
                         $take = "";
                         eval("\$take = \"".$templates->get("questboard_quest_take")."\";");
@@ -245,7 +245,7 @@ if($mybb->input['action'] == "allgemein") {
             $take = "";
             $finished = "";
     
-            if($questboard['players'] == "") {
+            if($questboard['players'] == "" || $questboard['reusable'] == "1") {
                 if(is_member($mybb->settings['questboard_allow_groups_take'])) {
                     $take = "";
                     eval("\$take = \"".$templates->get("questboard_quest_take")."\";");
@@ -309,7 +309,7 @@ if($mybb->input['action'] == "special") {
             $take = "";
             $finished = "";
     
-            if($questboard['players'] == "") {
+            if($questboard['players'] == "" || $questboard['reusable'] == "1") {
                 if(is_member($mybb->settings['questboard_allow_groups_take'])) {
                     $take = "";
                     eval("\$take = \"".$templates->get("questboard_quest_take")."\";");
@@ -373,7 +373,7 @@ if($mybb->input['action'] == "single") {
             $take = "";
             $finished = "";
     
-            if($questboard['players'] == "") {
+            if($questboard['players'] == "" || $questboard['reusable'] == "1") {
                 if(is_member($mybb->settings['questboard_allow_groups_take'])) {
                     $take = "";
                     eval("\$take = \"".$templates->get("questboard_quest_take")."\";");
@@ -437,7 +437,7 @@ if($mybb->input['action'] == "berufsbezogen") {
             $take = "";
             $finished = "";
     
-            if($questboard['players'] == "") {
+            if($questboard['players'] == "" || $questboard['reusable'] == "1") {
                 if(is_member($mybb->settings['questboard_allow_groups_take'])) {
                     $take = "";
                     eval("\$take = \"".$templates->get("questboard_quest_take")."\";");

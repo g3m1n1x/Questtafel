@@ -234,7 +234,7 @@ $insert_array = array(
     <div class="questboard_form">
 
     <form id="questboard" action="questboard.php?action=add" method="post">
-    <h1>Quest aufgeben</h1>
+    <h1>Quest hinzufügen</h1>
 
     <div class="questboard_description">Alle Felder mit einem * müssen ausgefüllt werden. Alle Felder im oberen Block sind für User*innen sichtbar, sobald die Quest auf "sichtbar" gestellt ist.</div>
 
@@ -283,7 +283,6 @@ $insert_array = array(
                 <option value="Specialquest">Specialquest</option>
                 <option value="Singlequest">Singlequest</option>
                 <option value="Berufsbezogene Quest">Berufsbezogene Quest</option>
-                <option value="Sonstiges">Sonstiges</option>
             </select>
         </div>
     </div>
@@ -606,7 +605,6 @@ $insert_array = array(
                 <option value="Specialquest">Specialquest</option>
                 <option value="Singlequest">Singlequest</option>
                 <option value="Berufsbezogene Quest">Berufsbezogene Quest</option>
-                <option value="Sonstiges">Sonstiges</option>
             </select>
         </div>
     </div>
@@ -897,10 +895,10 @@ $insert_array = array(
         <b>Charaktere ändern</b>
     </div>
     <div class="questboard_formblock-field-radio">
-        <label>Charaktere: </label>
-        <input type="text" name="players[]" class="players-select" value="{$questboard[\'players\']}">
-        <br><label>Szene: </label>
-        <input type="text" name="scene" id="scene" value="{$questboard[\'scene\']}">
+        <div><label>Teilnehmer*in: </label>
+        <input type="text" name="players[]" class="players-select" value="{$questboard[\'players\']}"></div>
+        <div><label>Szene: </label>
+        <input type="text" name="scene" id="scene" value="{$questboard[\'scene\']}"></div>
     </div>
 </div>
     '),
@@ -966,50 +964,49 @@ $insert_array = array(
     'title'	    => 'questboard_quest',
     'template'	=> $db->escape_string('
     <div class="questboard_quest">
-    <div class="questboard_header">{$edit}<span class="questboard_header_status">{$questboard[\'type\']}{$status}{$sl_information}</span></div>
-    <div class="questboard_quest-title">
-    <div class="questboard_quest-title-title">{$questboard[\'title\']}</div>
-    <div class="questboard_quest-title-contributor"><b>Questgeber*in:</b> {$questboard[\'client\']}</div>
-    </div>
-    <div class="questboard_quest-content switch">
-        <div class="questboard_quest-content-short short{$questboard[\'nid\']}">{$questboard[\'shortdescription\']}</div>
-        <div class="questboard_quest-content-long long{$questboard[\'nid\']}">{$questboard[\'quest\']}
-        <div class="questboard_quest-footer-feats">
-            {$skills}
+        <div class="questboard_header">{$edit}<span class="questboard_header_status">{$questboard[\'type\']}{$status}{$sl_information}</span></div>
+        <div class="questboard_quest-title">
+            <div class="questboard_quest-title-title">{$questboard[\'title\']}</div>
+            <div class="questboard_quest-title-contributor"><b>Questgeber*in:</b> {$questboard[\'client\']}</div>
         </div>
-    </div>
-    </div>
-            <button class="button{$questboard[\'nid\']} mehr_anzeigen">» Mehr anzeigen</button>
-  
-    <div class="questboard_quest-footer">
-    <div class="questboard_quest-footer">
-        <div class="questboard_quest-footer-item">
-        <div class="questboard_quest-footer-item-top">{$questboard[\'location\']}</div>
-        <div class="questboard_quest-footer-item-bottom">Ort</div>
+        <div class="questboard_quest-content switch">
+            <div class="questboard_quest-content-short short{$questboard[\'nid\']}">{$questboard[\'shortdescription\']}</div>
+            <div class="questboard_quest-content-long long{$questboard[\'nid\']}">{$questboard[\'quest\']}
+            <div class="questboard_quest-footer-feats">
+                {$skills}
+            </div>
+            </div>
         </div>
-        <div class="questboard_quest-footer-item">
-        <div class="questboard_quest-footer-item-top">{$questboard[\'lead\']}</div>
-        <div class="questboard_quest-footer-item-bottom">Geleitet</div>
-        </div>
-        <div class="questboard_quest-footer-item">
-            <div class="questboard_quest-footer-item-top">{$questboard[\'monster\']}</div>
-            <div class="questboard_quest-footer-item-bottom">Monster</div>
-        </div>
-        <div class="questboard_quest-footer-item">
-        <div class="questboard_quest-footer-item-top">{$questboard[\'reward\']}</div>
-        <div class="questboard_quest-footer-item-bottom">Belohnung</div>
-        </div>
-        <div class="questboard_quest-footer-item">
-        <div class="questboard_quest-footer-item-top questboard_quest-footer-level">{$questboard[\'level\']}</div>
-        <div class="questboard_quest-footer-item-bottom">Level</div>
-        </div>
-    </div>
+                <button class="button{$questboard[\'nid\']} mehr_anzeigen">» Mehr anzeigen</button>
     
-    </div>
-    {$quest_status}
-    {$take}
-    {$finished}
-    </div>
+        <div class="questboard_quest-footer">
+        <div class="questboard_quest-footer">
+            <div class="questboard_quest-footer-item">
+                <div class="questboard_quest-footer-item-top">{$questboard[\'location\']}</div>
+                <div class="questboard_quest-footer-item-bottom">Ort</div>
+            </div>
+            <div class="questboard_quest-footer-item">
+                <div class="questboard_quest-footer-item-top">{$questboard[\'lead\']}</div>
+                <div class="questboard_quest-footer-item-bottom">Geleitet</div>
+            </div>
+            <div class="questboard_quest-footer-item">
+                <div class="questboard_quest-footer-item-top">{$questboard[\'monster\']}</div>
+                <div class="questboard_quest-footer-item-bottom">Monster</div>
+            </div>
+            <div class="questboard_quest-footer-item">
+                <div class="questboard_quest-footer-item-top">{$questboard[\'reward\']}</div>
+                <div class="questboard_quest-footer-item-bottom">Belohnung</div>
+            </div>
+            <div class="questboard_quest-footer-item">
+                <div class="questboard_quest-footer-item-top questboard_quest-footer-level">{$questboard[\'level\']}</div>
+                <div class="questboard_quest-footer-item-bottom">Level</div>
+            </div>
+        </div>
+        </div>
+            {$quest_status}
+            {$take}
+            {$finished}  
+        </div>
     
     <script type="text/javascript">
     
@@ -1187,15 +1184,88 @@ $insert_array = array(
     });
     </script>
 
+    <script>
+        let characterIndex = 0; // Zum Zählen der Charaktere
+
+        // Funktion zum Hinzufügen eines neuen Charakters
+        function addCharacterField() {
+            characterIndex++;
+
+            const html = `
+                <div class="character-form" data-index="${characterIndex}" id="character-${characterIndex}">
+                    <input name="characters[${characterIndex}][user]" class="character-select" required></input>
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" name="characters[${characterIndex}][xp]"> Nur Erfahrungspunkte
+                        </label>
+                        <label>
+                            <input type="checkbox" name="characters[${characterIndex}][hp]"> Nur Hauspunkte
+                        </label>
+                        <label>
+                            <input type="checkbox" name="characters[${characterIndex}][fifty]"> 50 % von beidem
+                        </label>
+                    </div>
+                    <span class="remove-button" onclick="removeCharacterField(${characterIndex})">✖</span>
+                </div>
+            `;
+
+            // Füge das neue Feld hinzu
+            $("#characters-container").append(html);
+
+            // Initialisiere select2 für das neu hinzugefügte Feld
+            MyBB.select2();
+            $(`.character-select`).last().select2({
+                placeholder: "Benutzer auswählen...",
+                minimumInputLength: 2,
+                ajax: {
+                    url: "xmlhttp.php?action=get_users",
+                    dataType: \'json\',
+                    data: function (term, page) {
+                        return {
+                            query: term, // search term
+                        };
+                    },
+                    results: function (data, page) { // parse the results into the format expected by Select2.
+                        // since we are using custom formatting functions we do not need to alter remote JSON data
+                        return {results: data};
+                    }
+                },
+                 width: "30%",
+            });
+        }
+
+        // Funktion zum Entfernen eines Charakter-Feldes
+        function removeCharacterField(characterIndex) {
+            const element = document.getElementById(`character-${characterIndex}`);
+            if (element) {
+                element.remove(); // Entferne das spezifische Element
+            }
+        }
+
+        // Initialisiere das erste Feld
+        $(document).ready(function () {
+            addCharacterField();
+
+            // Button-Klick zum Hinzufügen eines weiteren Charakters
+            $("#add-character").on("click", function () {
+                addCharacterField();
+            });
+        });
+    </script>
+
     <div class="questboard_quest-take">
-        <h3>Quest annehmen</h3>
-        <form action="questboard.php?action=take&nid={$questboard[\'nid\']}" method="post">
-            <b>Charaktere: </b>
-                <input type="text" name="players[]" class="players-select" value="{$players}">
-            <b>Szene: </b>
-            <input type="text" name="scene" class="scene-input">
+        <details>
+            <summary>Quest annehmen</summary>
+            <form id="character-form" action="questboard.php?action=take&nid={$questboard[\'nid\']}" method="post">
+            <div class="questboard_quest_scene-input"><b>Szene:</b> <input type="text" id="scene" name="scene" required" /></div>
+            <div id="characters-container">
+                <!-- Hier wird das erste Feld dynamisch hinzugefügt -->
+            </div>
+            <button type="button" id="add-character">Charakter hinzufügen</button>
+            <br><br>
             <input type="submit" value="Quest annehmen" name="take_quest" />
-        </form>
+            </form>
+        </details>
     </div> 
     '),
     'sid'       => '-2',
@@ -1452,6 +1522,27 @@ $css = array(
     width: 300px;
 }
 
+.character-form {
+    margin: 5px 0;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.checkbox-group {
+    align-items: center;
+    gap: 10px;
+}
+.remove-button {
+    margin-left: auto;
+    color: red;
+    cursor: pointer;
+}
+
+.character-select {
+    width: 30%;
+}
+
 /* #################### Content #################### */
 
 .questboard_content {
@@ -1537,6 +1628,7 @@ $css = array(
   display: flex;
   flex-direction: row;
   gap: 10px;
+  margin-top:10px;
 }
 
 .questboard_quest-footer-feats div {
@@ -1576,6 +1668,10 @@ $css = array(
 
 
 /* ################### Szene annehmen ###################### */
+
+.questboard_quest_scene-input {
+    margin: 10px 0;
+}
 
 .questboard_quest-take b {
     color: var(--emphasis);
