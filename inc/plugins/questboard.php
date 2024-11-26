@@ -187,7 +187,6 @@ $insert_array = array(
                 <form>
                     <label for="action">Wähle die Questart:</label>
                     <select name="action" id="action">
-                        <option value="overview">Alle Quests</option>
                         <option value="allgemein">Allgemeine Quests</option>
                         <option value="special">Specialquests</option>
                         <option value="single">Singlequests</option>
@@ -814,7 +813,7 @@ $insert_array = array(
     'title'	    => 'questboard_edit_button',
     'template'	=> $db->escape_string('
 <div class="questboard_buttons">
-    <div class="questboard_button"><a href="questboard.php?action=edit&nid={$questboard[\'nid\']}">Editieren</a> | <a href="questboard.php?action=archive&nid={$questboard[\'nid\']}">Archivieren</a> | <a href="questboard.php?action=delete&nid={$questboard[\'nid\']}">Löschen</a></div>
+    <div class="questboard_button"><a href="questboard.php?action=edit&nid={$questboard[\'nid\']}">Editieren</a> | <a href="questboard.php?action=delete&nid={$questboard[\'nid\']}">Löschen</a></div>
 </div>
     '),
     'sid'       => '-2',
@@ -898,7 +897,7 @@ $insert_array = array(
         <div><label>Teilnehmer*in: </label>
         <input type="text" name="players[]" class="players-select" value="{$questboard[\'players\']}"></div>
         <div><label>Szene: </label>
-        <input type="text" name="scene" id="scene" value="{$questboard[\'scene\']}"></div>
+        <input type="text" name="scene" id="scene" value="{$questboard[\'scene\']}" placeholder="URL einfügen"></div>
     </div>
 </div>
     '),
@@ -916,10 +915,9 @@ $insert_array = array(
     <div class="questboard_navigation-links"><a href="questboard.php">Über Quests</a></div>
     <div class="questboard_navigation-title">Übersicht</div>
     <div class="questboard_navigation-links">
-        <div><a href="questboard.php?action=overview"><i class="fa-regular fa-newspaper"></i> Alle Quests</a></div>
-        <div><a href="questboard.php?action=free"><i class="fa-regular fa-circle"></i> freie Quests</a></div>
-        <div><a href="questboard.php?action=taken"><i class="fa-regular fa-hourglass"></i> bespielte Quests</a></div>
-        <div><a href="questboard.php?action=finished"><i class="fa-solid fa-circle"></i> erledigte Quests</a></div>
+        <div><a href="questboard.php?action=free"><i class="fa-regular fa-circle"></i> Freie Quests</a></div>
+        <div><a href="questboard.php?action=taken"><i class="fa-regular fa-hourglass"></i> Bespielte Quests</a></div>
+        <div><a href="questboard.php?action=finished"><i class="fa-solid fa-check"></i> Erledigte Quests</a></div>
     </div>
     {$questboard_cp}
 </div>
@@ -936,8 +934,7 @@ $insert_array = array(
     'template'	=> $db->escape_string('
 <div class="questboard_navigation-title">Control Panel</div>
 <div class="questboard_navigation-links">
-    <div><a href="questboard.php?action=pending"><i class="fa-regular fa-circle-xmark"></i> nicht freigegebene Quests</a></div>
-    <div><a href="questboard.php?action=all"><i class="fa-regular fa-note-sticky"></i> alle Quests</a></div>
+    <div><a href="questboard.php?action=pending"><i class="fa-regular fa-circle-xmark"></i> Nicht freigegebene Quests</a></div>
     <div><a href="questboard.php?action=add"><i class="fa-solid fa-plus"></i> Quest hinzufügen</a></div>
 </div>
     '),
@@ -957,7 +954,6 @@ $insert_array = array(
     'dateline'  => TIME_NOW
 );
 $db->insert_query("templates", $insert_array);
-
 
 // ## Quest - questboard_quest
 $insert_array = array(
@@ -1006,6 +1002,11 @@ $insert_array = array(
             {$quest_status}
             {$take}
             {$finished}  
+        
+        <div class="questboard_reusable">
+        {$questboard[\'reusable_text\']}
+        </div>
+    
         </div>
     
     <script type="text/javascript">
@@ -1045,7 +1046,7 @@ $insert_array = array(
     'title'	    => 'questboard_quest_finished',
     'template'	=> $db->escape_string('
     <div class="questboard_quest-content">
-        Diese Quest wurde von {$questboard[\'players\']} im Rahmen <a href="{$questboard[\'scene\']}">dieser Szene</a> erledigt.
+        Diese Quest wurde im Rahmen <a href="{$questboard[\'scene\']}">dieser Szene</a> erledigt.
     </div>        
     '),
     'sid'       => '-2',
@@ -1210,7 +1211,7 @@ $insert_array = array(
             `;
 
             // Füge das neue Feld hinzu
-            $("#characters-container").append(html);
+            $("#characters-container-{$questboard[\'nid\']}").append(html);
 
             // Initialisiere select2 für das neu hinzugefügte Feld
             MyBB.select2();
@@ -1258,7 +1259,7 @@ $insert_array = array(
             <summary>Quest annehmen</summary>
             <form id="character-form" action="questboard.php?action=take&nid={$questboard[\'nid\']}" method="post">
             <div class="questboard_quest_scene-input"><b>Szene:</b> <input type="text" id="scene" name="scene" required" /></div>
-            <div id="characters-container">
+            <div id="characters-container-{$questboard[\'nid\']}">
                 <!-- Hier wird das erste Feld dynamisch hinzugefügt -->
             </div>
             <button type="button" id="add-character">Charakter hinzufügen</button>
@@ -1279,7 +1280,7 @@ $insert_array = array(
     'title'	    => 'questboard_quest_taken',
     'template'	=> $db->escape_string('
     <div class="questboard_quest-taken">
-    Von <b>{$questboard[\'players\']}</b> wurde die Quest im Rahmen <a href="{$questboard[\'scene\']}">dieser Szene</a> angenommen.
+    Die Quest wurde im Rahmen <a href="{$questboard[\'scene\']}">dieser Szene</a> angenommen.
     </div>
     '),
     'sid'       => '-2',
@@ -1569,7 +1570,7 @@ $css = array(
   width: 700px;
   margin: 30px auto;
   background: var(--background);
-  padding: 30px;
+  padding: 20px;
   box-sizing: border-box;
 }
 
@@ -1616,7 +1617,9 @@ $css = array(
     text-transform: uppercase;
   }
 
-.questboard_quest-content {
+.questboard_reusable {
+    text-align:center;
+    font-style: italic;
 }
 
 .questboard_quest-footer {
@@ -1858,9 +1861,6 @@ global $parameters;
         if($parameters['action'] == "" && empty($parameters['site'])) {
             $user_activity['activity'] = "questboard";
         }
-        if($parameters['action'] == "overview" && empty($parameters['site'])) {
-            $user_activity['activity'] = "overview";
-        }
         if($parameters['action'] == "allgemein" && empty($parameters['site'])) {
             $user_activity['activity'] = "allgemein";
         }
@@ -1897,9 +1897,6 @@ global $mybb, $theme, $lang;
     if($plugin_array['user_activity']['activity'] == "questboard") {
         $plugin_array['location_name'] = "Betrachtet die <a href=\"questboard.php\">Questtafel</a>.";
     }
-	if($plugin_array['user_activity']['activity'] == "overview") {
-		$plugin_array['location_name'] = "Studiert die <a href=\"questboard.php?action=overview\">Quests</a>.";
-	}
     if($plugin_array['user_activity']['activity'] == "free") {
 		$plugin_array['location_name'] = "Sieht sich freie <a href=\"questboard.php?action=free\">Quests</a> an.";
 	}
