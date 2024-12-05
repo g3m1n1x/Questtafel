@@ -63,7 +63,6 @@ if(!$mybb->input['action']) {
     output_page($page);
 }
 
-
 // Übersicht über freie Quests
 
     if($mybb->input['action'] == "free") {
@@ -136,6 +135,8 @@ if(!$mybb->input['action']) {
     eval("\$page = \"".$templates->get("questboard")."\";");
         output_page($page);
 }
+
+//TODO: Code optimieren und kürzen! Im besten Fall, falls es geht, mit einer For-Schleife für alle Questarten
 
 // Übersicht über Allgemeine Quests
 if($mybb->input['action'] == "allgemein") {
@@ -632,7 +633,7 @@ eval("\$page = \"".$templates->get("questboard")."\";");
     
                 $db->insert_query("questboard", $new_questboard);
                 $db->query("UPDATE ".TABLE_PREFIX."users SET questboard_new ='0'");
-                redirect("questboard.php", "Die Quest wurde erfolgreich erstellt.");
+                redirect("questboard.php?action=free", "Die Quest wurde erfolgreich erstellt.");
             }
             
         eval("\$page = \"".$templates->get("questboard_add")."\";");
@@ -742,10 +743,9 @@ eval("\$page = \"".$templates->get("questboard")."\";");
             $checked_status_1 = "checked";
         }
 
-        if($mybb->usergroup['cancp'] == 1) {
-            eval("\$edit_players = \"".$templates->get("questboard_edit_players")."\";");
+        if(is_member($mybb->settings['questboard_allow_groups_edit'])) {
+            eval("\$player_info = \"".$templates->get("questboard_player_info_field")."\";");
         }
-
 
         eval("\$page = \"".$templates->get("questboard_edit")."\";");
         output_page($page);
@@ -767,21 +767,34 @@ if(is_member($mybb->settings['questboard_allow_groups_take'])) {
             $questboard = [];
         }
 
-        // Validierung und Bereinigung
         if (!empty($characters)) {
-            foreach ($characters as &$character) {
-                // Bereinige den Benutzernamen
-                $character['user'] = trim($character['user'] ?? '');
+            $processedCharacters = [];
+            
+            foreach ($characters as $character) {
+                // Benutzername bereinigen
+                $user = trim($character['user'] ?? '');
+                
+                // Überspringe Einträge ohne Benutzername
+                if (empty($user)) {
+                    continue;
+                }
+                
+                // Checkbox-Werte prüfen und in Integer umwandeln
+                $xp = !empty($character['xp']) ? 1 : 0;
+                $hp = !empty($character['hp']) ? 1 : 0;
+                $fifty = !empty($character['fifty']) ? 1 : 0;
         
-                // Checkboxen prüfen und in Integer-Werte umwandeln (1 = aktiviert, 0 = nicht aktiviert)
-                $character['xp'] = isset($character['xp']) ? 1 : 0;
-                $character['hp'] = isset($character['hp']) ? 1 : 0;
-                $character['fifty'] = isset($character['fifty']) ? 1 : 0;
+                // Kombiniere die Daten zu einem Eintrag
+                $processedCharacters[] = [
+                    'user' => $user,
+                    'xp' => $xp,
+                    'hp' => $hp,
+                    'fifty' => $fifty
+                ];
             }
-            unset($character); // Sicherheitsmaßnahme, um Referenzen aufzuheben
         
             // JSON-encode die bereinigten Daten
-            $playersData = json_encode($characters, JSON_UNESCAPED_UNICODE);
+            $playersData = json_encode($processedCharacters, JSON_UNESCAPED_UNICODE);
         } else {
             $playersData = ''; // Leeres Feld, wenn keine Daten vorhanden sind
         }
@@ -800,9 +813,9 @@ if(is_member($mybb->settings['questboard_allow_groups_take'])) {
 
         $questdata = [
             "title" => $existingQuest['title'] ?? "n/a", 
-            "visible" => 1,
-            "reusable" => 1,
-            "status" => "0",
+            "visible" => $existingQuest['visible'] ?? 1,
+            "reusable" => $existingQuest['reusable'] ?? 1,
+            "status" => $existingQuest['status'] ?? "0",
             "scene" => $existingQuest['scene'] ?? "n/a",
             "quest" => $existingQuest['quest'] ?? "n/a",
             "shortdescription" => $existingQuest['shortdescription'] ?? "n/a",
