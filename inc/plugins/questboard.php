@@ -555,7 +555,9 @@ $insert_array = array(
     <div class="questboard_form">
 
     <form id="questboard" action="questboard.php?action=edit&nid={$questboard[\'nid\']}" method="post">
-    <h1>Quest aufgeben</h1>
+    <h1>Quest hinzufügen/bearbeiten</h1>
+    
+    {$player_info}
 
     <div class="questboard_description">Alle Felder mit einem * müssen ausgefüllt werden. Alle Felder im oberen Block sind für User*innen sichtbar, sobald die Quest auf "sichtbar" gestellt ist.</div>
 
@@ -778,8 +780,6 @@ $insert_array = array(
         </div>
     </div>
 
-    {$edit_players}
-
     <div class="questboard_formblock">
         <div class="questboard_formblock-label">
             <b>Quest erledigt?</b>
@@ -792,7 +792,7 @@ $insert_array = array(
                 <label for="0">nicht erledigt</label>
         </div>
 
-<input type="submit" value="Absenden" name="submit" id="submit">
+    <input type="submit" value="Absenden" name="submit" id="submit">
 </form>
 </div>
 </td>
@@ -821,85 +821,16 @@ $insert_array = array(
 );
 $db->insert_query("templates", $insert_array);
 
-
-// ## Edit Spieler - questboard_edit_players
+// ## Player Info Feld - questboard_player_info_field
 $insert_array = array(
-    'title'	    => 'questboard_edit_players',
+    'title'	    => 'questboard_player_info_field',
     'template'	=> $db->escape_string('
-
-    <link rel="stylesheet" href="{$mybb->asset_url}/jscripts/select2/select2.css?ver=1807">
-    <script type="text/javascript" src="{$mybb->asset_url}/jscripts/select2/select2.min.js?ver=1806"></script>
-    <script type="text/javascript">
-    $(document).ready(function () {
-        MyBB.select2();
-        if (use_xmlhttprequest == "1") {
-            function initializeSelect2() {
-                $(".players-select").each(function () {
-                    if (!$(this).hasClass("select2-hidden-accessible")) { // Verhindert doppelte Initialisierung
-                        $(this).select2({
-                            placeholder: "{$lang->search_user}",
-                            minimumInputLength: 2,
-                            maximumSelectionSize: \'\',
-                            multiple: true,
-                            ajax: {
-                                url: "xmlhttp.php?action=get_users",
-                                dataType: \'json\',
-                                data: function (term, page) {
-                                    return {
-                                        query: term, // search term
-                                    };
-                                },
-                                results: function (data, page) { // parse the results into the format expected by Select2.
-                                    // since we are using custom formatting functions we do not need to alter remote JSON data
-                                    return {results: data};
-                                }
-                            },
-                            width: "50%",
-                            initSelection: function (element, callback) {
-                                var query = $(element).val();
-                                if (query !== "") {
-                                    var newqueries = [];
-                                    exp_queries = query.split(",");
-                                    $.each(exp_queries, function (index, value) {
-                                        if (value.replace(/\s/g, \'\') != "") {
-                                            var newquery = {
-                                                id: value.replace(/,\s?/g, ","),
-                                                text: value.replace(/,\s?/g, ",")
-                                            };
-                                            newqueries.push(newquery);
-                                        }
-                                    });
-                                    callback(newqueries);
-                                }
-                            }
-                        });
-                    }
-                });
-            }
-
-            // Initialisierung auf bestehenden Feldern
-            initializeSelect2();
-
-            // Optional: Initialisierung nach AJAX oder dynamischem Hinzufügen
-            $(document).on("contentUpdated", function () {
-                initializeSelect2();
-            });
-        }
-    });
-    </script>
-
-
-<div class="questboard_formblock">
-    <div class="questboard_formblock-label">
-        <b>Charaktere ändern</b>
-    </div>
-    <div class="questboard_formblock-field-radio">
-        <div><label>Teilnehmer*in: </label>
-        <input type="text" name="players[]" class="players-select" value="{$questboard[\'players\']}"></div>
-        <div><label>Szene: </label>
-        <input type="text" name="scene" id="scene" value="{$questboard[\'scene\']}" placeholder="URL einfügen"></div>
-    </div>
-</div>
+        <div class="quest_player_info">
+            Diese Quest wird von folgenden Charakteren bespielt:
+            
+                Test
+           
+        </div>
     '),
     'sid'       => '-2',
     'dateline'  => TIME_NOW
@@ -1045,7 +976,7 @@ $db->insert_query("templates", $insert_array);
 $insert_array = array(
     'title'	    => 'questboard_quest_finished',
     'template'	=> $db->escape_string('
-    <div class="questboard_quest-content">
+    <div class="questboard_quest-content-finished">
         Diese Quest wurde im Rahmen <a href="{$questboard[\'scene\']}">dieser Szene</a> erledigt.
     </div>        
     '),
@@ -1183,9 +1114,7 @@ $insert_array = array(
             });
         }
     });
-    </script>
 
-    <script>
         let characterIndex = 0; // Zum Zählen der Charaktere
 
         // Funktion zum Hinzufügen eines neuen Charakters
@@ -1193,7 +1122,7 @@ $insert_array = array(
             characterIndex++;
 
             const html = `
-                <div class="character-form" data-index="${characterIndex}" id="character-${characterIndex}">
+                <div class="character-form" data-index="{$questboard[\'nid\']}-${characterIndex}" id="character-{$questboard[\'nid\']}-${characterIndex}">
                     <input name="characters[${characterIndex}][user]" class="character-select" required></input>
                     <div class="checkbox-group">
                         <label>
@@ -1237,7 +1166,7 @@ $insert_array = array(
 
         // Funktion zum Entfernen eines Charakter-Feldes
         function removeCharacterField(characterIndex) {
-            const element = document.getElementById(`character-${characterIndex}`);
+            const element = document.getElementById(`character-{$questboard[\'nid\']}-${characterIndex}`);
             if (element) {
                 element.remove(); // Entferne das spezifische Element
             }
@@ -1400,7 +1329,7 @@ $css = array(
     --background-main: #2B2B2B;
     --background: #161616;
     --emphasis: #2ECC71;
-    --text: #ccc;
+    --questboard-text: #ccc;
 }
 
 .questboard button {
@@ -1546,6 +1475,19 @@ $css = array(
 
 /* #################### Content #################### */
 
+.quest_player_info {
+    font-size: 15px;
+    border: 1px solid var(--questboard-text);
+    padding: 10px;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    font-weight: 900;
+}
+
 .questboard_content {
   display: flex;
   flex-wrap: wrap;
@@ -1613,7 +1555,7 @@ $css = array(
 }
 
 .questboard_quest-title-contributor b {
-    color: var(--text);
+    color: var(--questboard-text);
     text-transform: uppercase;
   }
 
@@ -1669,6 +1611,13 @@ $css = array(
   gap: 5px;
 }
 
+.questboard_quest-content-finished a{
+    text-decoration: underline;
+}
+
+.select2-search-choice{
+    width: 100%;
+}
 
 /* ################### Szene annehmen ###################### */
 
