@@ -12,8 +12,8 @@ function questboard_info()
 {
 	return array(
 		"name"			=> "Questtafel",
-		"description"	=> "Ein Questplugin für Quests",
-		"author"		=> "white_rabbit",
+		"description"	=> "Ein Questplugin für Mybb.",
+		"author"		=> "white_rabbit x g3m1n1x",
 		"authorsite"	=> "https://epic.quodvide.de/member.php?action=profile&uid=2",
 		"version"		=> "1.0",
 		"compatibility" => "18*"
@@ -88,7 +88,7 @@ function questboard_install()
 
         'questboard_allow_groups_see' => array(
             'title' => 'Quests sichtbar für',
-            'description' => 'Welche Gruppen dürfen Quests sehen?',
+            'description' => 'Welche Gruppen dürfen die unterschiedlichen Quests sehen?',
             'optionscode' => 'groupselect',
             'value' => '4', // Default
             'disporder' => 1
@@ -128,7 +128,7 @@ function questboard_install()
 	
 	'questboard_allow_groups_edit' => array(
 	    'title' => 'Quests bearbeiten',
-            'description' => 'Welche Gruppen dürfen Quests bearbeiten?',
+            'description' => 'Welche Gruppen dürfen Quests nachträglich bearbeiten?',
             'optionscode' => 'groupselect',
             'value' => '4', // Default
             'disporder' => 6
@@ -136,7 +136,7 @@ function questboard_install()
 	
 	'questboard_allow_groups_lead' => array(
 	    'title' => 'Spielleitungsinformationen',
-            'description' => 'Welche Gruppen dürfen Spielleitungsinformationen sehen?',
+            'description' => 'Welche Gruppen dürfen die Spielleitungsinformationen sehen?',
             'optionscode' => 'groupselect',
             'value' => '4', // Default
             'disporder' => 7
@@ -292,7 +292,7 @@ $insert_array = array(
             <br>Gib hier eine kurze, aussagekräftige Beschreibung der Quest von max. 500 Zeichen an.
         </div>
         <div class="questboard_formblock-field">
-            <textarea name="shortdescription" id="shortdescription"></textarea>
+            <textarea maxlength="500" name="shortdescription" id="shortdescription"></textarea>
         </div>
     </div>
 
@@ -359,7 +359,7 @@ $insert_array = array(
         </div>
         <div class="questboard_formblock-field">
             <select name="lead" id="lead" style="width: 100%;">
-                <option>Wähle eine Leitung aus</option>
+                <option value="">Wähle eine Leitung aus</option>
                 <option value="Ja">Ja</option>
                 <option value="Nein">Nein</option>
             </select>
@@ -616,7 +616,7 @@ $insert_array = array(
             <br>Gib hier eine kurze, aussagekräftige Beschreibung der Quest von max. 500 Zeichen an.
         </div>
         <div class="questboard_formblock-field">
-            <textarea name="shortdescription" id="shortdescription">{$questboard[\'shortdescription\']}</textarea>
+            <textarea maxlength="500" name="shortdescription" id="shortdescription">{$questboard[\'shortdescription\']}</textarea>
         </div>
     </div>
 
@@ -825,12 +825,42 @@ $db->insert_query("templates", $insert_array);
 $insert_array = array(
     'title'	    => 'questboard_player_info_field',
     'template'	=> $db->escape_string('
-        <div class="quest_player_info">
+    
+     <div class="quest_player_info">
             Diese Quest wird von folgenden Charakteren bespielt:
             
-                Test
+                <ul class="player-info-list">
+                <!-- Diese Liste wird gefüllt -->
+                </ul>
            
         </div>
+
+    <script type="text/javascript">    
+        const players = {$questboard[\'players\']};
+        console.log("User:", players);
+        const playerList = document.querySelector(".player-info-list");
+
+        // Prüfen, ob es eine Liste gibt und players ein Array ist
+        if (Array.isArray(players)) {
+        console.log("Ist Ein Array")
+            if (playerList) {
+            console.log("playerlist existiert", playerList)
+                players.forEach(player => {
+                    const reward = player.hp
+                    ? "Nur HP"
+                    : player.fifty
+                    ? "50% von beidem"
+                    : "Nur EP"; // Standardtext, falls nichts aktiv ist
+                    console.log(reward)
+                    const li = document.createElement("li"); // Neues <li>-Element
+                    li.textContent = player.user + " - (" + reward + ")"; // Benutzername setzen
+                    playerList.appendChild(li); // <li> hinzufügen
+                });
+            }
+        } else {
+            console.error("Players is not an array:", players);
+        }
+    </script>
     '),
     'sid'       => '-2',
     'dateline'  => TIME_NOW
@@ -842,32 +872,32 @@ $db->insert_query("templates", $insert_array);
 $insert_array = array(
 'title'	    => 'questboard_navigation',
 'template'	=> $db->escape_string('
-<div class="questboard_navigation">
-    <div class="questboard_navigation-links"><a href="questboard.php">Über Quests</a></div>
-    <div class="questboard_navigation-title">Übersicht</div>
-    <div class="questboard_navigation-links">
-        <div><a href="questboard.php?action=free"><i class="fa-regular fa-circle"></i> Freie Quests</a></div>
-        <div><a href="questboard.php?action=taken"><i class="fa-regular fa-hourglass"></i> Bespielte Quests</a></div>
-        <div><a href="questboard.php?action=finished"><i class="fa-solid fa-check"></i> Erledigte Quests</a></div>
+    <div class="questboard_navigation">
+        <div class="questboard_navigation-links"><a href="questboard.php">Über Quests</a></div>
+        <div class="questboard_navigation-title">Übersicht</div>
+        <div class="questboard_navigation-links">
+            <div><a href="questboard.php?action=free"><i class="fa-regular fa-circle"></i> Freie Quests</a></div>
+            <div><a href="questboard.php?action=taken"><i class="fa-regular fa-hourglass"></i> Bespielte Quests</a></div>
+            <div><a href="questboard.php?action=finished"><i class="fa-solid fa-check"></i> Erledigte Quests</a></div>
+        </div>
+        {$questboard_cp}
     </div>
-    {$questboard_cp}
-</div>
-                '),
-                'sid'       => '-2',
-                'dateline'  => TIME_NOW
-            );
-            $db->insert_query("templates", $insert_array);
+        '),
+        'sid'       => '-2',
+        'dateline'  => TIME_NOW
+    );
+    $db->insert_query("templates", $insert_array);
 
 
 // ## Navigation CP - questboard_navigation_cp
 $insert_array = array(
     'title'	    => 'questboard_navigation_cp',
     'template'	=> $db->escape_string('
-<div class="questboard_navigation-title">Control Panel</div>
-<div class="questboard_navigation-links">
-    <div><a href="questboard.php?action=pending"><i class="fa-regular fa-circle-xmark"></i> Nicht freigegebene Quests</a></div>
-    <div><a href="questboard.php?action=add"><i class="fa-solid fa-plus"></i> Quest hinzufügen</a></div>
-</div>
+    <div class="questboard_navigation-title">Control Panel</div>
+    <div class="questboard_navigation-links">
+        <div><a href="questboard.php?action=pending"><i class="fa-regular fa-circle-xmark"></i> Nicht freigegebene Quests</a></div>
+        <div><a href="questboard.php?action=add"><i class="fa-solid fa-plus"></i> Quest hinzufügen</a></div>
+    </div>
     '),
     'sid'       => '-2',
     'dateline'  => TIME_NOW
@@ -879,7 +909,7 @@ $db->insert_query("templates", $insert_array);
 $insert_array = array(
     'title'	    => 'questboard_no_permission',
     'template'	=> $db->escape_string('
-<div class="questboard_quest">Du hast keine Erlaubnis, dir die Quests anzuschauen.</div>
+    <div class="questboard_quest">Du hast keine Erlaubnis, dir die Quests anzuschauen.</div>
     '),
     'sid'       => '-2',
     'dateline'  => TIME_NOW
@@ -1062,7 +1092,7 @@ $insert_array = array(
         MyBB.select2();
         if (use_xmlhttprequest == "1") {
             function initializeSelect2() {
-                $(".players-select").each(function () {
+                $(".character-select").each(function () {
                     if (!$(this).hasClass("select2-hidden-accessible")) { // Verhindert doppelte Initialisierung
                         $(this).select2({
                             placeholder: "{$lang->search_user}",
@@ -1114,12 +1144,14 @@ $insert_array = array(
             });
         }
     });
+    </script>
 
-        let characterIndex = 0; // Zum Zählen der Charaktere
+    <script>
+        let characterIndex = Date.now();
 
         // Funktion zum Hinzufügen eines neuen Charakters
         function addCharacterField() {
-            characterIndex++;
+            characterIndex++; // Erhöhe den Index für den nächsten Charakter
 
             const html = `
                 <div class="character-form" data-index="{$questboard[\'nid\']}-${characterIndex}" id="character-{$questboard[\'nid\']}-${characterIndex}">
