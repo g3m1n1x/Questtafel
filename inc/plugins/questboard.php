@@ -837,28 +837,22 @@ $insert_array = array(
 
     <script type="text/javascript">    
         const players = {$questboard[\'players\']};
-        console.log("User:", players);
         const playerList = document.querySelector(".player-info-list");
 
         // Prüfen, ob es eine Liste gibt und players ein Array ist
         if (Array.isArray(players)) {
-        console.log("Ist Ein Array")
             if (playerList) {
-            console.log("playerlist existiert", playerList)
                 players.forEach(player => {
                     const reward = player.hp
                     ? "Nur HP"
                     : player.fifty
                     ? "50% von beidem"
                     : "Nur EP"; // Standardtext, falls nichts aktiv ist
-                    console.log(reward)
                     const li = document.createElement("li"); // Neues <li>-Element
                     li.textContent = player.user + " - (" + reward + ")"; // Benutzername setzen
                     playerList.appendChild(li); // <li> hinzufügen
                 });
             }
-        } else {
-            console.error("Players is not an array:", players);
         }
     </script>
     '),
@@ -1037,7 +1031,7 @@ $insert_array = array(
 <div class="questboard_hidden-content">
     <h1>Informationen für die Spielleitung</h1>
 
-    Diese Seite ist nur für die Spielleitung sichtbar. Die Informationen sollen nicht außerhalb der vorgesehenen Reihenfolge an die Spielenden weitergegeben werden. Du kannst die Informationen bei Bedarf ergänzen, indem Du die Quest editierst.
+    Diese Seite ist nur für die Spielleitung sichtbar. Die Informationen sollten nicht an die Spielenden weitergegeben werden. Du kannst die Informationen bei Bedarf ergänzen, indem du die Quest editierst.
 
     <h2>Hintergründe</h2>
     {$questboard[\'background\']}
@@ -1080,7 +1074,6 @@ $insert_array = array(
 );
 $db->insert_query("templates", $insert_array);
 
-
 // ## Quest annehmen - questboard_quest_take
 $insert_array = array(
     'title'	    => 'questboard_quest_take',
@@ -1098,7 +1091,6 @@ $insert_array = array(
                             placeholder: "{$lang->search_user}",
                             minimumInputLength: 2,
                             maximumSelectionSize: \'\',
-                            multiple: true,
                             ajax: {
                                 url: "xmlhttp.php?action=get_users",
                                 dataType: \'json\',
@@ -1112,7 +1104,7 @@ $insert_array = array(
                                     return {results: data};
                                 }
                             },
-                            width: "20%",
+                            width: "30%",
                             initSelection: function (element, callback) {
                                 var query = $(element).val();
                                 if (query !== "") {
@@ -1146,39 +1138,41 @@ $insert_array = array(
     });
     </script>
 
-    <script>
+    <script type="text/javascript">
         let characterIndex = Date.now();
 
         // Funktion zum Hinzufügen eines neuen Charakters
         function addCharacterField() {
             characterIndex++; // Erhöhe den Index für den nächsten Charakter
-
             const html = `
-                <div class="character-form" data-index="{$questboard[\'nid\']}-${characterIndex}" id="character-{$questboard[\'nid\']}-${characterIndex}">
-                    <input name="characters[${characterIndex}][user]" class="character-select" required></input>
+                <div class="character-form" data-index="{$questboard[\'nid\']}-{index}" id="character-{$questboard[\'nid\']}-{index}">
+                    <input name="characters[{index}][user]" class="character-select" required></input>
                     <div class="checkbox-group">
                         <label>
-                            <input type="checkbox" name="characters[${characterIndex}][xp]"> Nur Erfahrungspunkte
+                            <input type="checkbox" name="characters[{index}][xp]"> Nur Erfahrungspunkte
                         </label>
                         <label>
-                            <input type="checkbox" name="characters[${characterIndex}][hp]"> Nur Hauspunkte
+                            <input type="checkbox" name="characters[{index}][hp]"> Nur Hauspunkte
                         </label>
                         <label>
-                            <input type="checkbox" name="characters[${characterIndex}][fifty]"> 50 % von beidem
+                            <input type="checkbox" name="characters[{index}][fifty]"> 50 % von beidem
                         </label>
                     </div>
-                    <span class="remove-button" onclick="removeCharacterField(${characterIndex})">✖</span>
+                    <span class="remove-button" onclick="removeCharacterField({index})">✖</span>
                 </div>
             `;
 
+            const filledHtml = html.replace(/{index}/g, characterIndex);
+
             // Füge das neue Feld hinzu
-            $("#characters-container-{$questboard[\'nid\']}").append(html);
+            $("#characters-container-{$questboard[\'nid\']}").append(filledHtml);
 
             // Initialisiere select2 für das neu hinzugefügte Feld
             MyBB.select2();
             $(`.character-select`).last().select2({
-                placeholder: "Benutzer auswählen...",
+                placeholder: "{$lang->search_user}",
                 minimumInputLength: 2,
+                maximumSelectionSize: \'\',
                 ajax: {
                     url: "xmlhttp.php?action=get_users",
                     dataType: \'json\',
@@ -1192,13 +1186,19 @@ $insert_array = array(
                         return {results: data};
                     }
                 },
-                 width: "30%",
+                width: "30%",
             });
         }
 
         // Funktion zum Entfernen eines Charakter-Feldes
         function removeCharacterField(characterIndex) {
-            const element = document.getElementById(`character-{$questboard[\'nid\']}-${characterIndex}`);
+            const templateId = "character-{$questboard[\'nid\']}-{index}";
+    
+            // Platzhalter {index} mit dem aktuellen characterIndex ersetzen
+            const elementId = templateId.replace("{index}", characterIndex);
+
+            // Element mit der generierten ID abrufen und entfernen
+            const element = document.getElementById(elementId);
             if (element) {
                 element.remove(); // Entferne das spezifische Element
             }
@@ -1240,9 +1240,31 @@ $db->insert_query("templates", $insert_array);
 $insert_array = array(
     'title'	    => 'questboard_quest_taken',
     'template'	=> $db->escape_string('
-    <div class="questboard_quest-taken">
-    Die Quest wurde im Rahmen <a href="{$questboard[\'scene\']}">dieser Szene</a> angenommen.
+
+    <div id="questboard_quest-taken">
+    Die Quest wurde im Rahmen <a href="{$questboard[\'scene\']}"><u>dieser Szene</u></a> angenommen.
     </div>
+
+    <script type="text/javascript">    
+    //     (function () {
+    //     let playerIndex = Date.now();
+    //     const players = {$questboard[\'players\']};
+
+    //     const questTakenContainer = document.createElement("div");
+    //     const className = "questboard_quest-taken-{index}";
+    //     const replacedClassName = className.replace(/{index}/g, playerIndex);
+    //     questTakenContainer.className = replacedClassName;
+
+    //     if (Array.isArray(players)) {
+    //         const playerNames = players.map(player => player.user);
+    //         const playerList = playerNames.join(", ");
+    //         const text = `Die Quest wurde im Rahmen <a href="{$questboard[\'scene\']}">dieser Szene</a> von <strong>{index}</strong> angenommen.`;
+    //         questTakenContainer.innerHTML = text.replace(/{index}/g, playerList);
+    //     }
+
+    //     $("#questboard_quest-taken").append(questTakenContainer);
+    // })();
+    </script>
     '),
     'sid'       => '-2',
     'dateline'  => TIME_NOW
@@ -1361,7 +1383,9 @@ $css = array(
     --background-main: #2B2B2B;
     --background: #161616;
     --emphasis: #2ECC71;
-    --questboard-text: #ccc;
+    --emphasis-light:rgb(183, 201, 191);
+    --questboard-text: #cccccc;
+    --questboard-text-dark:rgb(73, 72, 72);
 }
 
 .questboard button {
@@ -1509,9 +1533,10 @@ $css = array(
 
 .quest_player_info {
     font-size: 15px;
-    border: 1px solid var(--questboard-text);
+    border-left: 8px solid var(--emphasis);
+    background-color: var(--emphasis-light);
+    color: var(--questboard-text-dark);
     padding: 10px;
-    width: 50%;
     display: flex;
     flex-direction: column;
     justify-content: center;
