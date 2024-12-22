@@ -11,7 +11,7 @@ function questboard_info()
 {
 	return array(
 		"name"			=> "Questtafel",
-		"description"	=> "Ein Questplugin für Mybb.",
+		"description"	=> "Mit diesem Plugin können Quests für die User*innen erstellt und gemanaged werden.",
 		"author"		=> "white_rabbit x g3m1n1x",
 		"authorsite"	=> "https://epic.quodvide.de/member.php?action=profile&uid=2",
 		"version"		=> "1.0",
@@ -44,7 +44,7 @@ function questboard_install()
         `background` LONGTEXT,
         `material` LONGTEXT,
         `maps` LONGTEXT,
-        `treassure` LONGTEXT,
+        `treasure` LONGTEXT,
         `boss` LONGTEXT,
         `solution` LONGTEXT,
         `players` VARCHAR(500),
@@ -61,6 +61,8 @@ function questboard_install()
     $db->query("ALTER TABLE `".TABLE_PREFIX."users` ADD `questboard_new` int(11) NOT NULL DEFAULT '0';");
 
     $db->query("ALTER TABLE `".TABLE_PREFIX."users` ADD `questboard_new_registration` int(11) NOT NULL DEFAULT '0';");
+
+    $db->query("ALTER TABLE `".TABLE_PREFIX."users` ADD `questboard_quest_evaluation` int(11) NOT NULL DEFAULT '1';");
 
     // Einstellungen ACP
     $setting_group = array(
@@ -182,10 +184,11 @@ $insert_array = array(
                 <form>
                     <label for="action">Wähle die Questart:</label>
                     <select name="action" id="action">
-                        <option value="allgemein">Allgemeine Quests</option>
-                        <option value="special">Specialquests</option>
-                        <option value="single">Singlequests</option>
-                        <option value="berufsbezogen">Berufsbezogene Quests</option>
+                        <option value="free">Freie Quests</option>
+                        <option value="allgemein">Freie allgemeine Quests</option>
+                        <option value="special">Freie Specialquests</option>
+                        <option value="single">Freie Singlequests</option>
+                        <option value="berufsbezogen">Freie berufsbezogene Quests</option>
                     </select>
                     <input type="submit" value="Filtern">
                 </form>
@@ -427,7 +430,7 @@ $insert_array = array(
             <br>Trage hier weitere Belohnungen ein, die die Charaktere finden können.
         </div>
         <div class="questboard_formblock-field">
-            <textarea name="treassure" id="treassure"></textarea>
+            <textarea name="treasure" id="treasure"></textarea>
         </div>
     </div>
 
@@ -494,29 +497,45 @@ $insert_array = array(
 );
 $db->insert_query("templates", $insert_array);
 
+// ## Alert für zur Auswertung freigegebene Quests (Spielleiter only) - questboard_alert_auswertung
+$insert_array = array(
+    'title'	    => 'questboard_alert_auswertung',
+    'template'	=> $db->escape_string('
+    <div class="quest_alert">
+        Eine <a href="https://beta-zone.de/mybb/questboard.php?action=inEvaluation">Quest</a> kann ausgewertet werden!
+        {$questboard_read}
+    </div>
+    '),
+    'sid'       => '-2',
+    'dateline'  => TIME_NOW
+);
+$db->insert_query("templates", $insert_array);
+
 // ## Beschreibung - questboard_description
 $insert_array = array(
     'title'	    => 'questboard_description',
     'template'	=> $db->escape_string('
 <div class="questboard_description">
     <h1>Questtafel</h1>
-    Willkommen an der legendären Questtafel! Hier findest du alle aktuellen Aufträge, die für mutige Abenteurer wie dich bereitstehen. Die Questtafel dient als zentrale Anlaufstelle für alle, die sich nach Ruhm, Reichtum und Ehre sehnen – oder nach einer Herausforderung, die ihren Mut auf die Probe stellt.
+    Willkommen an der Questtafel! Hier findest du alle aktuellen Aufträge, die für mutige Abenteurer wie dich bereitstehen. Die Questtafel dient als zentrale Anlaufstelle für alle, die sich nach Ruhm, Reichtum und Ehre sehnen – oder nach einer Herausforderung, die ihren Mut auf die Probe stellt.
     <br/>
     Die Quests sind nach Kategorien sortiert und umfassen verschiedenste Schwierigkeitsgrade und Belohnungen. Ob du nun ein erfahrener Held auf der Suche nach epischen Aufgaben bist oder ein Neuling, der seine ersten Schritte in der Welt wagen möchte – hier wirst du fündig!
     <br/><br/>
     So funktioniert es:
     <br/>
-    <ul><li><b>Allgemeine Quests:</b> Diese Aufträge sind für Abenteurer aller Erfahrungsstufen geeignet. Sie bieten einfache Herausforderungen, die dir helfen, dich mit den Mechanismen des Spiels vertraut zu machen.</li>
-    <li><b>Specialquests:</b> Für jene, die etwas Besonderes suchen. Diese Quests bieten außergewöhnliche Belohnungen und sind nur für die tapfersten Helden gedacht.</li>
-    <li><b>Singlequests:</b> Einzelne, personalisierte Abenteuer, die dir die Möglichkeit geben, in deinem eigenen Tempo zu wachsen und einzigartige Belohnungen zu verdienen.</li>
-    <li><b>Berufsbezogene Quests:</b> Wenn du dich einer bestimmten Disziplin verschrieben hast, findest du hier spezialisierte Quests, die dir dabei helfen, deine Fähigkeiten und Fertigkeiten weiter auszubauen.</li></ul>
+    <ul><li><b>Allgemeine Quests:</b> Diese Aufträge sind für Abenteurer aller Erfahrungsstufen geeignet. Sie bieten einfache oder mittelschwere Herausforderungen.</li>
+    <li><b>Specialquests:</b> Für jene, die etwas Besonderes suchen. Diese Quests bieten außergewöhnliche Belohnungen und sind nur für die tapfersten Helden gedacht. Manchmal handelt es sich hierbei um spezielle, geleitete Quests, bei denen Discord erforderlich ist.</li>
+    <li><b>Singlequests:</b> Singlequests bieten dir die Möglichkeit, unabhängig von Postpartner*innen, deinen Charakter noch einmal neu kennenzulernen. Hierfür ist nur ein Post von Nöten, die benötigte Wörteranzahl beträgt meistens 1000 Wörter.</li>
+    <li><b>Berufsbezogene Quests:</b> Berufsbezogene Quests sind nur für die jeweilige Berufssparte bespielbar und behandeln Themen, die zu dem jeweiligen Beruf passen könnten.</li></ul>
     <br/>
     Wie du mitmachst:
     <br/>
-    <ol><li><b>Suche dir eine Quest aus:</b> Stöbere durch die Quests und finde jene, die deinem Charakter entsprechen.</li>
-    <li><b>Melde dich und mögliche andere Questteilnehmer*innen an:</b> Wenn du eine Quest gefunden hast, die du annehmen möchtest, melde dich unterhalb der Quest mit dem Link zu deinem/eurem Play an.</li>
-    <li><b>Schließe die Quest ab:</b> Arbeite dich durch die Aufgaben und Herausforderungen, die dir gestellt werden. Du wirst deine Belohnung erhalten, sobald du die Quest erfolgreich abgeschlossen hast!</li></ol>
-    <b>Hinweis:</b> Manche Quests erfordern eine bestimmte Anzahl an Mitstreitern oder eine spezielle Klasse, um erfolgreich abgeschlossen zu werden. Achte darauf, die Anforderungen genau zu prüfen, bevor du dich für eine Quest entscheidest.<br/><br/>
+    <ol><li><b>Suche dir eine Quest aus:</b> Stöbere durch die Quests und finde jene, die dich und ggf. andere Questteilnehmer*innen anspricht.</li>
+    <li><b>Melde dich und ggf. andere Questteilnehmer*innen an:</b> Wenn du eine Quest gefunden hast, die du annehmen möchtest, melde dich unterhalb der Quest mit dem Link zu deinem/eurem Play an.</li>
+    <li><b>Schließe die Quest ab:</b> Arbeite dich durch die Aufgaben und Herausforderungen, die dir gestellt werden.</li>
+    <li><b>Gebe deine Quest zur Auswertung frei:</b> Auf der Questtafel kannst du Quests, an denen dein Charakter mitwirkt, zur Auswertung freigeben. Das sollte erst passieren, wenn du der Meinung bist, dass deine Quest auch wirklich abgeschlossen ist.</li>
+    <li><b>Auf die Auswertung warten:</b> Nun kannst du dich zurücklehnen und darauf warten, dass deine Quest ausgewertet wird. Erst dann erhältst du auch deine Belohnung.</li></ol>
+    <b>Hinweis:</b> Manche Quests erfordern eine bestimmte Anzahl an Mitstreitern oder andere spezielle Anforderungen, um angenommen werden zu dürfen. Achte darauf, diese Anforderungen genau zu prüfen, bevor du dich für eine Quest entscheidest.<br/><br/>
     Viel Erfolg bei deinen Abenteuern – wir freuen uns, deine Fortschritte zu sehen!
 </div>
     '),
@@ -748,7 +767,7 @@ $insert_array = array(
             <br>Trage hier weitere Belohnungen ein, die die Charaktere finden können. Wenn Du etwas Exotisches verteilen willst, sprich Dich mit der Spielleitung ab.
         </div>
         <div class="questboard_formblock-field">
-            <textarea name="treassure" id="treassure">{$questboard[\'treassure\']}</textarea>
+            <textarea name="treasure" id="treasure">{$questboard[\'treasure\']}</textarea>
         </div>
     </div>
 
@@ -778,10 +797,10 @@ $insert_array = array(
             <br>Wurde die Quest erledigt?
         </div>
         <div class="questboard_formblock-field"></div>
-            <input type="radio" id="1" name="status" value="1" {$checked_status_1}>
-                <label for="1">erledigt</label>
-            <input type="radio" id="0" name="status" value="0" {$checked_status_0}>
-                <label for="0">nicht erledigt</label>
+            <input type="radio" id="finished" name="status" value="finished" {$checked_status_1}>
+                <label for="finished">erledigt</label>
+            <input type="radio" id="free" name="status" value="free" {$checked_status_0}>
+                <label for="free">nicht erledigt</label>
         </div>
 
     <input type="submit" value="Absenden" name="submit" id="submit">
@@ -857,12 +876,13 @@ $insert_array = array(
 'title'	    => 'questboard_navigation',
 'template'	=> $db->escape_string('
     <div class="questboard_navigation">
-        <div class="questboard_navigation-links"><a href="questboard.php">Über Quests</a></div>
+        <div class="questboard_navigation-links"><a href="questboard.php">Questtafel</a></div>
         <div class="questboard_navigation-title">Übersicht</div>
         <div class="questboard_navigation-links">
             <div><a href="questboard.php?action=free"><i class="fa-regular fa-circle"></i> Freie Quests</a></div>
             <div><a href="questboard.php?action=taken"><i class="fa-regular fa-hourglass"></i> Bespielte Quests</a></div>
-            <div><a href="questboard.php?action=finished"><i class="fa-solid fa-check"></i> Erledigte Quests</a></div>
+            <div><a href="questboard.php?action=inEvaluation"><i class="fa-regular fa-clipboard"></i> Auszuwertende Quests</a></div>
+            <div><a href="questboard.php?action=finished"><i class="fa-solid fa-check"></i> Ausgewertete Quests</a></div>
         </div>
         {$questboard_cp}
     </div>
@@ -983,12 +1003,25 @@ $insert_array = array(
 );
 $db->insert_query("templates", $insert_array);
 
-// ## Quest erledigt - questboard_quest_finished
+// ## Quest zur Auswertung freigegeben - questboard_quest_in_evaluation
+$insert_array = array(
+    'title'	    => 'questboard_quest_in_evaluation',
+    'template'	=> $db->escape_string('
+    <div class="questboard_quest-content-finished">
+        Diese Quest wurde im Rahmen <a href="{$questboard[\'scene\']}">dieser Szene</a> erledigt und wartet nun auf die Auswertung.
+    </div>        
+    '),
+    'sid'       => '-2',
+    'dateline'  => TIME_NOW
+);
+$db->insert_query("templates", $insert_array);
+
+// ## Quest erledigt und ausgewertet - questboard_quest_finished
 $insert_array = array(
     'title'	    => 'questboard_quest_finished',
     'template'	=> $db->escape_string('
     <div class="questboard_quest-content-finished">
-        Diese Quest wurde im Rahmen <a href="{$questboard[\'scene\']}">dieser Szene</a> erledigt.
+        Diese Quest wurde im Rahmen <a href="{$questboard[\'scene\']}">dieser Szene</a> erledigt und ausgewertet.
     </div>        
     '),
     'sid'       => '-2',
@@ -1028,7 +1061,7 @@ $insert_array = array(
     {$questboard[\'maps\']}
 
     <h2>Schätze & Belohnungen</h2>
-    {$questboard[\'treassure\']}
+    {$questboard[\'treasure\']}
 
     <h2>Endgegner</h2>
     {$questboard[\'boss\']}
@@ -1225,11 +1258,60 @@ $insert_array = array(
     'title'	    => 'questboard_quest_taken',
     'template'	=> $db->escape_string('
 
-    <div id="questboard_quest-taken">
-    Die Quest wurde im Rahmen <a href="{$questboard[\'scene\']}"><u>dieser Szene</u></a> angenommen.
+    <div id="questboard_quest-taken-{$questboard[\'nid\']}">
     </div>
 
     <script type="text/javascript">    
+        (function () {
+            const players = {$questboard[\'players\']};
+            const questId = "{$questboard[\'nid\']}"; // Eindeutige Quest-ID
+            const sceneLink = "{$questboard[\'scene\']}"; // Link zur Szene
+
+            if (!players || !questId || !sceneLink) {
+                console.error("Fehlende Daten für die Quest.");
+                return;
+            }
+
+            // Container für diese spezifische Quest prüfen
+            const containerId = `questboard-quest-taken-{index}`;
+            const replacedContainerId = containerId.replace(/{index}/g, questId);
+            if (document.getElementById(replacedContainerId)) {
+                // Wenn bereits existiert, keine weiteren Änderungen
+                console.log(`Quest-Container für Quest-ID ${questId} existiert bereits.`);
+                return;
+            }
+
+            // Neues Element für diese Quest erstellen
+            const questTakenContainer = document.createElement("div");
+            questTakenContainer.id = replacedContainerId;
+            questTakenContainer.className = "questboard-quest-info";
+
+            // Spieler auflisten
+            if (Array.isArray(players)) {
+                const playerNames = players.map(player => player.user); // Array der Spielernamen
+
+                const playerNamesString = playerNames.join(", ");
+                let text = `Die Quest wurde im Rahmen <a href="{$questboard[\'scene\']}"><strong>dieser Szene</strong></a> von <strong>{index}</strong> angenommen.`;
+                
+                // Überprüfung: Ist der aktuelle Benutzer in der Liste?
+                if (playerNames.includes("{$mybb->user[\'username\']}")) {
+                    const evaluateQuestLink = ` <a href="questboard.php?action=evaluate&nid={$questboard[\'nid\']}"><b>(Quest zur Auswertung freigeben)</b></a>`;
+                    text += evaluateQuestLink;
+                } 
+
+                questTakenContainer.innerHTML = text.replace(/{index}/g, playerNamesString);
+            } else {
+                questTakenContainer.innerHTML = `
+                    Die Quest wurde im Rahmen <a href="${sceneLink}">dieser Szene</a> angenommen, aber keine Spieler sind angegeben.
+                `;
+            }
+
+            // Neuen Container zum Hauptbereich hinzufügen
+            document.getElementById("questboard_quest-taken-{$questboard[\'nid\']}").appendChild(questTakenContainer);
+        })();
+    </script>
+
+     <script type="text/javascript">    
     //     (function () {
     //     let playerIndex = Date.now();
     //     const players = {$questboard[\'players\']};
@@ -1248,7 +1330,7 @@ $insert_array = array(
 
     //     $("#questboard_quest-taken").append(questTakenContainer);
     // })();
-    </script>
+     </script>
     '),
     'sid'       => '-2',
     'dateline'  => TIME_NOW
@@ -1260,36 +1342,34 @@ $insert_array = array(
     'title'	    => 'questboard_sl_information',
     'template'	=> $db->escape_string('
     <button class="sl_button{$questboard[\'nid\']}"><i class="fa-regular fa-lightbulb"></i></button>
-    <div class="questboard_hidden-sl-information sl{$questboard[\'nid\']}"> 
-    
-    
-    <div class="questboard_hidden-content">
-        <h1>Informationen für die Spielleitung</h1>
-    
-        Diese Seite ist nur für die Spielleitung sichtbar. Die Informationen sollen nicht außerhalb der vorgesehenen Reihenfolge an die Spielenden weitergegeben werden. Du kannst die Informationen bei Bedarf ergänzen, indem Du die Quest editierst.
-    
-        <h2>Hintergründe</h2>
-        {$questboard[\'background\']}
-    
-        <h2>Zusatzmaterial</h2>
-        {$questboard[\'material\']}
-    
-        <h2>Karten</h2>
-        {$questboard[\'maps\']}
-    
-        <h2>Schätze & Belohnungen</h2>
-        {$questboard[\'treassure\']}
-    
-        <h2>Endgegner</h2>
-        {$questboard[\'boss\']}
-    
-        <h2>Lösung</h2>
-        {$questboard[\'solution\']}
-    
-    </div>
+        <div class="questboard_hidden-sl-information sl{$questboard[\'nid\']}"> 
         
-    </div>
-    
+        <div class="questboard_hidden-content">
+            <div class="questboard_hidden-sl-information-header"><h1>Informationen für die Spielleitung</h1></div>
+        
+            Diese Seite ist nur für die Spielleitung sichtbar. Die Informationen sollten nicht an die Spielenden weitergegeben werden. Du kannst die Informationen bei Bedarf ergänzen, indem Du die Quest editierst.
+        
+            <h2>Hintergründe</h2>
+            {$questboard[\'background\']}
+        
+            <h2>Zusatzmaterial</h2>
+            {$questboard[\'material\']}
+        
+            <h2>Karten</h2>
+            {$questboard[\'maps\']}
+        
+            <h2>Schätze & Belohnungen</h2>
+            {$questboard[\'treasure\']}
+        
+            <h2>Endgegner</h2>
+            {$questboard[\'boss\']}
+        
+            <h2>Lösung</h2>
+            {$questboard[\'solution\']}
+        
+        </div>
+            
+        </div>
     <script>
     $(document).ready(function(){
       $(".sl_button{$questboard[\'nid\']}").click(function(){
@@ -1311,39 +1391,6 @@ $insert_array = array(
          display: none;
         }
     </style>
-    '),
-    'sid'       => '-2',
-    'dateline'  => TIME_NOW
-);
-$db->insert_query("templates", $insert_array);
-
-// ## Status Quest erledigt - questboard_status_finished
-$insert_array = array(
-    'title'	    => 'questboard_status_finished',
-    'template'	=> $db->escape_string('
-<div class="questboard_quest-head-finished" title="Quest erledigt von {$questboard[\'players\']}"><i class="fa-solid fa-circle"></i></div>
-    '),
-    'sid'       => '-2',
-    'dateline'  => TIME_NOW
-);
-$db->insert_query("templates", $insert_array);
-
-// ## Status Quest frei - questboard_status_free
-$insert_array = array(
-    'title'	    => 'questboard_status_free',
-    'template'	=> $db->escape_string('
-<div class="questboard_quest-head-finished" title="Die Quest ist noch frei!">frei</i></div>
-    '),
-    'sid'       => '-2',
-    'dateline'  => TIME_NOW
-);
-$db->insert_query("templates", $insert_array);
-
-// ## Status Quest angenommen - questboard_status_taken
-$insert_array = array(
-    'title'	    => 'questboard_status_taken',
-    'template'	=> $db->escape_string('
-    <div class="questboard_quest-head-taken" title="Quest angenommen von {$questboard[\'players\']}"><i class="fa-regular fa-circle-half-stroke"></i></div>
     '),
     'sid'       => '-2',
     'dateline'  => TIME_NOW
@@ -1409,13 +1456,19 @@ $css = array(
   top: 50%;
   transform: translate(-50%, 0);
   height: 400px;
-  width: 1000px;
+  width: 800px;
   overflow-y: scroll;
   scrollbar-width: none;
   background-color: var(--background);
-  border: solid 2px var(--emphasis);
+  border: solid 0.5px var(--emphasis);
   animation-name: animatetop;
   animation-duration: 0.5s;
+}
+
+.questboard_hidden-sl-information-header {
+  text-align: center;
+  padding-bottom: 15px;
+  text-decoration: underline;
 }
 
 @keyframes animatetop {
@@ -1429,9 +1482,8 @@ $css = array(
 }
 
 .questboard_hidden-content {
-  width: 1000px;
   margin: auto;
-  padding: 50px;
+  padding: 30px;
   box-sizing: border-box;
 }
 
@@ -1526,6 +1578,11 @@ $css = array(
 
 /* #################### Content #################### */
 
+.questboard-quest-info a {
+    text-decoration: underline;
+    color: var(--emphasis);
+}
+
 .quest_player_info {
     font-size: 15px;
     border-left: 8px solid var(--emphasis);
@@ -1546,7 +1603,7 @@ $css = array(
   flex-wrap: wrap;
   margin-top: 15px;
   gap: 10px;
-  justify-content: space-around;
+  justify-content: space-evenly;
 }
 
 .questboard_description {
@@ -1742,6 +1799,10 @@ function questboard_uninstall()
     {
         $db->drop_column("users", "questboard_new_registration");
     }
+    if($db->field_exists("questboard_quest_evaluation", "users"))
+    {
+        $db->drop_column("users", "questboard_quest_evaluation");
+    }
     
     // Einstellungen löschen
     $db->delete_query('settings', "name LIKE 'questboard%'");
@@ -1773,7 +1834,7 @@ function questboard_activate()
 
     // Variable für den Alert im Header
 
-    find_replace_templatesets('header', '#'.preg_quote('{$bbclosedwarning}').'#', '{$questboard_new} {$questboard_new_registration} {$bbclosedwarning}');
+    find_replace_templatesets('header', '#'.preg_quote('{$bbclosedwarning}').'#', '{$questboard_new} {$questboard_new_registration} {$questboard_quest_evaluation} {$bbclosedwarning}');
 }
 
 function questboard_deactivate()
@@ -1785,7 +1846,7 @@ function questboard_deactivate()
 
     // Variablen für den Alert im Header entfernen
 
-    find_replace_templatesets('header', '#'.preg_quote('{$questboard_new} {$questboard_new_registration} {$bbclosedwarning}').'#', '{$bbclosedwarning}');
+    find_replace_templatesets('header', '#'.preg_quote('{$questboard_new} {$questboard_new_registration} {$questboard_quest_evaluation} {$bbclosedwarning}').'#', '{$bbclosedwarning}');
 }
 
 
@@ -1794,7 +1855,7 @@ $plugins->add_hook('global_start', 'questboard_global');
 
 function questboard_global(){
 
-    global $db, $mybb, $templates, $questboard_new, $questboard_new_registration, $questboard_read, $lang;
+    global $db, $mybb, $templates, $questboard_new, $questboard_new_registration, $questboard_quest_evaluation, $questboard_read, $lang;
 
     if(is_member($mybb->settings['questboard_allow_groups_see'])) {
 
@@ -1802,7 +1863,7 @@ function questboard_global(){
 
         $uid = $mybb->user['uid'];
 
-        $questboard_read = "<a href='misc.php?action=questboard_read&read={$uid}' original-title='Als gelesen markieren'><i class=\"fas fa-trash\" style=\"float: right;font-size: 14px;padding: 1px; color:#004085;\"></i></a>";
+        $questboard_read = "<a href='questboard.php?action=questboard_read&read={$uid}' original-title='Als gelesen markieren' onclick="return MyBB.dismissPMNotice('{$mybb->settings[\'bburl\']}/')"><i class=\"fas fa-trash\" style=\"float: right;font-size: 14px;padding: 1px; color:#004085;\"></i></a>";
 
             // User hat Info auf dem Index gelesen
 
@@ -1818,7 +1879,7 @@ function questboard_global(){
                     } elseif($as_uid != 0){
                         $db->query("UPDATE ".TABLE_PREFIX."users SET questboard_new = 1  WHERE (as_uid = $as_uid) OR (uid = $this_user) OR (uid = $as_uid)");
                     }
-                    redirect("index.php");
+                    redirect("index.php", "Als gelesen markiert");
                 }
             }
     
@@ -1843,7 +1904,7 @@ function questboard_global(){
 
         $uid = $mybb->user['uid'];
 
-        $questboard_read = "<a href='misc.php?action=questboard_registration_read&read={$uid}' original-title='Als gelesen markieren'><i class=\"fas fa-trash\" style=\"float: right;font-size: 14px;padding: 1px;\"></i></a>";
+        $questboard_read = "<a href='questboard.php?action=questboard_registration_read&read={$uid}' original-title='Als gelesen markieren'><i class=\"fas fa-trash\" style=\"float: right;font-size: 14px;padding: 1px;\"></i></a>";
 
             // User hat Info auf dem Index gelesen
 
@@ -1872,6 +1933,46 @@ function questboard_global(){
             $data = $db->fetch_array($select);
             if ($data['questboard_new_registration'] == '0') {
                 eval("\$questboard_new_registration = \"" . $templates->get("questboard_alert_anmeldung") . "\";");
+            }
+                
+        }
+    }
+
+    if(is_member($mybb->settings['questboard_allow_groups_lead'])) {
+
+        $lang->load('questboard');
+
+        $uid = $mybb->user['uid'];
+
+        $questboard_read = "<a href='questboard.php?action=questboard_evaluation_read&read={$uid}' original-title='Als gelesen markieren'><i class=\"fas fa-trash\" style=\"float: right;font-size: 14px;padding: 1px;\"></i></a>";
+
+            // User hat Info auf dem Index gelesen
+
+            if ($mybb->get_input('action') == 'questboard_evaluation_read') {
+
+                $this_user = intval($mybb->user['uid']);
+
+                $as_uid = intval($mybb->user['as_uid']);
+                $read = $mybb->input['read'];
+                if ($read) {
+                    if($as_uid == 0){
+                        $db->query("UPDATE ".TABLE_PREFIX."users SET questboard_quest_evaluation = 1  WHERE (as_uid = $this_user) OR (uid = $this_user)");
+                    } elseif($as_uid != 0){
+                        $db->query("UPDATE ".TABLE_PREFIX."users SET questboard_quest_evaluation = 1  WHERE (as_uid = $as_uid) OR (uid = $this_user) OR (uid = $as_uid)");
+                    }
+                    redirect("index.php");
+                }
+            }
+    
+        $select = $db->query("SELECT * FROM " . TABLE_PREFIX . "questboard WHERE visible = 1 AND players IS NOT NULL");
+        $row_cnt = $select->rowCount();
+        if ($row_cnt > 0) {
+            $select = $db->query("SELECT questboard_quest_evaluation FROM " . TABLE_PREFIX . "users 
+            WHERE uid = '" . $mybb->user['uid'] . "' LIMIT 1");
+
+            $dataEvaluation = $db->fetch_array($select);
+            if ($dataEvaluation['questboard_quest_evaluation'] == '0') {
+                eval("\$questboard_quest_evaluation = \"" . $templates->get("questboard_alert_auswertung") . "\";");
 
             }
                 
@@ -1922,6 +2023,9 @@ global $parameters;
         if($parameters['action'] == "add" && empty($parameters['site'])) {
             $user_activity['activity'] = "add";
         }
+        if($parameters['action'] == "inEvaluation" && empty($parameters['site'])) {
+            $user_activity['activity'] = "inEvaluation";
+        }
         if($parameters['action'] == "edit" && empty($parameters['site'])) {
             $user_activity['activity'] = "edit";
         }
@@ -1955,8 +2059,11 @@ global $mybb, $theme, $lang;
     if($plugin_array['user_activity']['activity'] == "taken") {
 		$plugin_array['location_name'] = "Sieht sich die bespielten <a href=\"questboard.php?action=taken\">Quests</a> an.";
 	}
+    if($plugin_array['user_activity']['activity'] == "inEvaluation") {
+		$plugin_array['location_name'] = "Sieht sich <a href=\"questboard.php?action=inEvaluation\">Auszuwertende Quests</a> an.";
+	}
     if($plugin_array['user_activity']['activity'] == "finished") {
-		$plugin_array['location_name'] = "Sieht sich erledigte <a href=\"questboard.php?action=finished\">Quests</a> an.";
+		$plugin_array['location_name'] = "Sieht sich <a href=\"questboard.php?action=finished\">ausgewertete Quests</a> an.";
 	}
     if($plugin_array['user_activity']['activity'] == "add") {
 		$plugin_array['location_name'] = "Erstellt eine neue Quest.";
