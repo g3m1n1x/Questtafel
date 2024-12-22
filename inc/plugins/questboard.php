@@ -7,7 +7,6 @@ if(!defined("IN_MYBB"))
 
 
 // Informationen für den Plugin Manager
-
 function questboard_info() 
 {
 	return array(
@@ -21,13 +20,11 @@ function questboard_info()
 }
 
 // Installation
-
 function questboard_install()
 {
     global $db, $cache, $mybb;
 
     // DB-Tabelle erstellen
-
     $db->query("CREATE TABLE ".TABLE_PREFIX."questboard(
         `nid` int(10) NOT NULL AUTO_INCREMENT,
         `type` VARCHAR(255) NOT NULL,
@@ -60,14 +57,12 @@ function questboard_install()
      ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci AUTO_INCREMENT=1
     "); 
     
-    // Tabellenerweiterung der users-Tabelle für die Index Nachricht
-
+    // Tabellenerweiterung der users-Tabelle für die Index Nachrichten
     $db->query("ALTER TABLE `".TABLE_PREFIX."users` ADD `questboard_new` int(11) NOT NULL DEFAULT '0';");
 
     $db->query("ALTER TABLE `".TABLE_PREFIX."users` ADD `questboard_new_registration` int(11) NOT NULL DEFAULT '0';");
 
     // Einstellungen ACP
-
     $setting_group = array(
         'name'          => 'questboard',
         'title'         => 'Questtafel',
@@ -154,12 +149,10 @@ foreach($setting_array as $name => $setting)
 rebuild_settings();
 
  // Templates und CSS erstellen
-
 require_once MYBB_ADMIN_DIR."inc/functions_themes.php";
 require_once MYBB_ROOT."/inc/adminfunctions_templates.php";
 	
 // ## Templategruppe erstellen
-	
 $templategrouparray = array(
     'prefix' => 'questboard',
     'title'  => $db->escape_string('Questtafel'),
@@ -472,8 +465,7 @@ $insert_array = array(
 );
 $db->insert_query("templates", $insert_array);
 
-
-// ## Alert - questboard_alert
+// ## Alert für neu erstellte Quests (alle User, die auf das Questboard zugreifen können) - questboard_alert
 $insert_array = array(
     'title'	    => 'questboard_alert',
     'template'	=> $db->escape_string('
@@ -487,7 +479,7 @@ $insert_array = array(
 );
 $db->insert_query("templates", $insert_array);
 
-// ## Alert - questboard_alert_anmeldung
+// ## Alert für angenommene Quests (Spielleiter only) - questboard_alert_anmeldung
 $insert_array = array(
     'title'	    => 'questboard_alert_anmeldung',
     'template'	=> $db->escape_string('
@@ -500,7 +492,6 @@ $insert_array = array(
     'dateline'  => TIME_NOW
 );
 $db->insert_query("templates", $insert_array);
-
 
 // ## Beschreibung - questboard_description
 $insert_array = array(
@@ -532,7 +523,6 @@ $insert_array = array(
     'dateline'  => TIME_NOW
 );
 $db->insert_query("templates", $insert_array);
-
 
 // ## Bearbeiten - questboard_edit
 $insert_array = array(
@@ -808,7 +798,6 @@ $insert_array = array(
 );
 $db->insert_query("templates", $insert_array);
 
-
 // ## Edit Button - questboard_edit_button
 $insert_array = array(
     'title'	    => 'questboard_edit_button',
@@ -862,7 +851,6 @@ $insert_array = array(
 );
 $db->insert_query("templates", $insert_array);
 
-
 // ## Navigation - questboard_navigation
 $insert_array = array(
 'title'	    => 'questboard_navigation',
@@ -883,7 +871,6 @@ $insert_array = array(
     );
     $db->insert_query("templates", $insert_array);
 
-
 // ## Navigation CP - questboard_navigation_cp
 $insert_array = array(
     'title'	    => 'questboard_navigation_cp',
@@ -898,7 +885,6 @@ $insert_array = array(
     'dateline'  => TIME_NOW
 );
 $db->insert_query("templates", $insert_array);
-
 
 // ## Navigation Keine Erlaubnis - questboard_no_permission
 $insert_array = array(
@@ -996,7 +982,6 @@ $insert_array = array(
 );
 $db->insert_query("templates", $insert_array);
 
-
 // ## Quest erledigt - questboard_quest_finished
 $insert_array = array(
     'title'	    => 'questboard_quest_finished',
@@ -1009,7 +994,6 @@ $insert_array = array(
     'dateline'  => TIME_NOW
 );
 $db->insert_query("templates", $insert_array);
-
 
 // ## Keine Quests - questboard_quest_none
 $insert_array = array(
@@ -1024,8 +1008,7 @@ $insert_array = array(
 );
 $db->insert_query("templates", $insert_array);
 
-
-// ## SL Informationen - questboard_quest_sl
+// ## Spielleiter-Informationen - questboard_quest_sl
 $insert_array = array(
     'title'	    => 'questboard_quest_sl',
     'template'	=> $db->escape_string('
@@ -1059,16 +1042,15 @@ $insert_array = array(
 );
 $db->insert_query("templates", $insert_array);
 
-
-// ## Kein Zugang zu SL Informationen - questboard_quest_sl_nope
+// ## Kein Zugang zu Spielleiter-Informationen - questboard_quest_sl_nope
 $insert_array = array(
     'title'	    => 'questboard_quest_sl_nope',
     'template'	=> $db->escape_string('
-<div class="questboard_hidden-content">
-    <div class="questboard_description">
-        Netter Versuch ... kein Cheaten!
-    </div>
-</div>   
+    <div class="questboard_hidden-content">
+        <div class="questboard_description">
+            Du hast nicht die Berechtigung, um dir Spielleiterinformationen anzuschauen.
+        </div>
+    </div>   
     '),
     'sid'       => '-2',
     'dateline'  => TIME_NOW
@@ -1140,6 +1122,7 @@ $insert_array = array(
     </script>
 
     <script type="text/javascript">
+    (function() {
         let characterIndex = Date.now();
 
         // Funktion zum Hinzufügen eines neuen Charakters
@@ -1159,11 +1142,12 @@ $insert_array = array(
                             <input type="checkbox" name="characters[{index}][fifty]"> 50 % von beidem
                         </label>
                     </div>
-                    <span class="remove-button" onclick="removeCharacterField({index})">✖</span>
+                    <span class="remove-button remove-{$questboard[\'nid\']}" data-character-index="{index}" data-quest-id="{$questboard[\'nid\']}">✖</span>
                 </div>
             `;
-
+            
             const filledHtml = html.replace(/{index}/g, characterIndex);
+            console.log("Quest: " + {$questboard[\'nid\']} + "HTML: " + filledHtml)
 
             // Füge das neue Feld hinzu
             $("#characters-container-{$questboard[\'nid\']}").append(filledHtml);
@@ -1192,28 +1176,33 @@ $insert_array = array(
         }
 
         // Funktion zum Entfernen eines Charakter-Feldes
-        function removeCharacterField(characterIndex) {
+       $(document).on(\'click\', \'.remove-{$questboard[\'nid\']}\', function() {
+            const questId = $(this).data(\'quest-id\');
+            const characterIndex = $(this).data(\'character-index\');
             const templateId = "character-{$questboard[\'nid\']}-{index}";
-    
+            
             // Platzhalter {index} mit dem aktuellen characterIndex ersetzen
             const elementId = templateId.replace("{index}", characterIndex);
+            console.log("elementId", elementId)
 
             // Element mit der generierten ID abrufen und entfernen
             const element = document.getElementById(elementId);
             if (element) {
+            console.log(element)
                 element.remove(); // Entferne das spezifische Element
             }
-        }
+        });
 
         // Initialisiere das erste Feld
         $(document).ready(function () {
             addCharacterField();
 
             // Button-Klick zum Hinzufügen eines weiteren Charakters
-            $("#add-character").on("click", function () {
+            $("#add-character-{$questboard[\'nid\']}").on("click", function () {
                 addCharacterField();
             });
         });
+    })();
     </script>
 
     <div class="questboard_quest-take">
@@ -1224,7 +1213,7 @@ $insert_array = array(
             <div id="characters-container-{$questboard[\'nid\']}">
                 <!-- Hier wird das erste Feld dynamisch hinzugefügt -->
             </div>
-            <button type="button" id="add-character">Charakter hinzufügen</button>
+            <button type="button" id="add-character-{$questboard[\'nid\']}">Charakter hinzufügen</button>
             <br><br>
             <input type="submit" value="Quest annehmen" name="take_quest" />
             </form>
@@ -1235,7 +1224,6 @@ $insert_array = array(
     'dateline'  => TIME_NOW
 );
 $db->insert_query("templates", $insert_array);
-
 
 // ## Quest angenommen - questboard_quest_taken
 $insert_array = array(
@@ -1272,8 +1260,7 @@ $insert_array = array(
 );
 $db->insert_query("templates", $insert_array);
 
-
-// ## SL Information - questboard_sl_information
+// ## Spielleiter-Information - questboard_sl_information
 $insert_array = array(
     'title'	    => 'questboard_sl_information',
     'template'	=> $db->escape_string('
@@ -1335,7 +1322,6 @@ $insert_array = array(
 );
 $db->insert_query("templates", $insert_array);
 
-
 // ## Status Quest erledigt - questboard_status_finished
 $insert_array = array(
     'title'	    => 'questboard_status_finished',
@@ -1346,7 +1332,6 @@ $insert_array = array(
     'dateline'  => TIME_NOW
 );
 $db->insert_query("templates", $insert_array);
-
 
 // ## Status Quest frei - questboard_status_free
 $insert_array = array(
@@ -1359,7 +1344,6 @@ $insert_array = array(
 );
 $db->insert_query("templates", $insert_array);
 
-
 // ## Status Quest angenommen - questboard_status_taken
 $insert_array = array(
     'title'	    => 'questboard_status_taken',
@@ -1371,9 +1355,7 @@ $insert_array = array(
 );
 $db->insert_query("templates", $insert_array);
 
-
 // ## CSS 
-
 $css = array(
     'name'  => 'questboard.css',
     'tid'   => 1,
@@ -1716,13 +1698,11 @@ $css = array(
 .questboard_quest-take h3 {
     text-transform: uppercase;
 }
-
     ',
     'cachefile'     => $db->escape_string(str_replace('/', '', 'questboard.css')),
     'lastmodified'  => time()
     ); 
-     
-    
+      
     $sid = $db->insert_query("themestylesheets", $css);
 	$db->update_query("themestylesheets", array("cachefile" => "css.php?stylesheet=".$sid), "sid = '".$sid."'", 1);
 
@@ -1730,10 +1710,7 @@ $css = array(
 	while($theme = $db->fetch_array($tids)) {
 	    update_theme_stylesheet_list($theme['tid']);
     }
-
-   
 }
-
 
 // Anzeigen, dass Plugin installiert wurde
 
@@ -1967,16 +1944,16 @@ global $mybb, $theme, $lang;
 		$plugin_array['location_name'] = "Sieht sich freie <a href=\"questboard.php?action=free\">Quests</a> an.";
 	}
     if($plugin_array['user_activity']['activity'] == "allgemein") {
-		$plugin_array['location_name'] = "Sieht sich freie <a href=\"questboard.php?action=allgemein\">Allgemeine Quests</a> an.";
+		$plugin_array['location_name'] = "Sieht sich die <a href=\"questboard.php?action=allgemein\">Allgemeinen Quests</a> an.";
 	}
     if($plugin_array['user_activity']['activity'] == "special") {
-		$plugin_array['location_name'] = "Sieht sich freie <a href=\"questboard.php?action=special\">Specialquests</a> an.";
+		$plugin_array['location_name'] = "Sieht sich die <a href=\"questboard.php?action=special\">Specialquests</a> an.";
 	}
     if($plugin_array['user_activity']['activity'] == "single") {
-		$plugin_array['location_name'] = "Sieht sich freie <a href=\"questboard.php?action=single\">Singlequests</a> an.";
+		$plugin_array['location_name'] = "Sieht sich die <a href=\"questboard.php?action=single\">Singlequests</a> an.";
 	}
     if($plugin_array['user_activity']['activity'] == "berufsbezogen") {
-		$plugin_array['location_name'] = "Sieht sich freie <a href=\"questboard.php?action=berufsbezogen\">Berufsbezogene Quests</a> an.";
+		$plugin_array['location_name'] = "Sieht sich die <a href=\"questboard.php?action=berufsbezogen\">Berufsbezogenen Quests</a> an.";
 	}
     if($plugin_array['user_activity']['activity'] == "taken") {
 		$plugin_array['location_name'] = "Sieht sich die bespielten <a href=\"questboard.php?action=taken\">Quests</a> an.";
@@ -1985,10 +1962,10 @@ global $mybb, $theme, $lang;
 		$plugin_array['location_name'] = "Sieht sich erledigte <a href=\"questboard.php?action=finished\">Quests</a> an.";
 	}
     if($plugin_array['user_activity']['activity'] == "add") {
-		$plugin_array['location_name'] = "Pinnt eine neue Quest an.";
+		$plugin_array['location_name'] = "Erstellt eine neue Quest.";
 	}
     if($plugin_array['user_activity']['activity'] == "edit") {
-		$plugin_array['location_name'] = "Bessert Fehler in einer Quest aus.";
+		$plugin_array['location_name'] = "Bearbeitet eine Quest.";
 	}
 
 return $plugin_array;
