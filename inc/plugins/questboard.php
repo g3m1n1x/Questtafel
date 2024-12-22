@@ -91,8 +91,8 @@ function questboard_install()
         ),
 
         'questboard_allow_groups_see_all' => array(
-            'title' => 'Nicht freigegebene Quests sichtbar für',
-            'description' => 'Welche Gruppen dürfen nicht freigegebene Quests sehen?',
+            'title' => 'Unveröffentlichte Quests sichtbar für',
+            'description' => 'Welche Gruppen dürfen unveröffentlichte Quests sehen?',
             'optionscode' => 'groupselect',
             'value' => '4', // Default
             'disporder' => 2
@@ -178,6 +178,7 @@ $insert_array = array(
             <div class="questboard">
                 {$navigation}
                 <div class="questboard_content">
+                {$questtype}
                 <form>
                     <label for="action">Wähle die Questart:</label>
                     <select name="action" id="action">
@@ -470,7 +471,7 @@ $insert_array = array(
     'title'	    => 'questboard_alert',
     'template'	=> $db->escape_string('
     <div class="quest_alert">
-        Eine neue Quest wurde ausgeschrieben!
+        Eine neue <a href="https://beta-zone.de/mybb/questboard.php?action=free">Quest</a> wurde ausgeschrieben!
         {$questboard_read}
     </div>
     '),
@@ -546,7 +547,7 @@ $insert_array = array(
     <div class="questboard_form">
 
     <form id="questboard" action="questboard.php?action=edit&nid={$questboard[\'nid\']}" method="post">
-    <h1>Quest hinzufügen/bearbeiten</h1>
+    <h1>Quest bearbeiten</h1>
     
     {$player_info}
 
@@ -877,7 +878,7 @@ $insert_array = array(
     'template'	=> $db->escape_string('
     <div class="questboard_navigation-title">Control Panel</div>
     <div class="questboard_navigation-links">
-        <div><a href="questboard.php?action=pending"><i class="fa-regular fa-circle-xmark"></i> Nicht freigegebene Quests</a></div>
+        <div><a href="questboard.php?action=pending"><i class="fa-regular fa-circle-xmark"></i> Unveröffentlichte Quests</a></div>
         <div><a href="questboard.php?action=add"><i class="fa-solid fa-plus"></i> Quest hinzufügen</a></div>
     </div>
     '),
@@ -1127,6 +1128,7 @@ $insert_array = array(
 
         // Funktion zum Hinzufügen eines neuen Charakters
         function addCharacterField() {
+            const container = $(`#characters-container-{$questboard[\'nid\']}`);
             characterIndex++; // Erhöhe den Index für den nächsten Charakter
             const html = `
                 <div class="character-form" data-index="{$questboard[\'nid\']}-{index}" id="character-{$questboard[\'nid\']}-{index}">
@@ -1147,32 +1149,27 @@ $insert_array = array(
             `;
             
             const filledHtml = html.replace(/{index}/g, characterIndex);
-            console.log("Quest: " + {$questboard[\'nid\']} + "HTML: " + filledHtml)
 
             // Füge das neue Feld hinzu
             $("#characters-container-{$questboard[\'nid\']}").append(filledHtml);
 
             // Initialisiere select2 für das neu hinzugefügte Feld
             MyBB.select2();
-            $(`.character-select`).last().select2({
-                placeholder: "{$lang->search_user}",
-                minimumInputLength: 2,
-                maximumSelectionSize: \'\',
-                ajax: {
-                    url: "xmlhttp.php?action=get_users",
-                    dataType: \'json\',
-                    data: function (term, page) {
-                        return {
-                            query: term, // search term
-                        };
-                    },
-                    results: function (data, page) { // parse the results into the format expected by Select2.
-                        // since we are using custom formatting functions we do not need to alter remote JSON data
-                        return {results: data};
-                    }
+            container.find(`.character-select`).last().select2({
+            placeholder: "{$lang->search_user}",
+            minimumInputLength: 2,
+            ajax: {
+                url: "xmlhttp.php?action=get_users",
+                dataType: \'json\',
+                data: function(term, page) {
+                    return { query: term };
                 },
-                width: "30%",
-            });
+                results: function(data, page) {
+                    return { results: data };
+                }
+            },
+            width: "30%",
+        });
         }
 
         // Funktion zum Entfernen eines Charakter-Feldes
@@ -1183,12 +1180,10 @@ $insert_array = array(
             
             // Platzhalter {index} mit dem aktuellen characterIndex ersetzen
             const elementId = templateId.replace("{index}", characterIndex);
-            console.log("elementId", elementId)
 
             // Element mit der generierten ID abrufen und entfernen
             const element = document.getElementById(elementId);
             if (element) {
-            console.log(element)
                 element.remove(); // Entferne das spezifische Element
             }
         });
@@ -1207,9 +1202,9 @@ $insert_array = array(
 
     <div class="questboard_quest-take">
         <details>
-            <summary>Quest annehmen</summary>
+            <summary><b>Quest annehmen</b></summary>
             <form id="character-form" action="questboard.php?action=take&nid={$questboard[\'nid\']}" method="post">
-            <div class="questboard_quest_scene-input"><b>Szene:</b> <input type="text" id="scene" name="scene" placeholder="URL einfügen" required /></div>
+            <div class="questboard_quest_scene-input"><b>Szene:</b> <input type="text" id="scene" name="scene" placeholder="URL einfügen" /></div>
             <div id="characters-container-{$questboard[\'nid\']}">
                 <!-- Hier wird das erste Feld dynamisch hinzugefügt -->
             </div>
@@ -1547,10 +1542,11 @@ $css = array(
 
 .questboard_content {
   display: flex;
+  align-items:center;
   flex-wrap: wrap;
   margin-top: 15px;
   gap: 10px;
-  justify-content: center;
+  justify-content: space-around;
 }
 
 .questboard_description {
@@ -1684,6 +1680,7 @@ $css = array(
 
 .questboard_quest-take b {
     color: var(--emphasis);
+    cursor: pointer;
 }
 
 .questboard_quest-taken b {
@@ -1805,7 +1802,7 @@ function questboard_global(){
 
         $uid = $mybb->user['uid'];
 
-        $questboard_read = "<a href='misc.php?action=questboard_read&read={$uid}' original-title='als gelesen markieren'><i class=\"fas fa-trash\" style=\"float: right;font-size: 14px;padding: 1px; color:#004085;\"></i></a>";
+        $questboard_read = "<a href='misc.php?action=questboard_read&read={$uid}' original-title='Als gelesen markieren'><i class=\"fas fa-trash\" style=\"float: right;font-size: 14px;padding: 1px; color:#004085;\"></i></a>";
 
             // User hat Info auf dem Index gelesen
 
@@ -1846,11 +1843,11 @@ function questboard_global(){
 
         $uid = $mybb->user['uid'];
 
-        $questboard_read = "<a href='misc.php?action=questboard_read&read={$uid}' original-title='Als gelesen markieren'><i class=\"fas fa-trash\" style=\"float: right;font-size: 14px;padding: 1px;\"></i></a>";
+        $questboard_read = "<a href='misc.php?action=questboard_registration_read&read={$uid}' original-title='Als gelesen markieren'><i class=\"fas fa-trash\" style=\"float: right;font-size: 14px;padding: 1px;\"></i></a>";
 
             // User hat Info auf dem Index gelesen
 
-            if ($mybb->get_input('action') == 'questboard_read') {
+            if ($mybb->get_input('action') == 'questboard_registration_read') {
 
                 $this_user = intval($mybb->user['uid']);
 
@@ -1941,7 +1938,7 @@ global $mybb, $theme, $lang;
         $plugin_array['location_name'] = "Betrachtet die <a href=\"questboard.php\">Questtafel</a>.";
     }
     if($plugin_array['user_activity']['activity'] == "free") {
-		$plugin_array['location_name'] = "Sieht sich freie <a href=\"questboard.php?action=free\">Quests</a> an.";
+		$plugin_array['location_name'] = "Sieht sich <a href=\"questboard.php?action=free\">freie Quests</a> an.";
 	}
     if($plugin_array['user_activity']['activity'] == "allgemein") {
 		$plugin_array['location_name'] = "Sieht sich die <a href=\"questboard.php?action=allgemein\">Allgemeinen Quests</a> an.";

@@ -68,13 +68,14 @@ if(!$mybb->input['action']) {
     if($mybb->input['action'] == "free") {
 
         if(is_member($mybb->settings['questboard_allow_groups_see'])) {
-
+            
         add_breadcrumb("Freie Quests");
-
+        
         eval("\$none = \"".$templates->get("questboard_quest_none")."\";");
 
             $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1 AND status = '0' AND (players IS NULL OR players = '') ORDER BY nid DESC";
             $query = $db->query($sql);
+            eval("\$questtype = \"<h1>Freie Quests</h1>\";");
             while($questboard = $db->fetch_array($query)) {
                 $questboard['reusable_text'] = $questboard['reusable'] ? 'Mehrmals bespielbar' : 'Nur einmal bespielbar';
                 $none = "";
@@ -83,7 +84,7 @@ if(!$mybb->input['action']) {
 
                 $skill = '<div>'.str_replace(', ', '</div><div>', $questboard['skills']).'</div>';
                 $skills = str_replace(
-                    array("0", "1"),
+                    array("1", "0"),
                     array(
                     "<i class=\"fa-solid fa-hand-point-up\" title=\"von Nachteil\" style=\"color: var(--text);\"></i>", 
                     "<i class=\"fa-solid fa-ban\" title=\"verboten\" style=\"color: var(--text);\"></i>"
@@ -91,7 +92,6 @@ if(!$mybb->input['action']) {
                     $skill
                 );
                
-
                 $take = "";
                 $finished = "";
 
@@ -145,6 +145,7 @@ if($mybb->input['action'] == "allgemein") {
     eval("\$none = \"".$templates->get("questboard_quest_none")."\";");
         $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1 && (players IS NULL OR players = '') && type = 'Allgemeine Quest' ORDER BY nid DESC";
         $query = $db->query($sql);
+        eval("\$questtype = \"<h1>Allgemeine Quests</h1>\";");
         while($questboard = $db->fetch_array($query)) {
             $none = "";
     
@@ -152,7 +153,7 @@ if($mybb->input['action'] == "allgemein") {
     
             $skill = '<div>'.str_replace(', ', '</div><div>', $questboard['skills']).'</div>';
             $skills = str_replace(
-                array("0", "1"),
+                array("1", "0"),
                 array(
                 "<i class=\"fa-solid fa-hand-point-up\" title=\"von Nachteil\" style=\"color: var(--text);\"></i>", 
                 "<i class=\"fa-solid fa-ban\" title=\"verboten\" style=\"color: var(--text);\"></i>"
@@ -209,6 +210,7 @@ if($mybb->input['action'] == "special") {
     eval("\$none = \"".$templates->get("questboard_quest_none")."\";");
         $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1 && (players IS NULL OR players = '') && type = 'Specialquest' ORDER BY nid DESC";
         $query = $db->query($sql);
+        eval("\$questtype = \"<h1>Specialquests</h1>\";");
         while($questboard = $db->fetch_array($query)) {
             $none = "";
     
@@ -216,7 +218,7 @@ if($mybb->input['action'] == "special") {
     
             $skill = '<div>'.str_replace(', ', '</div><div>', $questboard['skills']).'</div>';
             $skills = str_replace(
-                array("0", "1"),
+                array("1", "0"),
                 array(
                 "<i class=\"fa-solid fa-hand-point-up\" title=\"von Nachteil\" style=\"color: var(--text);\"></i>", 
                 "<i class=\"fa-solid fa-ban\" title=\"verboten\" style=\"color: var(--text);\"></i>"
@@ -273,6 +275,7 @@ if($mybb->input['action'] == "single") {
     eval("\$none = \"".$templates->get("questboard_quest_none")."\";");
         $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1 && (players IS NULL OR players = '') && type = 'Singlequest' ORDER BY nid DESC";
         $query = $db->query($sql);
+        eval("\$questtype = \"<h1>Singlequests</h1>\";");
         while($questboard = $db->fetch_array($query)) {
             $none = "";
     
@@ -280,7 +283,7 @@ if($mybb->input['action'] == "single") {
     
             $skill = '<div>'.str_replace(', ', '</div><div>', $questboard['skills']).'</div>';
             $skills = str_replace(
-                array("0", "1"),
+                array("1", "0"),
                 array(
                 "<i class=\"fa-solid fa-hand-point-up\" title=\"von Nachteil\" style=\"color: var(--text);\"></i>", 
                 "<i class=\"fa-solid fa-ban\" title=\"verboten\" style=\"color: var(--text);\"></i>"
@@ -338,6 +341,7 @@ if($mybb->input['action'] == "berufsbezogen") {
     eval("\$none = \"".$templates->get("questboard_quest_none")."\";");
         $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1 && (players IS NULL OR players = '') && type = 'Berufsbezogene Quest' ORDER BY nid DESC";
         $query = $db->query($sql);
+        eval("\$questtype = \"<h1>Berufsbezogene Quests</h1>\";");
         while($questboard = $db->fetch_array($query)) {
             $none = "";
     
@@ -345,7 +349,7 @@ if($mybb->input['action'] == "berufsbezogen") {
     
             $skill = '<div>'.str_replace(', ', '</div><div>', $questboard['skills']).'</div>';
             $skills = str_replace(
-                array("0", "1"),
+                array("1", "0"),
                 array(
                 "<i class=\"fa-solid fa-hand-point-up\" title=\"von Nachteil\" style=\"color: var(--text);\"></i>", 
                 "<i class=\"fa-solid fa-ban\" title=\"verboten\" style=\"color: var(--text);\"></i>"
@@ -409,6 +413,7 @@ eval("\$page = \"".$templates->get("questboard")."\";");
 
             $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1 AND status = '0' AND players IS NOT NULL";
             $query = $db->query($sql);
+            eval("\$questtype = \"<h1>Bespielte Quests</h1>\";");
             while($questboard = $db->fetch_array($query)) {
 
                 $none = "";
@@ -417,7 +422,7 @@ eval("\$page = \"".$templates->get("questboard")."\";");
 
                 $skill = '<div>'.str_replace(', ', '</div><div>', $questboard['skills']).'</div>';
                 $skills = str_replace(
-                    array("0", "1"),
+                    array("1", "0"),
                     array(
                     "<i class=\"fa-solid fa-hand-point-up\" title=\"von Nachteil\" style=\"color: var(--text);\"></i>", 
                     "<i class=\"fa-solid fa-ban\" title=\"verboten\" style=\"color: var(--text);\"></i>"
@@ -469,6 +474,7 @@ eval("\$page = \"".$templates->get("questboard")."\";");
 
             $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1 AND status = 1";
             $query = $db->query($sql);
+            eval("\$questtype = \"<h1>Erledigte Quests</h1>\";");
             while($questboard = $db->fetch_array($query)) {
 
                 $none = "";
@@ -477,7 +483,7 @@ eval("\$page = \"".$templates->get("questboard")."\";");
 
                 $skill = '<div>'.str_replace(', ', '</div><div>', $questboard['skills']).'</div>';
                 $skills = str_replace(
-                    array("0", "1"),
+                    array("1", "0"),
                     array(
                     "<i class=\"fa-solid fa-hand-point-up\" title=\"von Nachteil\" style=\"color: var(--text);\"></i>", 
                     "<i class=\"fa-solid fa-ban\" title=\"verboten\" style=\"color: var(--text);\"></i>"
@@ -529,6 +535,7 @@ eval("\$page = \"".$templates->get("questboard")."\";");
 
             $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 0";
             $query = $db->query($sql);
+            eval("\$questtype = \"<h1>Unveröffentlichte Quests</h1>\";");
             while($questboard = $db->fetch_array($query)) {
 
                 $none = "";
@@ -537,7 +544,7 @@ eval("\$page = \"".$templates->get("questboard")."\";");
 
                 $skill = '<div>'.str_replace(', ', '</div><div>', $questboard['skills']).'</div>';
                 $skills = str_replace(
-                    array("0", "1"),
+                    array("1", "0"),
                     array(
                     "<i class=\"fa-solid fa-hand-point-up\" title=\"von Nachteil\" style=\"color: var(--text);\"></i>", 
                     "<i class=\"fa-solid fa-ban\" title=\"verboten\" style=\"color: var(--text);\"></i>"
@@ -712,7 +719,6 @@ eval("\$page = \"".$templates->get("questboard")."\";");
                     "solution" => $db->escape_string($mybb->get_input('solution')),
                     "visible" => $db->escape_string($mybb->get_input('visible')),
                     "reusable" => $db->escape_string($mybb->get_input('reusable')),
-                    "players" => $db->escape_string($mybb->get_input('players')),
                     "scene" => $db->escape_string($mybb->get_input('scene')),
                     "status" => $db->escape_string($mybb->get_input('status')),
                 );
@@ -851,7 +857,9 @@ if(is_member($mybb->settings['questboard_allow_groups_take'])) {
             // Fallback: Wenn die Quest nicht existiert
             $db->insert_query("questboard", array_merge($updated_data, ["nid" => $db->escape_string($nid)]));
         }
-        
+        if(is_member($mybb->settings['questboard_allow_groups_lead'])){
+            $db->query("UPDATE ".TABLE_PREFIX."users SET questboard_new_registration ='0'");
+        }
         redirect("questboard.php?action=taken", "Du hast dich erfolgreich zu dieser Quest angemeldet.");
     } 
 }
@@ -864,7 +872,7 @@ if(is_member($mybb->settings['questboard_allow_groups_edit'])) {
 
         $db->delete_query("questboard", "nid = '$nid'");
 
-        redirect("questboard.php?action=free", "Die Quest wurde erfolgreich gelöscht.");
+        redirect("questboard.php", "Die Quest wurde erfolgreich gelöscht.");
     }
 }
 
@@ -877,7 +885,7 @@ $taken = $mybb->input['finished'];
         );
 
         $db->update_query("questboard", $take, "nid = '".$taken."'");
-        redirect("questboard.php?action=free", "Die Quest wurde erfolgreich als erledigt markiert.");
+        redirect("questboard.php?action=finished", "Die Quest wurde erfolgreich als erledigt markiert. Du wirst nun zu den erledigten Quests weitergeleitet.");
     }
 
 }
