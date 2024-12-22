@@ -63,7 +63,8 @@ function questboard_install()
     // Tabellenerweiterung der users-Tabelle für die Index Nachricht
 
     $db->query("ALTER TABLE `".TABLE_PREFIX."users` ADD `questboard_new` int(11) NOT NULL DEFAULT '0';");
-    
+
+    $db->query("ALTER TABLE `".TABLE_PREFIX."users` ADD `questboard_new_registration` int(11) NOT NULL DEFAULT '0';");
 
     // Einstellungen ACP
 
@@ -476,7 +477,7 @@ $db->insert_query("templates", $insert_array);
 $insert_array = array(
     'title'	    => 'questboard_alert',
     'template'	=> $db->escape_string('
-    <div class="red_alert">
+    <div class="quest_alert">
         Eine neue Quest wurde ausgeschrieben!
         {$questboard_read}
     </div>
@@ -490,8 +491,8 @@ $db->insert_query("templates", $insert_array);
 $insert_array = array(
     'title'	    => 'questboard_alert_anmeldung',
     'template'	=> $db->escape_string('
-    <div class="red_alert">
-        Jemand hat sich für eine Quest angemeldet!
+    <div class="quest_alert">
+        Jemand hat sich für eine <a href="https://beta-zone.de/mybb/questboard.php?action=taken">Quest</a> angemeldet!
         {$questboard_read}
     </div>
     '),
@@ -1404,6 +1405,22 @@ $css = array(
 
 /* Popup*/
 
+.quest_alert {
+	background: #cce5ff;
+	color: #004085;
+	text-align: center;
+	padding: 12px 20px;
+	margin-bottom: 15px;
+	word-wrap: break-word;
+	border-radius: 2px;
+	font-size: 13px;
+}
+
+.quest_alert a {
+    color: #004085;
+    text-decoration: underline;
+}
+
 .sl {
     display: none;
 }
@@ -1412,6 +1429,7 @@ $css = array(
   position: absolute;
   z-index: 1;
   left: 50%;
+  top: 50%;
   transform: translate(-50%, 0);
   height: 400px;
   width: 1000px;
@@ -1746,6 +1764,10 @@ function questboard_uninstall()
     {
         $db->drop_column("users", "questboard_new");
     }
+    if($db->field_exists("questboard_new_registration", "users"))
+    {
+        $db->drop_column("users", "questboard_new_registration");
+    }
     
     // Einstellungen löschen
     $db->delete_query('settings', "name LIKE 'questboard%'");
@@ -1777,7 +1799,7 @@ function questboard_activate()
 
     // Variable für den Alert im Header
 
-    find_replace_templatesets('header', '#'.preg_quote('{$bbclosedwarning}').'#', '{$questboard_new} {$bbclosedwarning}');
+    find_replace_templatesets('header', '#'.preg_quote('{$bbclosedwarning}').'#', '{$questboard_new} {$questboard_new_registration} {$bbclosedwarning}');
 }
 
 function questboard_deactivate()
@@ -1789,7 +1811,7 @@ function questboard_deactivate()
 
     // Variablen für den Alert im Header entfernen
 
-    find_replace_templatesets('header', '#'.preg_quote('{$questboard_new} {$bbclosedwarning}').'#', '{$bbclosedwarning}');
+    find_replace_templatesets('header', '#'.preg_quote('{$questboard_new} {$questboard_new_registration} {$bbclosedwarning}').'#', '{$bbclosedwarning}');
 }
 
 
@@ -1798,7 +1820,7 @@ $plugins->add_hook('global_start', 'questboard_global');
 
 function questboard_global(){
 
-    global $db, $mybb, $templates, $questboard_new, $questboard_read, $lang;
+    global $db, $mybb, $templates, $questboard_new, $questboard_new_registration, $questboard_read, $lang;
 
     if(is_member($mybb->settings['questboard_allow_groups_see'])) {
 
@@ -1806,7 +1828,7 @@ function questboard_global(){
 
         $uid = $mybb->user['uid'];
 
-        $questboard_read = "<a href='misc.php?action=questboard_read&read={$uid}' original-title='als gelesen markieren'><i class=\"fas fa-trash\" style=\"float: right;font-size: 14px;padding: 1px;\"></i></a>";
+        $questboard_read = "<a href='misc.php?action=questboard_read&read={$uid}' original-title='als gelesen markieren'><i class=\"fas fa-trash\" style=\"float: right;font-size: 14px;padding: 1px; color:#004085;\"></i></a>";
 
             // User hat Info auf dem Index gelesen
 
@@ -1825,21 +1847,62 @@ function questboard_global(){
                     redirect("index.php");
                 }
             }
-    }
-    $select = $db->query("SELECT * FROM " . TABLE_PREFIX . "questboard WHERE visible = 1");
-    $row_cnt = $select->rowCount();
-    if ($row_cnt > 0) {
-        $select = $db->query("SELECT questboard_new FROM " . TABLE_PREFIX . "users 
-        WHERE uid = '" . $mybb->user['uid'] . "' LIMIT 1");
+    
+        $select = $db->query("SELECT * FROM " . TABLE_PREFIX . "questboard WHERE visible = 1");
+        $row_cnt = $select->rowCount();
+        if ($row_cnt > 0) {
+            $select = $db->query("SELECT questboard_new FROM " . TABLE_PREFIX . "users 
+            WHERE uid = '" . $mybb->user['uid'] . "' LIMIT 1");
 
-        $data = $db->fetch_array($select);
-        if ($data['questboard_new'] == '0') {
-            eval("\$questboard_new = \"" . $templates->get("questboard_alert") . "\";");
+            $data = $db->fetch_array($select);
+            if ($data['questboard_new'] == '0') {
+                eval("\$questboard_new = \"" . $templates->get("questboard_alert") . "\";");
 
+            }
+                
         }
-            
     }
+    
+    if(is_member($mybb->settings['questboard_allow_groups_lead'])) {
 
+        $lang->load('questboard');
+
+        $uid = $mybb->user['uid'];
+
+        $questboard_read = "<a href='misc.php?action=questboard_read&read={$uid}' original-title='Als gelesen markieren'><i class=\"fas fa-trash\" style=\"float: right;font-size: 14px;padding: 1px;\"></i></a>";
+
+            // User hat Info auf dem Index gelesen
+
+            if ($mybb->get_input('action') == 'questboard_read') {
+
+                $this_user = intval($mybb->user['uid']);
+
+                $as_uid = intval($mybb->user['as_uid']);
+                $read = $mybb->input['read'];
+                if ($read) {
+                    if($as_uid == 0){
+                        $db->query("UPDATE ".TABLE_PREFIX."users SET questboard_new_registration = 1  WHERE (as_uid = $this_user) OR (uid = $this_user)");
+                    } elseif($as_uid != 0){
+                        $db->query("UPDATE ".TABLE_PREFIX."users SET questboard_new_registration = 1  WHERE (as_uid = $as_uid) OR (uid = $this_user) OR (uid = $as_uid)");
+                    }
+                    redirect("index.php");
+                }
+            }
+    
+        $select = $db->query("SELECT * FROM " . TABLE_PREFIX . "questboard WHERE visible = 1 AND players IS NOT NULL");
+        $row_cnt = $select->rowCount();
+        if ($row_cnt > 0) {
+            $select = $db->query("SELECT questboard_new_registration FROM " . TABLE_PREFIX . "users 
+            WHERE uid = '" . $mybb->user['uid'] . "' LIMIT 1");
+
+            $data = $db->fetch_array($select);
+            if ($data['questboard_new_registration'] == '0') {
+                eval("\$questboard_new_registration = \"" . $templates->get("questboard_alert_anmeldung") . "\";");
+
+            }
+                
+        }
+    }
 }
 
 

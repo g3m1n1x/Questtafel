@@ -73,7 +73,7 @@ if(!$mybb->input['action']) {
 
         eval("\$none = \"".$templates->get("questboard_quest_none")."\";");
 
-            $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1 AND status = '0' AND (players IS NULL OR players = '')";
+            $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1 AND status = '0' AND (players IS NULL OR players = '') ORDER BY nid DESC";
             $query = $db->query($sql);
             while($questboard = $db->fetch_array($query)) {
                 $questboard['reusable_text'] = $questboard['reusable'] ? 'Mehrmals bespielbar' : 'Nur einmal bespielbar';
@@ -143,7 +143,7 @@ if($mybb->input['action'] == "allgemein") {
     if(is_member($mybb->settings['questboard_allow_groups_see'])) {
     add_breadcrumb("Allgemeine Quests");
     eval("\$none = \"".$templates->get("questboard_quest_none")."\";");
-        $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1 && (players IS NULL OR players = '') && type = 'Allgemeine Quest'";
+        $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1 && (players IS NULL OR players = '') && type = 'Allgemeine Quest' ORDER BY nid DESC";
         $query = $db->query($sql);
         while($questboard = $db->fetch_array($query)) {
             $none = "";
@@ -207,7 +207,7 @@ if($mybb->input['action'] == "special") {
     if(is_member($mybb->settings['questboard_allow_groups_see'])) {
     add_breadcrumb("Specialquests");
     eval("\$none = \"".$templates->get("questboard_quest_none")."\";");
-        $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1 && (players IS NULL OR players = '') && type = 'Specialquest'";
+        $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1 && (players IS NULL OR players = '') && type = 'Specialquest' ORDER BY nid DESC";
         $query = $db->query($sql);
         while($questboard = $db->fetch_array($query)) {
             $none = "";
@@ -271,7 +271,7 @@ if($mybb->input['action'] == "single") {
     if(is_member($mybb->settings['questboard_allow_groups_see'])) {
     add_breadcrumb("Singlequests");
     eval("\$none = \"".$templates->get("questboard_quest_none")."\";");
-        $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1 && (players IS NULL OR players = '') && type = 'Singlequest'";
+        $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1 && (players IS NULL OR players = '') && type = 'Singlequest' ORDER BY nid DESC";
         $query = $db->query($sql);
         while($questboard = $db->fetch_array($query)) {
             $none = "";
@@ -336,7 +336,7 @@ if($mybb->input['action'] == "berufsbezogen") {
     if(is_member($mybb->settings['questboard_allow_groups_see'])) {
     add_breadcrumb("Berufsbezogene Quests");
     eval("\$none = \"".$templates->get("questboard_quest_none")."\";");
-        $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1 && (players IS NULL OR players = '') && type = 'Berufsbezogene Quest'";
+        $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1 && (players IS NULL OR players = '') && type = 'Berufsbezogene Quest' ORDER BY nid DESC";
         $query = $db->query($sql);
         while($questboard = $db->fetch_array($query)) {
             $none = "";
