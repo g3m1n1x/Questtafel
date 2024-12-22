@@ -476,10 +476,10 @@ $db->insert_query("templates", $insert_array);
 $insert_array = array(
     'title'	    => 'questboard_alert',
     'template'	=> $db->escape_string('
-<div class="red_alert">
-    Jemand hat eine neue Quest ausgeschrieben!
-    {$questboard_read}
-</div>
+    <div class="red_alert">
+        Eine neue Quest wurde ausgeschrieben!
+        {$questboard_read}
+    </div>
     '),
     'sid'       => '-2',
     'dateline'  => TIME_NOW
@@ -490,10 +490,10 @@ $db->insert_query("templates", $insert_array);
 $insert_array = array(
     'title'	    => 'questboard_alert_anmeldung',
     'template'	=> $db->escape_string('
-<div class="red_alert">
-    Jemand hat sich für eine Quest angemeldet!
-    {$questboard_read}
-</div>
+    <div class="red_alert">
+        Jemand hat sich für eine Quest angemeldet!
+        {$questboard_read}
+    </div>
     '),
     'sid'       => '-2',
     'dateline'  => TIME_NOW
@@ -849,7 +849,7 @@ $insert_array = array(
                     ? "50% von beidem"
                     : "Nur EP"; // Standardtext, falls nichts aktiv ist
                     const li = document.createElement("li"); // Neues <li>-Element
-                    li.textContent = player.user + " - (" + reward + ")"; // Benutzername setzen
+                    li.textContent = player.user + " (" + reward + ")"; // Benutzername setzen
                     playerList.appendChild(li); // <li> hinzufügen
                 });
             }
@@ -1219,7 +1219,7 @@ $insert_array = array(
         <details>
             <summary>Quest annehmen</summary>
             <form id="character-form" action="questboard.php?action=take&nid={$questboard[\'nid\']}" method="post">
-            <div class="questboard_quest_scene-input"><b>Szene:</b> <input type="text" id="scene" name="scene" required" /></div>
+            <div class="questboard_quest_scene-input"><b>Szene:</b> <input type="text" id="scene" name="scene" placeholder="URL einfügen" required /></div>
             <div id="characters-container-{$questboard[\'nid\']}">
                 <!-- Hier wird das erste Feld dynamisch hinzugefügt -->
             </div>
@@ -1798,7 +1798,7 @@ $plugins->add_hook('global_start', 'questboard_global');
 
 function questboard_global(){
 
-    global $db, $mybb, $templates, $questboard_new, $new_questboard, $questboard_read, $lang;
+    global $db, $mybb, $templates, $questboard_new, $questboard_read, $lang;
 
     if(is_member($mybb->settings['questboard_allow_groups_see'])) {
 
@@ -1810,34 +1810,31 @@ function questboard_global(){
 
             // User hat Info auf dem Index gelesen
 
-            if ($mybb->get_input ('action') == 'questboard_read') {
+            if ($mybb->get_input('action') == 'questboard_read') {
 
-                $this_user = intval ($mybb->user['uid']);
+                $this_user = intval($mybb->user['uid']);
 
-                $as_uid = intval ($mybb->user['as_uid']);
+                $as_uid = intval($mybb->user['as_uid']);
                 $read = $mybb->input['read'];
                 if ($read) {
                     if($as_uid == 0){
-                        $db->query ("UPDATE ".TABLE_PREFIX."users SET questboard_new = 1  WHERE (as_uid = $this_user) OR (uid = $this_user)");
-                    }elseif ($as_uid != 0){
-                        $db->query ("UPDATE ".TABLE_PREFIX."users SET questboard_new = 1  WHERE (as_uid = $as_uid) OR (uid = $this_user) OR (uid = $as_uid)");
+                        $db->query("UPDATE ".TABLE_PREFIX."users SET questboard_new = 1  WHERE (as_uid = $this_user) OR (uid = $this_user)");
+                    } elseif($as_uid != 0){
+                        $db->query("UPDATE ".TABLE_PREFIX."users SET questboard_new = 1  WHERE (as_uid = $as_uid) OR (uid = $this_user) OR (uid = $as_uid)");
                     }
                     redirect("index.php");
                 }
             }
     }
-
-    $select = $db->query ("SELECT * FROM " . TABLE_PREFIX ."questboard WHERE visible = 1");
+    $select = $db->query("SELECT * FROM " . TABLE_PREFIX . "questboard WHERE visible = 1");
     $row_cnt = $select->rowCount();
     if ($row_cnt > 0) {
-        $select = $db->query ("SELECT questboard_new FROM " . TABLE_PREFIX . "users 
+        $select = $db->query("SELECT questboard_new FROM " . TABLE_PREFIX . "users 
         WHERE uid = '" . $mybb->user['uid'] . "' LIMIT 1");
 
-
-        $data = $db->fetch_array ($select);
-        if (isset($data['questboard_new']) == '0') {
-
-            eval("\$new_questboard = \"" . $templates->get ("questboard_alert") . "\";");
+        $data = $db->fetch_array($select);
+        if ($data['questboard_new'] == '0') {
+            eval("\$questboard_new = \"" . $templates->get("questboard_alert") . "\";");
 
         }
             
