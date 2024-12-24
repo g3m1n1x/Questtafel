@@ -945,6 +945,57 @@ if ($mybb->input['action'] == "evaluate") {
     }
 }
 
+//Alert für "neue Quest" wurde weggeklickt
+if ($mybb->get_input('action') == 'questboard_read') {
+
+    $this_user = intval($mybb->user['uid']);
+
+    $as_uid = intval($mybb->user['as_uid']);
+    $read = $mybb->input['read'];
+    if ($read) {
+        if($as_uid == 0){
+            $db->query("UPDATE ".TABLE_PREFIX."users SET questboard_new = 1  WHERE (as_uid = $this_user) OR (uid = $this_user)");
+        } elseif($as_uid != 0){
+            $db->query("UPDATE ".TABLE_PREFIX."users SET questboard_new = 1  WHERE (as_uid = $as_uid) OR (uid = $this_user) OR (uid = $as_uid)");
+        }
+        redirect('index.php', "Als gelesen markiert");
+    }
+}
+
+//Alert für "neue Questanmeldung" wurde weggeklickt
+if ($mybb->get_input('action') == 'questboard_registration_read') {
+
+    $this_user = intval($mybb->user['uid']);
+
+    $as_uid = intval($mybb->user['as_uid']);
+    $read = $mybb->input['read'];
+    if ($read) {
+        if($as_uid == 0){
+            $db->query("UPDATE ".TABLE_PREFIX."users SET questboard_new_registration = 1  WHERE (as_uid = $this_user) OR (uid = $this_user)");
+        } elseif($as_uid != 0){
+            $db->query("UPDATE ".TABLE_PREFIX."users SET questboard_new_registration = 1  WHERE (as_uid = $as_uid) OR (uid = $this_user) OR (uid = $as_uid)");
+        }
+        redirect("index.php");
+    }
+}
+
+//Alert für "neue Quest zur Auswertung freigegeben" wurde weggeklickt
+if ($mybb->get_input('action') == 'questboard_evaluation_read') {
+
+    $this_user = intval($mybb->user['uid']);
+
+    $as_uid = intval($mybb->user['as_uid']);
+    $read = $mybb->input['read'];
+    if ($read) {
+        if($as_uid == 0){
+            $db->query("UPDATE ".TABLE_PREFIX."users SET questboard_quest_evaluation = 1  WHERE (as_uid = $this_user) OR (uid = $this_user)");
+        } elseif($as_uid != 0){
+            $db->query("UPDATE ".TABLE_PREFIX."users SET questboard_quest_evaluation = 1  WHERE (as_uid = $as_uid) OR (uid = $this_user) OR (uid = $as_uid)");
+        }
+        redirect("index.php");
+    }
+}
+
 // Quests als erledigt markieren
 $taken = $mybb->input['finished'];
     if($taken){

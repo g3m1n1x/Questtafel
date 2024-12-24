@@ -473,7 +473,7 @@ $db->insert_query("templates", $insert_array);
 $insert_array = array(
     'title'	    => 'questboard_alert',
     'template'	=> $db->escape_string('
-    <div class="quest_alert">
+    <div class="quest_alert" id="new-quest">
         Eine neue <a href="https://beta-zone.de/mybb/questboard.php?action=free">Quest</a> wurde ausgeschrieben!
         {$questboard_read}
     </div>
@@ -487,7 +487,7 @@ $db->insert_query("templates", $insert_array);
 $insert_array = array(
     'title'	    => 'questboard_alert_anmeldung',
     'template'	=> $db->escape_string('
-    <div class="quest_alert">
+    <div class="quest_alert" id="new-registration">
         Jemand hat sich für eine <a href="https://beta-zone.de/mybb/questboard.php?action=taken">Quest</a> angemeldet!
         {$questboard_read}
     </div>
@@ -501,7 +501,7 @@ $db->insert_query("templates", $insert_array);
 $insert_array = array(
     'title'	    => 'questboard_alert_auswertung',
     'template'	=> $db->escape_string('
-    <div class="quest_alert">
+    <div class="quest_alert" id="new-evaluation">
         Eine <a href="https://beta-zone.de/mybb/questboard.php?action=inEvaluation">Quest</a> kann ausgewertet werden!
         {$questboard_read}
     </div>
@@ -1863,25 +1863,9 @@ function questboard_global(){
 
         $uid = $mybb->user['uid'];
 
-        $questboard_read = "<a href='questboard.php?action=questboard_read&read={$uid}' original-title='Als gelesen markieren' onclick="return MyBB.dismissPMNotice('{$mybb->settings[\'bburl\']}/')"><i class=\"fas fa-trash\" style=\"float: right;font-size: 14px;padding: 1px; color:#004085;\"></i></a>";
+        echo "<script type='text/javascript' src='{$mybb->asset_url}/jscripts/questboard.js'></script>";
 
-            // User hat Info auf dem Index gelesen
-
-            if ($mybb->get_input('action') == 'questboard_read') {
-
-                $this_user = intval($mybb->user['uid']);
-
-                $as_uid = intval($mybb->user['as_uid']);
-                $read = $mybb->input['read'];
-                if ($read) {
-                    if($as_uid == 0){
-                        $db->query("UPDATE ".TABLE_PREFIX."users SET questboard_new = 1  WHERE (as_uid = $this_user) OR (uid = $this_user)");
-                    } elseif($as_uid != 0){
-                        $db->query("UPDATE ".TABLE_PREFIX."users SET questboard_new = 1  WHERE (as_uid = $as_uid) OR (uid = $this_user) OR (uid = $as_uid)");
-                    }
-                    redirect("index.php", "Als gelesen markiert");
-                }
-            }
+        $questboard_read = "<a href='questboard.php?action=questboard_read&read={$uid}' original-title='Als gelesen markieren' onclick=\"Questboard.dismissNewQuestAlert('{$mybb->settings['bburl']}/', '{$uid}'); return false;\"><i class=\"fas fa-trash\" style=\"float: right;font-size: 14px;padding: 1px; color:#004085;\"></i></a>";
     
         $select = $db->query("SELECT * FROM " . TABLE_PREFIX . "questboard WHERE visible = 1");
         $row_cnt = $select->rowCount();
@@ -1904,26 +1888,8 @@ function questboard_global(){
 
         $uid = $mybb->user['uid'];
 
-        $questboard_read = "<a href='questboard.php?action=questboard_registration_read&read={$uid}' original-title='Als gelesen markieren'><i class=\"fas fa-trash\" style=\"float: right;font-size: 14px;padding: 1px;\"></i></a>";
+        $questboard_read = "<a href='questboard.php?action=questboard_registration_read&read={$uid}' original-title='Als gelesen markieren' onclick=\"Questboard.dismissNewQuestRegistrationAlert('{$mybb->settings['bburl']}/', '{$uid}'); return false;\"><i class=\"fas fa-trash\" style=\"float: right;font-size: 14px;padding: 1px;\"></i></a>";
 
-            // User hat Info auf dem Index gelesen
-
-            if ($mybb->get_input('action') == 'questboard_registration_read') {
-
-                $this_user = intval($mybb->user['uid']);
-
-                $as_uid = intval($mybb->user['as_uid']);
-                $read = $mybb->input['read'];
-                if ($read) {
-                    if($as_uid == 0){
-                        $db->query("UPDATE ".TABLE_PREFIX."users SET questboard_new_registration = 1  WHERE (as_uid = $this_user) OR (uid = $this_user)");
-                    } elseif($as_uid != 0){
-                        $db->query("UPDATE ".TABLE_PREFIX."users SET questboard_new_registration = 1  WHERE (as_uid = $as_uid) OR (uid = $this_user) OR (uid = $as_uid)");
-                    }
-                    redirect("index.php");
-                }
-            }
-    
         $select = $db->query("SELECT * FROM " . TABLE_PREFIX . "questboard WHERE visible = 1 AND players IS NOT NULL");
         $row_cnt = $select->rowCount();
         if ($row_cnt > 0) {
@@ -1944,25 +1910,7 @@ function questboard_global(){
 
         $uid = $mybb->user['uid'];
 
-        $questboard_read = "<a href='questboard.php?action=questboard_evaluation_read&read={$uid}' original-title='Als gelesen markieren'><i class=\"fas fa-trash\" style=\"float: right;font-size: 14px;padding: 1px;\"></i></a>";
-
-            // User hat Info auf dem Index gelesen
-
-            if ($mybb->get_input('action') == 'questboard_evaluation_read') {
-
-                $this_user = intval($mybb->user['uid']);
-
-                $as_uid = intval($mybb->user['as_uid']);
-                $read = $mybb->input['read'];
-                if ($read) {
-                    if($as_uid == 0){
-                        $db->query("UPDATE ".TABLE_PREFIX."users SET questboard_quest_evaluation = 1  WHERE (as_uid = $this_user) OR (uid = $this_user)");
-                    } elseif($as_uid != 0){
-                        $db->query("UPDATE ".TABLE_PREFIX."users SET questboard_quest_evaluation = 1  WHERE (as_uid = $as_uid) OR (uid = $this_user) OR (uid = $as_uid)");
-                    }
-                    redirect("index.php");
-                }
-            }
+        $questboard_read = "<a href='questboard.php?action=questboard_evaluation_read&read={$uid}' original-title='Als gelesen markieren' onclick=\"Questboard.dismissNewQuestEvaluationAlert('{$mybb->settings['bburl']}/', '{$uid}'); return false;\"><i class=\"fas fa-trash\" style=\"float: right;font-size: 14px;padding: 1px;\"></i></a>";
     
         $select = $db->query("SELECT * FROM " . TABLE_PREFIX . "questboard WHERE visible = 1 AND players IS NOT NULL");
         $row_cnt = $select->rowCount();
