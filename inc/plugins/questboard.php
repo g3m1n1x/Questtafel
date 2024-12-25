@@ -1367,8 +1367,7 @@ $insert_array = array(
             <h2>Lösung</h2>
             {$questboard[\'solution\']}
         
-        </div>
-            
+        </div> 
         </div>
     <script>
     $(document).ready(function(){
@@ -1379,6 +1378,8 @@ $insert_array = array(
         
     $(document).mouseup(function(e) 
     {
+     $(".sl{$questboard[\'nid\']}").css(\'display\', \'none\');	
+        $(".background").css(\'display\', \'none\');	
         var container = $(".sl{$questboard[\'nid\']}");
         if (!container.is(e.target) && container.has(e.target).length === 0) 
         {
@@ -1387,9 +1388,9 @@ $insert_array = array(
     });
     </script>
     <style type="text/css">
-     .sl{$questboard[\'nid\']} {
+    .sl{$questboard[\'nid\']} {
          display: none;
-        }
+    }
     </style>
     '),
     'sid'       => '-2',
@@ -1450,19 +1451,22 @@ $css = array(
 }
 
 .questboard_hidden-sl-information {
-  position: absolute;
-  z-index: 1;
-  left: 50%;
+  position: fixed;
   top: 50%;
-  transform: translate(-50%, 0);
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: auto;
+  z-index: 1000;
   height: 400px;
   width: 800px;
   overflow-y: scroll;
   scrollbar-width: none;
-  background-color: var(--background);
   border: solid 0.5px var(--emphasis);
   animation-name: animatetop;
   animation-duration: 0.5s;
+  background: var(--background);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px var(--background);
 }
 
 .questboard_hidden-sl-information-header {
@@ -1619,8 +1623,8 @@ $css = array(
   display: flex;
   flex-direction: column;
   gap: 20px;
-  width: 700px;
-  margin: 30px auto;
+  width: 100%;
+  margin: 30px;
   background: var(--background);
   padding: 20px;
   box-sizing: border-box;
