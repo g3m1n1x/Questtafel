@@ -12,7 +12,7 @@ function questboard_info()
 	return array(
 		"name"			=> "Questtafel",
 		"description"	=> "Mit diesem Plugin können Quests für die User*innen erstellt und gemanaged werden.",
-		"author"		=> "white_rabbit x g3m1n1x",
+		"author"		=> "white_rabbit",
 		"authorsite"	=> "https://epic.quodvide.de/member.php?action=profile&uid=2",
 		"version"		=> "1.0",
 		"compatibility" => "18*"
@@ -92,25 +92,25 @@ function questboard_install()
             'disporder' => 1
         ),
 
-        'questboard_allow_groups_see_all' => array(
-            'title' => 'Unveröffentlichte Quests sichtbar für',
-            'description' => 'Welche Gruppen dürfen unveröffentlichte Quests sehen?',
+        'questboard_allow_groups_take' => array(
+            'title' => 'Quests annehmen',
+            'description' => 'Welche Gruppen dürfen Quests annehmen?',
             'optionscode' => 'groupselect',
             'value' => '4', // Default
             'disporder' => 2
         ),
 
-        'questboard_allow_groups_add' => array(
-            'title' => 'Quests erstellen',
-            'description' => 'Welche Gruppen dürfen Quests erstellen?',
+        'questboard_allow_groups_see_all' => array(
+            'title' => 'Unveröffentlichte Quests sichtbar für',
+            'description' => 'Welche Gruppen dürfen unveröffentlichte Quests sehen?',
             'optionscode' => 'groupselect',
             'value' => '4', // Default
             'disporder' => 3
         ),
 
-        'questboard_allow_groups_take' => array(
-            'title' => 'Quests annehmen',
-            'description' => 'Welche Gruppen dürfen Quests annehmen?',
+        'questboard_allow_groups_add' => array(
+            'title' => 'Quests erstellen',
+            'description' => 'Welche Gruppen dürfen Quests erstellen?',
             'optionscode' => 'groupselect',
             'value' => '4', // Default
             'disporder' => 4
@@ -1121,7 +1121,6 @@ $insert_array = array(
                                     return {results: data};
                                 }
                             },
-                            width: "30%",
                             initSelection: function (element, callback) {
                                 var query = $(element).val();
                                 if (query !== "") {
@@ -1201,7 +1200,6 @@ $insert_array = array(
                     return { results: data };
                 }
             },
-            width: "30%",
         });
         }
 
@@ -1577,7 +1575,7 @@ $css = array(
 }
 
 .character-select {
-    width: 30%;
+    width: 25%;
 }
 
 /* #################### Content #################### */
