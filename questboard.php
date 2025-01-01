@@ -3,7 +3,7 @@
 define('IN_MYBB', 1);
 require_once './global.php';
 
-global $db, $cache, $mybb, $lang, $templates, $theme, $header, $headerinclude, $footer;
+global $db, $cache, $mybb, $lang, $templates, $theme, $header, $headerinclude, $footer, $questtype, $bit, $none, $description;
 
 $lang->load('questboard');
 
@@ -30,7 +30,10 @@ eval("\$navigation = \"".$templates->get("questboard_navigation")."\";");
 
 $uid = $mybb->user['uid'];
 
-$username = format_name($user['username'], $user['usergroup'], $user['displaygroup']);
+if (isset($mybb->user['uid']) && $mybb->user['uid'] > 0) {
+    // Benutzer ist eingeloggt
+    $username = format_name($mybb->user['username'], $mybb->user['usergroup'], $mybb->user['displaygroup']);
+} 
 
 // ### FUNKTIONEN UND CO. ###
  
@@ -38,7 +41,7 @@ $username = format_name($user['username'], $user['usergroup'], $user['displaygro
 
 if(is_member($mybb->settings['questboard_allow_groups_access'])) {
 
-if(!$mybb->input['action']) {
+if(!isset($mybb->input['action']) || !$mybb->input['action']) {
 
     add_breadcrumb("Erklärung");
 
@@ -117,7 +120,7 @@ if(!$mybb->input['action']) {
         }
 
     eval("\$page = \"".$templates->get("questboard")."\";");
-        output_page($page);
+    output_page($page);
 }
 
 //TODO: Code optimieren und kürzen! Im besten Fall, falls es geht, mit einer For-Schleife für alle Questarten

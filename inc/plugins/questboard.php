@@ -517,16 +517,16 @@ $insert_array = array(
     'template'	=> $db->escape_string('
 <div class="questboard_description">
     <h1>Questtafel</h1>
-    Willkommen an der Questtafel! Hier findest du alle aktuellen Aufträge, die für mutige Abenteurer wie dich bereitstehen. Die Questtafel dient als zentrale Anlaufstelle für alle, die sich nach Ruhm, Reichtum und Ehre sehnen – oder nach einer Herausforderung, die ihren Mut auf die Probe stellt.
+    Willkommen an der Questtafel! Hier findest du alle aktuellen Aufträge, die dir zur Verfügung stehen. Die Questtafel dient als zentrale Anlaufstelle für alle, die sich nach Ruhm, Reichtum und Ehre sehnen – oder nach einer abwechslungsreichen Herausforderung.
     <br/>
-    Die Quests sind nach Kategorien sortiert und umfassen verschiedenste Schwierigkeitsgrade und Belohnungen. Ob du nun ein erfahrener Held auf der Suche nach epischen Aufgaben bist oder ein Neuling, der seine ersten Schritte in der Welt wagen möchte – hier wirst du fündig!
+    Die Quests sind nach Kategorien sortiert und umfassen verschiedenste Schwierigkeitsgrade und Belohnungen. Ob du nun schon mehrere Quests erfolgreich abgeschlossen hast oder auf der Suche nach deiner ersten Herausforderung bist – hier wirst du fündig!
     <br/><br/>
     So funktioniert es:
     <br/>
     <ul><li><b>Allgemeine Quests:</b> Diese Aufträge sind für Abenteurer aller Erfahrungsstufen geeignet. Sie bieten einfache oder mittelschwere Herausforderungen.</li>
     <li><b>Specialquests:</b> Für jene, die etwas Besonderes suchen. Diese Quests bieten außergewöhnliche Belohnungen und sind nur für die tapfersten Helden gedacht. Manchmal handelt es sich hierbei um spezielle, geleitete Quests, bei denen Discord erforderlich ist.</li>
     <li><b>Singlequests:</b> Singlequests bieten dir die Möglichkeit, unabhängig von Postpartner*innen, deinen Charakter noch einmal neu kennenzulernen. Hierfür ist nur ein Post von Nöten, die benötigte Wörteranzahl beträgt meistens 1000 Wörter.</li>
-    <li><b>Berufsbezogene Quests:</b> Berufsbezogene Quests sind nur für die jeweilige Berufssparte bespielbar und behandeln Themen, die zu dem jeweiligen Beruf passen könnten.</li></ul>
+    <li><b>Berufsbezogene Quests:</b> Berufsbezogene Quests sind nur für bestimmte Berufssparten bespielbar und behandeln Themen, die zu dem jeweiligen Beruf passen könnten.</li></ul>
     <br/>
     Wie du mitmachst:
     <br/>
@@ -923,7 +923,7 @@ $insert_array = array(
     'title'	    => 'questboard_quest',
     'template'	=> $db->escape_string('
     <div class="questboard_quest">
-        <div class="questboard_header">{$edit}<span class="questboard_header_status">{$questboard[\'type\']}{$status}{$sl_information}</span></div>
+        <div class="questboard_header">{$edit}<span class="questboard_header_status">{$questboard[\'type\']}{$sl_information}</span></div>
         <div class="questboard_quest-title">
             <div class="questboard_quest-title-title">{$questboard[\'title\']}</div>
             <div class="questboard_quest-title-contributor"><b>Questgeber*in:</b> {$questboard[\'client\']}</div>
@@ -962,7 +962,6 @@ $insert_array = array(
             </div>
         </div>
         </div>
-            {$quest_status}
             {$take}
             {$finished}  
         
@@ -1857,7 +1856,7 @@ $plugins->add_hook('global_start', 'questboard_global');
 
 function questboard_global(){
 
-    global $db, $mybb, $templates, $questboard_new, $questboard_new_registration, $questboard_quest_evaluation, $questboard_read, $lang;
+    global $db, $mybb, $templates, $questboard_new, $questboard_new_registration, $questboard_quest_evaluation, $questboard_read, $questboard_read_registration, $questboard_read_evaluation, $lang;
 
     if(is_member($mybb->settings['questboard_allow_groups_see'])) {
 
@@ -1890,7 +1889,7 @@ function questboard_global(){
 
         $uid = $mybb->user['uid'];
 
-        $questboard_read = "<a href='questboard.php?action=questboard_registration_read&read={$uid}' original-title='Als gelesen markieren' onclick=\"Questboard.dismissNewQuestRegistrationAlert('{$mybb->settings['bburl']}/', '{$uid}'); return false;\"><i class=\"fas fa-trash\" style=\"float: right;font-size: 14px;padding: 1px;\"></i></a>";
+        $questboard_read_registration = "<a href='questboard.php?action=questboard_registration_read&read={$uid}' original-title='Als gelesen markieren' onclick=\"Questboard.dismissNewQuestRegistrationAlert('{$mybb->settings['bburl']}/', '{$uid}'); return false;\"><i class=\"fas fa-trash\" style=\"float: right;font-size: 14px;padding: 1px;\"></i></a>";
 
         $select = $db->query("SELECT * FROM " . TABLE_PREFIX . "questboard WHERE visible = 1 AND players IS NOT NULL");
         $row_cnt = $select->rowCount();
@@ -1912,7 +1911,7 @@ function questboard_global(){
 
         $uid = $mybb->user['uid'];
 
-        $questboard_read = "<a href='questboard.php?action=questboard_evaluation_read&read={$uid}' original-title='Als gelesen markieren' onclick=\"Questboard.dismissNewQuestEvaluationAlert('{$mybb->settings['bburl']}/', '{$uid}'); return false;\"><i class=\"fas fa-trash\" style=\"float: right;font-size: 14px;padding: 1px;\"></i></a>";
+        $questboard_read_evaluation = "<a href='questboard.php?action=questboard_evaluation_read&read={$uid}' original-title='Als gelesen markieren' onclick=\"Questboard.dismissNewQuestEvaluationAlert('{$mybb->settings['bburl']}/', '{$uid}'); return false;\"><i class=\"fas fa-trash\" style=\"float: right;font-size: 14px;padding: 1px;\"></i></a>";
     
         $select = $db->query("SELECT * FROM " . TABLE_PREFIX . "questboard WHERE visible = 1 AND players IS NOT NULL");
         $row_cnt = $select->rowCount();
@@ -1923,7 +1922,6 @@ function questboard_global(){
             $dataEvaluation = $db->fetch_array($select);
             if ($dataEvaluation['questboard_quest_evaluation'] == '0') {
                 eval("\$questboard_quest_evaluation = \"" . $templates->get("questboard_alert_auswertung") . "\";");
-
             }
                 
         }
