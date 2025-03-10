@@ -123,8 +123,6 @@ if(!isset($mybb->input['action']) || !$mybb->input['action']) {
     output_page($page);
 }
 
-//TODO: Code optimieren und kürzen! Im besten Fall, falls es geht, mit einer For-Schleife für alle Questarten
-
 // Übersicht über Allgemeine Quests
 if($mybb->input['action'] == "allgemein") {
     if(is_member($mybb->settings['questboard_allow_groups_see'])) {
@@ -190,6 +188,7 @@ if($mybb->input['action'] == "allgemein") {
 eval("\$page = \"".$templates->get("questboard")."\";");
     output_page($page);
 }
+
 // Übersicht über Specialquests
 if($mybb->input['action'] == "special") {
     if(is_member($mybb->settings['questboard_allow_groups_see'])) {
@@ -255,6 +254,7 @@ if($mybb->input['action'] == "special") {
 eval("\$page = \"".$templates->get("questboard")."\";");
     output_page($page);
 }
+
 // Übersicht über Singlequests
 if($mybb->input['action'] == "single") {
     if(is_member($mybb->settings['questboard_allow_groups_see'])) {
@@ -738,8 +738,6 @@ eval("\$page = \"".$templates->get("questboard")."\";");
             $treasure = $mybb->get_input('treasure');
             $boss     = $mybb->get_input('boss');
             $solution = $mybb->get_input('solution');
-            $players  = $mybb->get_input('players');
-            $scene    = $mybb->get_input('scene');
             $visible  = $mybb->get_input('visible');
             $reusable  = $mybb->get_input('reusable');
         
@@ -766,7 +764,6 @@ eval("\$page = \"".$templates->get("questboard")."\";");
                     "solution" => $db->escape_string($mybb->get_input('solution')),
                     "visible" => $db->escape_string($mybb->get_input('visible')),
                     "reusable" => $db->escape_string($mybb->get_input('reusable')),
-                    "scene" => $db->escape_string($mybb->get_input('scene')),
                     "status" => $db->escape_string($mybb->get_input('status')),
                 );
 

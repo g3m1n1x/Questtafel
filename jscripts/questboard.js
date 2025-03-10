@@ -43,6 +43,7 @@ var Questboard = {
 
   dismissNewQuestEvaluationAlert: function (bburl, id) {
     var questboardAlert = $("#new-evaluation");
+    console.log('BLUUUBB')
     if (!questboardAlert.length) {
       return false;
     }
@@ -50,11 +51,12 @@ var Questboard = {
     if (use_xmlhttprequest != 1) {
       return true;
     }
+    console.log('TEEEEEST')
 
     $.ajax(
 		{
 			type: 'post',
-			url: bburl + `questboard.php?action=questboard_evaluation_read&read=read=${id}`,
+			url: bburl + `questboard.php?action=questboard_evaluation_read&read=${id}`,
 			data: { ajax: 1, questboard_quest_evaluation: 1, uid: id },
 			async: true
 		});

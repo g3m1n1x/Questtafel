@@ -182,7 +182,6 @@ $insert_array = array(
                 <div class="questboard_content">
                 {$questtype}
                 <form>
-                    <label for="action">Wähle die Questart:</label>
                     <select name="action" id="action">
                         <option value="free">Freie Quests</option>
                         <option value="allgemein">Freie allgemeine Quests</option>
@@ -296,7 +295,7 @@ $insert_array = array(
 
     <div class="questboard_formblock">
         <div class="questboard_formblock-label">
-            <b>Questsbeschreibung</b>
+            <b>Questbeschreibung</b>
             <br>Gib hier eine ausführliche Beschreibung der Quest an. Die User*innen müssen im Zweifelsfall mit dieser Beschreibung die Quest bestreiten können.
         </div>
         <div class="questboard_formblock-field">
@@ -489,7 +488,7 @@ $insert_array = array(
     'template'	=> $db->escape_string('
     <div class="quest_alert" id="new-registration">
         Jemand hat sich für eine <a href="https://beta-zone.de/mybb/questboard.php?action=taken">Quest</a> angemeldet!
-        {$questboard_read}
+        {$questboard_read_registration}
     </div>
     '),
     'sid'       => '-2',
@@ -503,7 +502,7 @@ $insert_array = array(
     'template'	=> $db->escape_string('
     <div class="quest_alert" id="new-evaluation">
         Eine <a href="https://beta-zone.de/mybb/questboard.php?action=inEvaluation">Quest</a> kann ausgewertet werden!
-        {$questboard_read}
+        {$questboard_read_evaluation}
     </div>
     '),
     'sid'       => '-2',
@@ -794,7 +793,7 @@ $insert_array = array(
     <div class="questboard_formblock">
         <div class="questboard_formblock-label">
             <b>Quest erledigt?</b>
-            <br>Wurde die Quest erledigt?
+            <br>Wurde die Quest erledigt und ausgewertet?
         </div>
         <div class="questboard_formblock-field"></div>
             <input type="radio" id="finished" name="status" value="finished" {$checked_status_1}>
@@ -837,19 +836,18 @@ $insert_array = array(
     'template'	=> $db->escape_string('
     
      <div class="quest_player_info">
-            Diese Quest wird von folgenden Charakteren bespielt:
+            <u>Teilnehmende Charaktere:</u>
             
                 <ul class="player-info-list">
-                <!-- Diese Liste wird gefüllt -->
-                </ul>
-           
+                <!-- Diese Liste wird automatisch befüllt -->
+                </ul>   
+           <a href="{$questboard[\'scene\']}">Link zur Szene</a>
         </div>
 
     <script type="text/javascript">    
         const players = {$questboard[\'players\']};
         const playerList = document.querySelector(".player-info-list");
 
-        // Prüfen, ob es eine Liste gibt und players ein Array ist
         if (Array.isArray(players)) {
             if (playerList) {
                 players.forEach(player => {
@@ -857,10 +855,10 @@ $insert_array = array(
                     ? "Nur HP"
                     : player.fifty
                     ? "50% von beidem"
-                    : "Nur EP"; // Standardtext, falls nichts aktiv ist
-                    const li = document.createElement("li"); // Neues <li>-Element
-                    li.textContent = player.user + " (" + reward + ")"; // Benutzername setzen
-                    playerList.appendChild(li); // <li> hinzufügen
+                    : "Nur EP";
+                    const li = document.createElement("li");
+                    li.textContent = player.user + " (" + reward + ")";
+                    playerList.appendChild(li);
                 });
             }
         }
@@ -898,8 +896,8 @@ $insert_array = array(
     'template'	=> $db->escape_string('
     <div class="questboard_navigation-title">Control Panel</div>
     <div class="questboard_navigation-links">
-        <div><a href="questboard.php?action=pending"><i class="fa-regular fa-circle-xmark"></i> Unveröffentlichte Quests</a></div>
-        <div><a href="questboard.php?action=add"><i class="fa-solid fa-plus"></i> Quest hinzufügen</a></div>
+        <div><a href="questboard.php?action=pending"><i class="fa-regular fa-eye-slash"></i> Unveröffentlichte Quests</a></div>
+        <div><a href="questboard.php?action=add"><i class="fa-regular fa-plus"></i> Quest hinzufügen</a></div>
     </div>
     '),
     'sid'       => '-2',
@@ -938,6 +936,7 @@ $insert_array = array(
         </div>
                 <button class="button{$questboard[\'nid\']} mehr_anzeigen">» Mehr anzeigen</button>
     
+        <hr/>
         <div class="questboard_quest-footer">
         <div class="questboard_quest-footer">
             <div class="questboard_quest-footer-item">
@@ -1102,7 +1101,7 @@ $insert_array = array(
         if (use_xmlhttprequest == "1") {
             function initializeSelect2() {
                 $(".character-select").each(function () {
-                    if (!$(this).hasClass("select2-hidden-accessible")) { // Verhindert doppelte Initialisierung
+                    if (!$(this).hasClass("select2-hidden-accessible")) {
                         $(this).select2({
                             placeholder: "{$lang->search_user}",
                             minimumInputLength: 2,
@@ -1112,11 +1111,10 @@ $insert_array = array(
                                 dataType: \'json\',
                                 data: function (term, page) {
                                     return {
-                                        query: term, // search term
+                                        query: term,
                                     };
                                 },
-                                results: function (data, page) { // parse the results into the format expected by Select2.
-                                    // since we are using custom formatting functions we do not need to alter remote JSON data
+                                results: function (data, page) {
                                     return {results: data};
                                 }
                             },
@@ -1166,13 +1164,13 @@ $insert_array = array(
                     <input name="characters[{index}][user]" class="character-select" required></input>
                     <div class="checkbox-group">
                         <label>
-                            <input type="checkbox" name="characters[{index}][xp]"> Nur Erfahrungspunkte
+                            <input type="checkbox" name="characters[{index}][xp]"> Nur EP
                         </label>
                         <label>
-                            <input type="checkbox" name="characters[{index}][hp]"> Nur Hauspunkte
+                            <input type="checkbox" name="characters[{index}][hp]"> Nur HP
                         </label>
                         <label>
-                            <input type="checkbox" name="characters[{index}][fifty]"> 50 % von beidem
+                            <input type="checkbox" name="characters[{index}][fifty]"> 50% von beidem
                         </label>
                     </div>
                     <span class="remove-button remove-{$questboard[\'nid\']}" data-character-index="{index}" data-quest-id="{$questboard[\'nid\']}">✖</span>
@@ -1214,7 +1212,7 @@ $insert_array = array(
             // Element mit der generierten ID abrufen und entfernen
             const element = document.getElementById(elementId);
             if (element) {
-                element.remove(); // Entferne das spezifische Element
+                element.remove();
             }
         });
 
@@ -1261,29 +1259,26 @@ $insert_array = array(
     <script type="text/javascript">    
         (function () {
             const players = {$questboard[\'players\']};
-            const questId = "{$questboard[\'nid\']}"; // Eindeutige Quest-ID
-            const sceneLink = "{$questboard[\'scene\']}"; // Link zur Szene
+            const questId = "{$questboard[\'nid\']}";
+            const sceneLink = "{$questboard[\'scene\']}";
 
             if (!players || !questId || !sceneLink) {
                 console.error("Fehlende Daten für die Quest.");
                 return;
             }
-
-            // Container für diese spezifische Quest prüfen
+                
             const containerId = `questboard-quest-taken-{index}`;
             const replacedContainerId = containerId.replace(/{index}/g, questId);
             if (document.getElementById(replacedContainerId)) {
-                // Wenn bereits existiert, keine weiteren Änderungen
-                console.log(`Quest-Container für Quest-ID ${questId} existiert bereits.`);
                 return;
             }
 
-            // Neues Element für diese Quest erstellen
+            // Create new Element
             const questTakenContainer = document.createElement("div");
             questTakenContainer.id = replacedContainerId;
             questTakenContainer.className = "questboard-quest-info";
 
-            // Spieler auflisten
+            // List player
             if (Array.isArray(players)) {
                 const playerNames = players.map(player => player.user); // Array der Spielernamen
 
@@ -1307,27 +1302,6 @@ $insert_array = array(
             document.getElementById("questboard_quest-taken-{$questboard[\'nid\']}").appendChild(questTakenContainer);
         })();
     </script>
-
-     <script type="text/javascript">    
-    //     (function () {
-    //     let playerIndex = Date.now();
-    //     const players = {$questboard[\'players\']};
-
-    //     const questTakenContainer = document.createElement("div");
-    //     const className = "questboard_quest-taken-{index}";
-    //     const replacedClassName = className.replace(/{index}/g, playerIndex);
-    //     questTakenContainer.className = replacedClassName;
-
-    //     if (Array.isArray(players)) {
-    //         const playerNames = players.map(player => player.user);
-    //         const playerList = playerNames.join(", ");
-    //         const text = `Die Quest wurde im Rahmen <a href="{$questboard[\'scene\']}">dieser Szene</a> von <strong>{index}</strong> angenommen.`;
-    //         questTakenContainer.innerHTML = text.replace(/{index}/g, playerList);
-    //     }
-
-    //     $("#questboard_quest-taken").append(questTakenContainer);
-    // })();
-     </script>
     '),
     'sid'       => '-2',
     'dateline'  => TIME_NOW
@@ -1406,9 +1380,8 @@ $css = array(
     --background-main: #2B2B2B;
     --background: #161616;
     --emphasis: #2ECC71;
-    --emphasis-light:rgb(183, 201, 191);
-    --questboard-text: #cccccc;
-    --questboard-text-dark:rgb(73, 72, 72);
+    --alert-background: #cce5ff;
+    --alert-text: #004085;
 }
 
 .questboard button {
@@ -1425,11 +1398,15 @@ $css = array(
     color: var(--emphasis);
 }
 
-/* Popup*/
+hr {
+    width: 40%;
+    background-color: var(--emphasis);
+}
 
+/* Popup*/
 .quest_alert {
-	background: #cce5ff;
-	color: #004085;
+	background: var(--alert-background);
+	color: var(--alert-text);
 	text-align: center;
 	padding: 12px 20px;
 	margin-bottom: 15px;
@@ -1439,7 +1416,7 @@ $css = array(
 }
 
 .quest_alert a {
-    color: #004085;
+    color: var(--alert-text);
     text-decoration: underline;
 }
 
@@ -1462,7 +1439,6 @@ $css = array(
   animation-name: animatetop;
   animation-duration: 0.5s;
   background: var(--background);
-  border-radius: 16px;
   box-shadow: 0 4px 30px var(--background);
 }
 
@@ -1492,7 +1468,7 @@ $css = array(
   width: 100%;
   background: var(--background-main);
   display: flex;
-  gap: 40px;
+  gap: 20px;
   align-items: flex-start;
   font-family: Roboto, sans-serif;
 }
@@ -1541,7 +1517,7 @@ $css = array(
 
 .questboard_formblock-field textarea {
     width: 80%;
-    height: 250px;
+    height: 100px;
 }
 
 .questboard_formblock-field select {
@@ -1574,7 +1550,7 @@ $css = array(
 }
 
 .character-select {
-    width: 25%;
+    width: 28%;
 }
 
 /* #################### Content #################### */
@@ -1587,8 +1563,7 @@ $css = array(
 .quest_player_info {
     font-size: 15px;
     border-left: 8px solid var(--emphasis);
-    background-color: var(--emphasis-light);
-    color: var(--questboard-text-dark);
+    background-color: var(--background);
     padding: 10px;
     display: flex;
     flex-direction: column;
@@ -1666,7 +1641,6 @@ $css = array(
 }
 
 .questboard_quest-title-contributor b {
-    color: var(--questboard-text);
     text-transform: uppercase;
   }
 
@@ -1866,7 +1840,7 @@ function questboard_global(){
 
         echo "<script type='text/javascript' src='{$mybb->asset_url}/jscripts/questboard.js'></script>";
 
-        $questboard_read = "<a href='questboard.php?action=questboard_read&read={$uid}' original-title='Als gelesen markieren' onclick=\"Questboard.dismissNewQuestAlert('{$mybb->settings['bburl']}/', '{$uid}'); return false;\"><i class=\"fas fa-trash\" style=\"float: right;font-size: 14px;padding: 1px; color:#004085;\"></i></a>";
+        $questboard_read = "<a href='questboard.php?action=questboard_read&read={$uid}' original-title='Als gelesen markieren' onclick=\"Questboard.dismissNewQuestAlert('{$mybb->settings['bburl']}/', '{$uid}'); return false;\"><i class=\"fas fa-trash\" style=\"float: right;font-size: 14px;padding: 1px;\"></i></a>";
     
         $select = $db->query("SELECT * FROM " . TABLE_PREFIX . "questboard WHERE visible = 1");
         $row_cnt = $select->rowCount();
