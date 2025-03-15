@@ -1,6 +1,6 @@
 <h1>Questtafel</h1>
 
-Dieses Plugin wurde mit der Erlaubnis von white_rabbit umgeschrieben.
+<strong>Dieses Plugin wurde mit der Erlaubnis von white_rabbit umgeschrieben.</strong>
 
 Dieses Plugin ist ein Quest-Plugin, das dem klassischen Auftragsprinzip aus Videospielen und Pen & Paper-RPGs nachempfunden ist. Das Team kann Quests erstellen, die verschiedene Informationsfelder haben, einige davon sind nur für das Team sichtbar. User können Teilnehmende und den Link zur Szene direkt auf der Übersichtsseite der Quests einfügen, um eine Quest anzunehmen. Dabei wird zwischen Quests, die mehrfach bespielbar sind und Quests, die nur ein einziges Mal bespielbar sind, unterschieden. 
 Die Quests werden abhängig von ihrem Status in die Kategorien "Frei", "Bespielt", "Zur Auswertung freigegeben" und "Ausgewertet" unterteilt. Außerdem gibt es einen Bereich für die Spielleitung, in dem alle noch nicht freigeschalteten Quests zu finden sind. So können Quests vorbereitet und später für die User freigeben werden.
@@ -115,10 +115,9 @@ Für das Plugin wird folgende Tabelle angelegt:
 
 Die Tabelle wird gelöscht, wenn das Plugin <b>deinstalliert</b> wird.
 
-
 <h2>Nutzungsregeln & Support</h2>
 
-Das Plugin darf freigenutzt und für eure eigenen Zwecke angepasst werden. Bitte entfernt nicht meinen Nick oder den Link zu meinem Profil und erwähnt in euren üblichen Credits, dass das Plugin von mir ist und woher ihr es habt, sodass es auch andere leicht finden können.
+White_rabbit: Das Plugin darf freigenutzt und für eure eigenen Zwecke angepasst werden. Bitte entfernt nicht meinen Nick oder den Link zu meinem Profil und erwähnt in euren üblichen Credits, dass das Plugin von mir ist und woher ihr es habt, sodass es auch andere leicht finden können.
 Bitte bietet das Plugin nicht irgendwo zum Download an ohne mein Wissen und gebt es nicht als euer eigenes aus. Wenn ihr es erweitern oder umschreiben und dann anderen anbieten wollt, setzt euch mit mir in Verbindung. Ich bin grundsätzlich für sowas zu haben, aber ich möchte, dass man mit mir redet und ich bin neugierig über eure Ideen.
 
 Bei Fragen oder Problemen meldet euch bitte in dieser Topic, sodass andere die Lösungen ebenfalls sehen können. Ich werde das Plugin erweitern und bei Feldern auch updaten, ich habe schon einige Pläne. Vorschläge sind mir sehr willkommen, aber ich bitte um Geduld sowohl zu den Updates als auch beim Support :D
