@@ -1,5 +1,7 @@
 <h1>Questtafel</h1>
 
+Dieses Plugin wurde mit der Erlaubnis von white_rabbit umgeschrieben.
+
 Dieses Plugin ist ein Quest-Plugin, das dem klassischen Auftragsprinzip aus Videospielen und Pen & Paper-RPGs nachempfunden ist. Das Team kann Quests erstellen, die verschiedene Informationsfelder haben, einige davon sind nur für das Team sichtbar. User können Teilnehmende und den Link zur Szene direkt auf der Übersichtsseite der Quests einfügen, um eine Quest anzunehmen. Dabei wird zwischen Quests, die mehrfach bespielbar sind und Quests, die nur ein einziges Mal bespielbar sind, unterschieden. 
 Die Quests werden abhängig von ihrem Status in die Kategorien "Frei", "Bespielt", "Zur Auswertung freigegeben" und "Ausgewertet" unterteilt. Außerdem gibt es einen Bereich für die Spielleitung, in dem alle noch nicht freigeschalteten Quests zu finden sind. So können Quests vorbereitet und später für die User freigeben werden.
 

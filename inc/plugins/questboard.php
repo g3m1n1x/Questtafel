@@ -12,7 +12,7 @@ function questboard_info()
 	return array(
 		"name"			=> "Questtafel",
 		"description"	=> "Mit diesem Plugin können Quests für die User*innen erstellt und gemanaged werden.",
-		"author"		=> "white_rabbit",
+		"author"		=> "white_rabbit / g3m1n1",
 		"authorsite"	=> "https://epic.quodvide.de/member.php?action=profile&uid=2",
 		"version"		=> "1.0",
 		"compatibility" => "18*"
@@ -1232,7 +1232,7 @@ $insert_array = array(
         <details>
             <summary><b>Quest annehmen</b></summary>
             <form id="character-form" action="questboard.php?action=take&nid={$questboard[\'nid\']}" method="post">
-            <div class="questboard_quest_scene-input"><b>Szene:</b> <input type="text" id="scene" name="scene" placeholder="URL einfügen" /></div>
+            <div class="questboard_quest_scene-input"><b>Szene:</b> <input type="text" id="scene" name="scene" placeholder="URL einfügen" required/></div>
             <div id="characters-container-{$questboard[\'nid\']}">
                 <!-- Hier wird das erste Feld dynamisch hinzugefügt -->
             </div>
@@ -1377,30 +1377,31 @@ $css = array(
     "stylesheet" =>	'
 
 :root {
-    --background-main: #2B2B2B;
-    --background: #161616;
-    --emphasis: #2ECC71;
-    --alert-background: #cce5ff;
-    --alert-text: #004085;
+    --background-main: #171e20;
+    --background: #416368;
+    --emphasis: #5f3e43;
+    --headline-color: #171e20;
+    --alert-background: #5f3e43;
+    --alert-text: #171e20;
 }
 
 .questboard button {
     cursor: pointer;
     width: auto;
     background: transparent;
-    color: var(--emphasis);
+    color: var(--headline-color);
     border: none;
     display:flex;
     padding: 0;
 }
 
 .questboard b {
-    color: var(--emphasis);
+    color: var(--headline-color);
 }
 
 hr {
     width: 40%;
-    background-color: var(--emphasis);
+    background-color: var(--headline-color);
 }
 
 /* Popup*/
@@ -1439,7 +1440,7 @@ hr {
   animation-name: animatetop;
   animation-duration: 0.5s;
   background: var(--background);
-  box-shadow: 0 4px 30px var(--background);
+  box-shadow: 0 0px 2px var(--background);
 }
 
 .questboard_hidden-sl-information-header {
@@ -1482,7 +1483,7 @@ hr {
   background: var(--background);
   padding: 20px;
   text-transform: uppercase;
-  color: var(--emphasis);
+  color: var(--headline-color);
   font-weight: bold;
 }
 
@@ -1557,13 +1558,14 @@ hr {
 
 .questboard-quest-info a {
     text-decoration: underline;
-    color: var(--emphasis);
+    color: var(--headline-color);
 }
 
 .quest_player_info {
     font-size: 15px;
     border-left: 8px solid var(--emphasis);
     background-color: var(--background);
+    color: var(--headline-color);
     padding: 10px;
     display: flex;
     flex-direction: column;
@@ -1636,7 +1638,7 @@ hr {
 }
 
 .questboard_quest-title-contributor {
-  color: var(--emphasis);
+  color: var(--headline-color);
   text-transform: uppercase;
 }
 
@@ -1684,7 +1686,7 @@ hr {
 }
 
 .questboard_quest-footer-item-top {
-  color: var(--emphasis);
+  color: var(--headline-color);
   text-align: center;
   font-size: 12px;
 }
@@ -1711,12 +1713,12 @@ hr {
 }
 
 .questboard_quest-take b {
-    color: var(--emphasis);
+    color: var(--headline-color);
     cursor: pointer;
 }
 
 .questboard_quest-taken b {
-    color: var(--emphasis);
+    color: var(--headline-color);
     text-transform: uppercase;
 }
 
