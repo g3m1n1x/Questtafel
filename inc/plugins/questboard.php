@@ -664,10 +664,10 @@ $insert_array = array(
         <div class="questboard_formblock-field">
             <select name="level" id="level">
                 <option value="{$questboard[\'level\']}">{$questboard[\'level\']}</option>
-                <option value="<i class=\'fa-duotone fa-signal-bars-weak\'></i>">leicht</option>
-                <option value="<i class=\'fa-duotone fa-signal-bars-fair\'></i>">mittel</option>
-                <option value="<i class=\'fa-duotone fa-signal-bars-good\'></i>">schwer</option>
-                <option value="<i class=\'fa-light fa-skull-crossbones\'></i>">tödlich</option>
+                <option value="leicht">leicht</option>
+                <option value="mittel">mittel</option>
+                <option value="schwer">schwer</option>
+                <option value="tödlich">tödlich</option>
             </select>
         </div>
     </div>
@@ -1361,7 +1361,6 @@ hr {
   border: solid 0.5px var(--emphasis);
   animation-name: animatetop;
   animation-duration: 0.5s;
-  background: var(--background);
   box-shadow: 0 0px 2px var(--background);
 }
 
@@ -1385,6 +1384,7 @@ hr {
   margin: auto;
   padding: 30px;
   box-sizing: border-box;
+  background-color: var(--background-main);
 }
 
 .questboard {
@@ -1477,11 +1477,6 @@ hr {
 }
 
 /* #################### Content #################### */
-
-.questboard-quest-info a {
-    text-decoration: underline;
-    color: var(--headline-color);
-}
 
 .quest_player_info {
     font-size: 15px;
@@ -1622,10 +1617,6 @@ hr {
   align-items: flex-end;
   font-size: 12px;
   gap: 5px;
-}
-
-.questboard_quest-content-finished a{
-    text-decoration: underline;
 }
 
 .select2-search-choice{
