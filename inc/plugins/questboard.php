@@ -31,21 +31,17 @@ function questboard_install()
         `title` VARCHAR(2500) NOT NULL,
         `shortdescription` VARCHAR(600),
         `quest` LONGTEXT,
-        `client` VARCHAR(255),
         `keywords` VARCHAR(500),
         `skills` VARCHAR(255),
         `location` VARCHAR(500),
         `lead` VARCHAR(255),
-        `leadby` VARCHAR(255),
         `reward` VARCHAR(500),
         `level` VARCHAR(255),
         `status` VARCHAR(255),
-        `monster` VARCHAR(255),
         `background` LONGTEXT,
         `material` LONGTEXT,
         `maps` LONGTEXT,
         `treasure` LONGTEXT,
-        `boss` LONGTEXT,
         `solution` LONGTEXT,
         `players` VARCHAR(500),
         `scene` VARCHAR(500),
@@ -305,16 +301,6 @@ $insert_array = array(
 
     <div class="questboard_formblock">
         <div class="questboard_formblock-label">
-            <b>Questgeber*in</b>
-            <br>Trage ein, von welchem Charakter oder NPC im Inplay die Quest kommt.
-        </div>
-        <div class="questboard_formblock-field">
-            <input type="text" name="client" id="client" value="n/a">
-        </div>
-    </div>
-
-    <div class="questboard_formblock">
-        <div class="questboard_formblock-label">
             <b>Fähigkeiten</b>
             <br>Gib hier Eigenschaften an, die mindestens ein Mitglied der Gruppe benötigt. Trenne die Eigenschaften mit , ab. Wenn sie für den Quest von Nachteil sind, setze eine 1 davor. Wenn sie bei dem Quest nicht zugelassen sind, setze eine 0 davor.
         </div>
@@ -379,16 +365,6 @@ $insert_array = array(
         </div>
     </div>
 
-    <div class="questboard_formblock">
-        <div class="questboard_formblock-label">
-            <b>Monster</b>
-            <br>Gib an, mit welchem Monster die Charaktere zu rechnen haben - sofern es eines gibt. Sie können auch auf andere Monster treffen (insbesondere den Bossgegner).
-        </div>
-        <div class="questboard_formblock-field">
-            <input type="text" name="monster" id="monster" value="n/a">
-        </div>
-    </div>
-
     <h2>Informationen für die Spielleitung</h2>
 
     <div class="questboard_description">Diese Informationen sind nicht für User*innen einsehbar.</div>
@@ -430,16 +406,6 @@ $insert_array = array(
         </div>
         <div class="questboard_formblock-field">
             <textarea name="treasure" id="treasure"></textarea>
-        </div>
-    </div>
-
-    <div class="questboard_formblock">
-        <div class="questboard_formblock-label">
-            <b>Endgegner</b>
-            <br>Gib hier Informationen zum Endgegner an und wie man ihn besiegen kann. Halte es plausibel!
-        </div>
-        <div class="questboard_formblock-field">
-            <textarea name="boss" id="boss"></textarea>
         </div>
     </div>
 
@@ -642,16 +608,6 @@ $insert_array = array(
 
     <div class="questboard_formblock">
         <div class="questboard_formblock-label">
-            <b>Questgeber*in</b>
-            <br>Trage ein, von welchem Charakter oder NPC im Inplay die Quest kommt.
-        </div>
-        <div class="questboard_formblock-field">
-            <input type="text" name="client" id="client" value="{$questboard[\'client\']}">
-        </div>
-    </div>
-
-    <div class="questboard_formblock">
-        <div class="questboard_formblock-label">
             <b>Fähigkeiten</b>
             <br>Gib hier Eigenschaften an, die mindestens ein Mitglied der Gruppe benötigt. Trenne die Eigenschaften mit , ab. Wenn sie für den Quest von Nachteil sind, setze eine 1 davor. Wenn sie bei dem Quest nicht zugelassen sind, setze eine 0 davor.
         </div>
@@ -716,16 +672,6 @@ $insert_array = array(
         </div>
     </div>
 
-    <div class="questboard_formblock">
-        <div class="questboard_formblock-label">
-            <b>Monster</b>
-            <br>Wähle aus, mit welchem Monster die Charaktere zu rechnen haben - insofern es eines gibt. Sie können auch andere Monster treffen (insbesondere den Bossgegner).
-        </div>
-        <div class="questboard_formblock-field">
-		<input type="text" name="monster" id="monster" value="{$questboard[\'monster\']}">
-        </div>
-    </div>
-
     <h2>Informationen für die Spielleitung</h2>
 
     <div class="questboard_description">Diese Informationen sind nicht für User*innen einsehbar.</div>
@@ -767,16 +713,6 @@ $insert_array = array(
         </div>
         <div class="questboard_formblock-field">
             <textarea name="treasure" id="treasure">{$questboard[\'treasure\']}</textarea>
-        </div>
-    </div>
-
-    <div class="questboard_formblock">
-        <div class="questboard_formblock-label">
-            <b>Endgegner</b>
-            <br>Gib hier Informationen zum Endgegner an und wie man ihn besiegen kann. Halte es plausibel!
-        </div>
-        <div class="questboard_formblock-field">
-            <textarea name="boss" id="boss">{$questboard[\'boss\']}</textarea>
         </div>
     </div>
 
@@ -841,7 +777,7 @@ $insert_array = array(
                 <ul class="player-info-list">
                 <!-- Diese Liste wird automatisch befüllt -->
                 </ul>   
-           <a href="{$questboard[\'scene\']}">Link zur Szene</a>
+           <a href="{$questboard[\'scene\']}">»Link zur Szene«</a>
         </div>
 
     <script type="text/javascript">    
@@ -877,9 +813,9 @@ $insert_array = array(
         <div class="questboard_navigation-links"><a href="questboard.php">Questtafel</a></div>
         <div class="questboard_navigation-title">Übersicht</div>
         <div class="questboard_navigation-links">
-            <div><a href="questboard.php?action=free"><i class="fa-regular fa-circle"></i> Freie Quests</a></div>
-            <div><a href="questboard.php?action=taken"><i class="fa-regular fa-hourglass"></i> Bespielte Quests</a></div>
-            <div><a href="questboard.php?action=inEvaluation"><i class="fa-regular fa-clipboard"></i> Auszuwertende Quests</a></div>
+            <div><a href="questboard.php?action=free"><i class="fa-solid fa-circle"></i> Freie Quests</a></div>
+            <div><a href="questboard.php?action=taken"><i class="fa-solid fa-hourglass"></i> Bespielte Quests</a></div>
+            <div><a href="questboard.php?action=inEvaluation"><i class="fa-solid fa-clipboard"></i> Auszuwertende Quests</a></div>
             <div><a href="questboard.php?action=finished"><i class="fa-solid fa-check"></i> Ausgewertete Quests</a></div>
         </div>
         {$questboard_cp}
@@ -896,8 +832,8 @@ $insert_array = array(
     'template'	=> $db->escape_string('
     <div class="questboard_navigation-title">Control Panel</div>
     <div class="questboard_navigation-links">
-        <div><a href="questboard.php?action=pending"><i class="fa-regular fa-eye-slash"></i> Unveröffentlichte Quests</a></div>
-        <div><a href="questboard.php?action=add"><i class="fa-regular fa-plus"></i> Quest hinzufügen</a></div>
+        <div><a href="questboard.php?action=pending"><i class="fa-solid fa-eye-slash"></i> Unveröffentlichte Quests</a></div>
+        <div><a href="questboard.php?action=add"><i class="fa-solid fa-plus"></i> Quest hinzufügen</a></div>
     </div>
     '),
     'sid'       => '-2',
@@ -924,7 +860,6 @@ $insert_array = array(
         <div class="questboard_header">{$edit}<span class="questboard_header_status">{$questboard[\'type\']}{$sl_information}</span></div>
         <div class="questboard_quest-title">
             <div class="questboard_quest-title-title">{$questboard[\'title\']}</div>
-            <div class="questboard_quest-title-contributor"><b>Questgeber*in:</b> {$questboard[\'client\']}</div>
         </div>
         <div class="questboard_quest-content switch">
             <div class="questboard_quest-content-short short{$questboard[\'nid\']}">{$questboard[\'shortdescription\']}</div>
@@ -946,10 +881,6 @@ $insert_array = array(
             <div class="questboard_quest-footer-item">
                 <div class="questboard_quest-footer-item-top">{$questboard[\'lead\']}</div>
                 <div class="questboard_quest-footer-item-bottom">Geleitet</div>
-            </div>
-            <div class="questboard_quest-footer-item">
-                <div class="questboard_quest-footer-item-top">{$questboard[\'monster\']}</div>
-                <div class="questboard_quest-footer-item-bottom">Monster</div>
             </div>
             <div class="questboard_quest-footer-item">
                 <div class="questboard_quest-footer-item-top">{$questboard[\'reward\']}</div>
@@ -1060,9 +991,6 @@ $insert_array = array(
 
     <h2>Schätze & Belohnungen</h2>
     {$questboard[\'treasure\']}
-
-    <h2>Endgegner</h2>
-    {$questboard[\'boss\']}
 
     <h2>Lösung</h2>
     {$questboard[\'solution\']}
@@ -1312,7 +1240,7 @@ $db->insert_query("templates", $insert_array);
 $insert_array = array(
     'title'	    => 'questboard_sl_information',
     'template'	=> $db->escape_string('
-    <button class="sl_button{$questboard[\'nid\']}"><i class="fa-regular fa-lightbulb"></i></button>
+    <button class="sl_button{$questboard[\'nid\']}"><i class="fa-solid fa-lightbulb"></i></button>
         <div class="questboard_hidden-sl-information sl{$questboard[\'nid\']}"> 
         
         <div class="questboard_hidden-content">
@@ -1331,9 +1259,6 @@ $insert_array = array(
         
             <h2>Schätze & Belohnungen</h2>
             {$questboard[\'treasure\']}
-        
-            <h2>Endgegner</h2>
-            {$questboard[\'boss\']}
         
             <h2>Lösung</h2>
             {$questboard[\'solution\']}
@@ -1382,21 +1307,17 @@ $css = array(
     --emphasis: #5f3e43;
     --headline-color: #171e20;
     --alert-background: #5f3e43;
-    --alert-text: #171e20;
+    --alert-text: #798681;
 }
 
 .questboard button {
     cursor: pointer;
     width: auto;
     background: transparent;
-    color: var(--headline-color);
+    color: var(--background);
     border: none;
     display:flex;
     padding: 0;
-}
-
-.questboard b {
-    color: var(--headline-color);
 }
 
 hr {
@@ -1407,18 +1328,19 @@ hr {
 /* Popup*/
 .quest_alert {
 	background: var(--alert-background);
-	color: var(--alert-text);
 	text-align: center;
 	padding: 12px 20px;
 	margin-bottom: 15px;
 	word-wrap: break-word;
 	border-radius: 2px;
 	font-size: 13px;
+    color: var(----alert-text);
 }
 
 .quest_alert a {
-    color: var(--alert-text);
+    font-weight:900;
     text-decoration: underline;
+    color: var(----alert-text);
 }
 
 .sl {
@@ -1546,7 +1468,7 @@ hr {
 }
 .remove-button {
     margin-left: auto;
-    color: red;
+    color: var(--emphasis);
     cursor: pointer;
 }
 
@@ -1575,6 +1497,15 @@ hr {
     font-weight: 900;
 }
 
+.quest_player_info a {
+    color: var(--headline-color);
+    font-weight: 900;
+}
+
+.player-info-list {
+    color: var(--headline-color);
+}
+
 .questboard_content {
   display: flex;
   align-items:center;
@@ -1599,9 +1530,9 @@ hr {
   gap: 20px;
   width: 100%;
   margin: 30px;
-  background: var(--background);
   padding: 20px;
   box-sizing: border-box;
+  border: 2px solid var(--background);
 }
 
 .questboard_header {
@@ -1635,20 +1566,15 @@ hr {
   font-size: 25px;
   width: 60%;
   text-transform: uppercase;
+  color: var(--emphasis);
+  font-weight:900;
 }
-
-.questboard_quest-title-contributor {
-  color: var(--headline-color);
-  text-transform: uppercase;
-}
-
-.questboard_quest-title-contributor b {
-    text-transform: uppercase;
-  }
 
 .questboard_reusable {
     text-align:center;
     font-style: italic;
+    color: var(--emphasis);
+    font-weight:900;
 }
 
 .questboard_quest-footer {
@@ -1666,7 +1592,7 @@ hr {
 .questboard_quest-footer-feats div {
   padding: 5px 10px;
   color: var(--emphasis);
-  font-size: 11px;
+  font-size: 12px;
   text-align: left;
   text-transform: uppercase;
 }
@@ -1686,7 +1612,7 @@ hr {
 }
 
 .questboard_quest-footer-item-top {
-  color: var(--headline-color);
+  color: var(--emphasis);
   text-align: center;
   font-size: 12px;
 }
@@ -1713,12 +1639,10 @@ hr {
 }
 
 .questboard_quest-take b {
-    color: var(--headline-color);
     cursor: pointer;
 }
 
 .questboard_quest-taken b {
-    color: var(--headline-color);
     text-transform: uppercase;
 }
 
@@ -1845,7 +1769,7 @@ function questboard_global(){
         $questboard_read = "<a href='questboard.php?action=questboard_read&read={$uid}' original-title='Als gelesen markieren' onclick=\"Questboard.dismissNewQuestAlert('{$mybb->settings['bburl']}/', '{$uid}'); return false;\"><i class=\"fas fa-trash\" style=\"float: right;font-size: 14px;padding: 1px;\"></i></a>";
     
         $select = $db->query("SELECT * FROM " . TABLE_PREFIX . "questboard WHERE visible = 1");
-        $row_cnt = $select->rowCount();
+        $row_cnt = $select->num_rows;
         if ($row_cnt > 0) {
             $select = $db->query("SELECT questboard_new FROM " . TABLE_PREFIX . "users 
             WHERE uid = '" . $mybb->user['uid'] . "' LIMIT 1");
@@ -1868,7 +1792,7 @@ function questboard_global(){
         $questboard_read_registration = "<a href='questboard.php?action=questboard_registration_read&read={$uid}' original-title='Als gelesen markieren' onclick=\"Questboard.dismissNewQuestRegistrationAlert('{$mybb->settings['bburl']}/', '{$uid}'); return false;\"><i class=\"fas fa-trash\" style=\"float: right;font-size: 14px;padding: 1px;\"></i></a>";
 
         $select = $db->query("SELECT * FROM " . TABLE_PREFIX . "questboard WHERE visible = 1 AND players IS NOT NULL");
-        $row_cnt = $select->rowCount();
+        $row_cnt = $select->num_rows;
         if ($row_cnt > 0) {
             $select = $db->query("SELECT questboard_new_registration FROM " . TABLE_PREFIX . "users 
             WHERE uid = '" . $mybb->user['uid'] . "' LIMIT 1");
@@ -1890,7 +1814,7 @@ function questboard_global(){
         $questboard_read_evaluation = "<a href='questboard.php?action=questboard_evaluation_read&read={$uid}' original-title='Als gelesen markieren' onclick=\"Questboard.dismissNewQuestEvaluationAlert('{$mybb->settings['bburl']}/', '{$uid}'); return false;\"><i class=\"fas fa-trash\" style=\"float: right;font-size: 14px;padding: 1px;\"></i></a>";
     
         $select = $db->query("SELECT * FROM " . TABLE_PREFIX . "questboard WHERE visible = 1 AND players IS NOT NULL");
-        $row_cnt = $select->rowCount();
+        $row_cnt = $select->num_rows;
         if ($row_cnt > 0) {
             $select = $db->query("SELECT questboard_quest_evaluation FROM " . TABLE_PREFIX . "users 
             WHERE uid = '" . $mybb->user['uid'] . "' LIMIT 1");
