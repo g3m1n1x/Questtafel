@@ -256,7 +256,7 @@ $insert_array = array(
 
     <div class="questboard_formblock">
         <div class="questboard_formblock-label">
-            Questtitel
+            <b>Questtitel*</b>
         </div>
         <div class="questboard_formblock-field">
             <input type="text" name="title" id="title">
@@ -813,10 +813,10 @@ $insert_array = array(
         <div class="questboard_navigation-links"><a href="questboard.php">Questtafel</a></div>
         <div class="questboard_navigation-title">Übersicht</div>
         <div class="questboard_navigation-links">
-            <div><a href="questboard.php?action=free"><i class="fa-solid fa-circle"></i> Freie Quests</a></div>
-            <div><a href="questboard.php?action=taken"><i class="fa-solid fa-hourglass"></i> Bespielte Quests</a></div>
-            <div><a href="questboard.php?action=inEvaluation"><i class="fa-solid fa-clipboard"></i> Auszuwertende Quests</a></div>
-            <div><a href="questboard.php?action=finished"><i class="fa-solid fa-check"></i> Ausgewertete Quests</a></div>
+            <div><a href="questboard.php?action=free"><i class="fas fa-circle"></i> Freie Quests</a></div>
+            <div><a href="questboard.php?action=taken"><i class="fas fa-hourglass"></i> Bespielte Quests</a></div>
+            <div><a href="questboard.php?action=inEvaluation"><i class="fas fa-clipboard"></i> Auszuwertende Quests</a></div>
+            <div><a href="questboard.php?action=finished"><i class="fas fa-check"></i> Ausgewertete Quests</a></div>
         </div>
         {$questboard_cp}
     </div>
@@ -832,8 +832,8 @@ $insert_array = array(
     'template'	=> $db->escape_string('
     <div class="questboard_navigation-title">Control Panel</div>
     <div class="questboard_navigation-links">
-        <div><a href="questboard.php?action=pending"><i class="fa-solid fa-eye-slash"></i> Unveröffentlichte Quests</a></div>
-        <div><a href="questboard.php?action=add"><i class="fa-solid fa-plus"></i> Quest hinzufügen</a></div>
+        <div><a href="questboard.php?action=pending"><i class="fas fa-eye-slash"></i> Unveröffentlichte Quests</a></div>
+        <div><a href="questboard.php?action=add"><i class="fas fa-plus"></i> Quest hinzufügen</a></div>
     </div>
     '),
     'sid'       => '-2',
@@ -1240,7 +1240,7 @@ $db->insert_query("templates", $insert_array);
 $insert_array = array(
     'title'	    => 'questboard_sl_information',
     'template'	=> $db->escape_string('
-    <button class="sl_button{$questboard[\'nid\']}"><i class="fa-solid fa-lightbulb"></i></button>
+    <button class="sl_button{$questboard[\'nid\']}"><i class="fas fa-lightbulb"></i></button>
         <div class="questboard_hidden-sl-information sl{$questboard[\'nid\']}"> 
         
         <div class="questboard_hidden-content">
