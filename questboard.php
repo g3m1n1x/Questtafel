@@ -50,347 +50,340 @@ if(!isset($mybb->input['action']) || !$mybb->input['action']) {
     output_page($page);
 }
 
-// Übersicht über freie Quests
+$action = $mybb->get_input('action');
 
-    if($mybb->input['action'] == "free") {
-
+switch($action){
+    case "free":
         if(is_member($mybb->settings['questboard_allow_groups_see'])) {
             
-        add_breadcrumb("Freie Quests");
-        
-        eval("\$none = \"".$templates->get("questboard_quest_none")."\";");
-
-            $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1 AND status = 'free' AND (players IS NULL OR players = '') ORDER BY nid DESC";
-            $query = $db->query($sql);
-            eval("\$questtype = \"<h1>Freie Quests</h1>\";");
-            while($questboard = $db->fetch_array($query)) {
-                $questboard['reusable_text'] = $questboard['reusable'] ? 'Mehrmals bespielbar' : 'Nur einmal bespielbar';
-                $none = "";
-
-                $keywords = '<div>'.str_replace(', ', '</div><div>', $questboard['keywords']).'</div>';
-
-                $skill = '<div>'.str_replace(', ', '</div><div>', $questboard['skills']).'</div>';
-                $skills = str_replace(
-                    array("1", "0"),
-                    array(
-                    "<i class=\"fa-solid fa-hand-point-up\" title=\"von Nachteil\" style=\"color: var(--text);\"></i>", 
-                    "<i class=\"fa-solid fa-ban\" title=\"verboten\" style=\"color: var(--text);\"></i>"
-                    ),
-                    $skill
-                );
-               
-                $take = "";
-                $finished = "";
-
-                if($questboard['players'] == "") {
-                    if(is_member($mybb->settings['questboard_allow_groups_take'])) {
-                        $take = "";
-                        eval("\$take = \"".$templates->get("questboard_quest_take")."\";");
+            add_breadcrumb("Freie Quests");
+            
+            eval("\$none = \"".$templates->get("questboard_quest_none")."\";");
+    
+                $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1 AND status = 'free' AND (players IS NULL OR players = '') ORDER BY nid DESC";
+                $query = $db->query($sql);
+                eval("\$questtype = \"<h1>Freie Quests</h1>\";");
+                while($questboard = $db->fetch_array($query)) {
+                    $questboard['reusable_text'] = $questboard['reusable'] ? 'Mehrmals bespielbar' : 'Nur einmal bespielbar';
+                    $none = "";
+    
+                    $keywords = '<div>'.str_replace(', ', '</div><div>', $questboard['keywords']).'</div>';
+    
+                    $skill = '<div>'.str_replace(', ', '</div><div>', $questboard['skills']).'</div>';
+                    $skills = str_replace(
+                        array("1", "0"),
+                        array(
+                        "<i class=\"fa-solid fa-hand-point-up\" title=\"von Nachteil\" style=\"color: var(--text);\"></i>", 
+                        "<i class=\"fa-solid fa-ban\" title=\"verboten\" style=\"color: var(--text);\"></i>"
+                        ),
+                        $skill
+                    );
+                   
+                    $take = "";
+                    $finished = "";
+    
+                    if($questboard['players'] == "") {
+                        if(is_member($mybb->settings['questboard_allow_groups_take'])) {
+                            $take = "";
+                            eval("\$take = \"".$templates->get("questboard_quest_take")."\";");
+                        }
+                        else {
+                            $take = "";
+                        }
                     }
                     else {
-                        $take = "";
+                        eval("\$take = \"".$templates->get("questboard_quest_taken")."\";");
                     }
-                }
-                else {
-                    eval("\$take = \"".$templates->get("questboard_quest_taken")."\";");
-                }
-
-                if(is_member($mybb->settings['questboard_allow_groups_edit'])) {
-                    $edit = "";
-                    eval("\$edit .= \"".$templates->get("questboard_edit_button")."\";");
-                }
-                else {
-                    $edit = "";
-                }
-
-                if(is_member($mybb->settings['questboard_allow_groups_lead'])) {
-                    $sl_information = "";
-                    eval("\$sl_information .= \"".$templates->get("questboard_sl_information")."\";");
-                }
-                else {
-                    $sl_information = "";
-                }
-                
-                eval("\$bit .= \"".$templates->get("questboard_quest")."\";");
-            };
-
-        }
-        else {
-                eval("\$bit = \"".$templates->get("questboard_no_permission")."\";");
-        }
-
-    eval("\$page = \"".$templates->get("questboard")."\";");
-    output_page($page);
-}
-
-// Übersicht über Allgemeine Quests
-if($mybb->input['action'] == "allgemein") {
-    if(is_member($mybb->settings['questboard_allow_groups_see'])) {
-    add_breadcrumb("Allgemeine Quests");
-    eval("\$none = \"".$templates->get("questboard_quest_none")."\";");
-        $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1 && (players IS NULL OR players = '') && type = 'Allgemeine Quest' ORDER BY nid DESC";
-        $query = $db->query($sql);
-        eval("\$questtype = \"<h1>Allgemeine Quests</h1>\";");
-        while($questboard = $db->fetch_array($query)) {
-            $none = "";
     
-            $keywords = '<div>'.str_replace(', ', '</div><div>', $questboard['keywords']).'</div>';
+                    if(is_member($mybb->settings['questboard_allow_groups_edit'])) {
+                        $edit = "";
+                        eval("\$edit .= \"".$templates->get("questboard_edit_button")."\";");
+                    }
+                    else {
+                        $edit = "";
+                    }
     
-            $skill = '<div>'.str_replace(', ', '</div><div>', $questboard['skills']).'</div>';
-            $skills = str_replace(
-                array("1", "0"),
-                array(
-                "<i class=\"fa-solid fa-hand-point-up\" title=\"von Nachteil\" style=\"color: var(--text);\"></i>", 
-                "<i class=\"fa-solid fa-ban\" title=\"verboten\" style=\"color: var(--text);\"></i>"
-                ),
-                $skill
-            );
-           
+                    if(is_member($mybb->settings['questboard_allow_groups_lead'])) {
+                        $sl_information = "";
+                        eval("\$sl_information .= \"".$templates->get("questboard_sl_information")."\";");
+                    }
+                    else {
+                        $sl_information = "";
+                    }
+                    
+                    eval("\$bit .= \"".$templates->get("questboard_quest")."\";");
+                };
     
-            $take = "";
-            $finished = "";
-    
-            if($questboard['players'] == "") {
-                if(is_member($mybb->settings['questboard_allow_groups_take'])) {
-                    $take = "";
-                    eval("\$take = \"".$templates->get("questboard_quest_take")."\";");
-                }
-                else {
-                    $take = "";
-                }
             }
             else {
-                eval("\$take = \"".$templates->get("questboard_quest_taken")."\";");
+                    eval("\$bit = \"".$templates->get("questboard_no_permission")."\";");
             }
     
-            if(is_member($mybb->settings['questboard_allow_groups_edit'])) {
-                $edit = "";
-                eval("\$edit .= \"".$templates->get("questboard_edit_button")."\";");
-            }
-            else {
-                $edit = "";
-            }
-    
-            if(is_member($mybb->settings['questboard_allow_groups_lead'])) {
-                $sl_information = "";
-                eval("\$sl_information .= \"".$templates->get("questboard_sl_information")."\";");
-            }
-            else {
-                $sl_information = "";
-            }
+        eval("\$page = \"".$templates->get("questboard")."\";");
+        output_page($page);
+        break;
+
+    case "allgemein":
+        if(is_member($mybb->settings['questboard_allow_groups_see'])) {
+            add_breadcrumb("Allgemeine Quests");
+            eval("\$none = \"".$templates->get("questboard_quest_none")."\";");
+                $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1 && (players IS NULL OR players = '') && type = 'Allgemeine Quest' ORDER BY nid DESC";
+                $query = $db->query($sql);
+                eval("\$questtype = \"<h1>Allgemeine Quests</h1>\";");
+                while($questboard = $db->fetch_array($query)) {
+                    $none = "";
             
-            eval("\$bit .= \"".$templates->get("questboard_quest")."\";");
-        };
-    }
-    else {
-            eval("\$bit = \"".$templates->get("questboard_no_permission")."\";");
-    }
-eval("\$page = \"".$templates->get("questboard")."\";");
-    output_page($page);
-}
-
-// Übersicht über Specialquests
-if($mybb->input['action'] == "special") {
-    if(is_member($mybb->settings['questboard_allow_groups_see'])) {
-    add_breadcrumb("Specialquests");
-    eval("\$none = \"".$templates->get("questboard_quest_none")."\";");
-        $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1 && (players IS NULL OR players = '') && type = 'Specialquest' ORDER BY nid DESC";
-        $query = $db->query($sql);
-        eval("\$questtype = \"<h1>Specialquests</h1>\";");
-        while($questboard = $db->fetch_array($query)) {
-            $none = "";
-    
-            $keywords = '<div>'.str_replace(', ', '</div><div>', $questboard['keywords']).'</div>';
-    
-            $skill = '<div>'.str_replace(', ', '</div><div>', $questboard['skills']).'</div>';
-            $skills = str_replace(
-                array("1", "0"),
-                array(
-                "<i class=\"fa-solid fa-hand-point-up\" title=\"von Nachteil\" style=\"color: var(--text);\"></i>", 
-                "<i class=\"fa-solid fa-ban\" title=\"verboten\" style=\"color: var(--text);\"></i>"
-                ),
-                $skill
-            );
-           
-    
-            $take = "";
-            $finished = "";
-    
-            if($questboard['players'] == "") {
-                if(is_member($mybb->settings['questboard_allow_groups_take'])) {
-                    $take = "";
-                    eval("\$take = \"".$templates->get("questboard_quest_take")."\";");
-                }
-                else {
-                    $take = "";
-                }
-            }
-            else {
-                eval("\$take = \"".$templates->get("questboard_quest_taken")."\";");
-            }
-    
-            if(is_member($mybb->settings['questboard_allow_groups_edit'])) {
-                $edit = "";
-                eval("\$edit .= \"".$templates->get("questboard_edit_button")."\";");
-            }
-            else {
-                $edit = "";
-            }
-    
-            if(is_member($mybb->settings['questboard_allow_groups_lead'])) {
-                $sl_information = "";
-                eval("\$sl_information .= \"".$templates->get("questboard_sl_information")."\";");
-            }
-            else {
-                $sl_information = "";
-            }
+                    $keywords = '<div>'.str_replace(', ', '</div><div>', $questboard['keywords']).'</div>';
             
-            eval("\$bit .= \"".$templates->get("questboard_quest")."\";");
-        };
-    }
-    else {
-            eval("\$bit = \"".$templates->get("questboard_no_permission")."\";");
-    }
-eval("\$page = \"".$templates->get("questboard")."\";");
-    output_page($page);
-}
-
-// Übersicht über Singlequests
-if($mybb->input['action'] == "single") {
-    if(is_member($mybb->settings['questboard_allow_groups_see'])) {
-    add_breadcrumb("Singlequests");
-    eval("\$none = \"".$templates->get("questboard_quest_none")."\";");
-        $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1 && (players IS NULL OR players = '') && type = 'Singlequest' ORDER BY nid DESC";
-        $query = $db->query($sql);
-        eval("\$questtype = \"<h1>Singlequests</h1>\";");
-        while($questboard = $db->fetch_array($query)) {
-            $none = "";
-    
-            $keywords = '<div>'.str_replace(', ', '</div><div>', $questboard['keywords']).'</div>';
-    
-            $skill = '<div>'.str_replace(', ', '</div><div>', $questboard['skills']).'</div>';
-            $skills = str_replace(
-                array("1", "0"),
-                array(
-                "<i class=\"fa-solid fa-hand-point-up\" title=\"von Nachteil\" style=\"color: var(--text);\"></i>", 
-                "<i class=\"fa-solid fa-ban\" title=\"verboten\" style=\"color: var(--text);\"></i>"
-                ),
-                $skill
-            );
-           
-    
-            $take = "";
-            $finished = "";
-    
-            if($questboard['players'] == "") {
-                if(is_member($mybb->settings['questboard_allow_groups_take'])) {
-                    $take = "";
-                    eval("\$take = \"".$templates->get("questboard_quest_take")."\";");
-                }
-                else {
-                    $take = "";
-                }
-            }
-            else {
-                eval("\$take = \"".$templates->get("questboard_quest_taken")."\";");
-            }
-    
-            if(is_member($mybb->settings['questboard_allow_groups_edit'])) {
-                $edit = "";
-                eval("\$edit .= \"".$templates->get("questboard_edit_button")."\";");
-            }
-            else {
-                $edit = "";
-            }
-    
-            if(is_member($mybb->settings['questboard_allow_groups_lead'])) {
-                $sl_information = "";
-                eval("\$sl_information .= \"".$templates->get("questboard_sl_information")."\";");
-            }
-            else {
-                $sl_information = "";
-            }
+                    $skill = '<div>'.str_replace(', ', '</div><div>', $questboard['skills']).'</div>';
+                    $skills = str_replace(
+                        array("1", "0"),
+                        array(
+                        "<i class=\"fa-solid fa-hand-point-up\" title=\"von Nachteil\" style=\"color: var(--text);\"></i>", 
+                        "<i class=\"fa-solid fa-ban\" title=\"verboten\" style=\"color: var(--text);\"></i>"
+                        ),
+                        $skill
+                    );
+                   
             
-            eval("\$bit .= \"".$templates->get("questboard_quest")."\";");
-        };
-    }
-    else {
-            eval("\$bit = \"".$templates->get("questboard_no_permission")."\";");
-    }
-eval("\$page = \"".$templates->get("questboard")."\";");
-    output_page($page);
-}
-
-// Übersicht über Berufsbezogene Quests
-if($mybb->input['action'] == "berufsbezogen") {
-    if(is_member($mybb->settings['questboard_allow_groups_see'])) {
-    add_breadcrumb("Berufsbezogene Quests");
-    eval("\$none = \"".$templates->get("questboard_quest_none")."\";");
-        $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1 && (players IS NULL OR players = '') && type = 'Berufsbezogene Quest' ORDER BY nid DESC";
-        $query = $db->query($sql);
-        eval("\$questtype = \"<h1>Berufsbezogene Quests</h1>\";");
-        while($questboard = $db->fetch_array($query)) {
-            $none = "";
-    
-            $keywords = '<div>'.str_replace(', ', '</div><div>', $questboard['keywords']).'</div>';
-    
-            $skill = '<div>'.str_replace(', ', '</div><div>', $questboard['skills']).'</div>';
-            $skills = str_replace(
-                array("1", "0"),
-                array(
-                "<i class=\"fa-solid fa-hand-point-up\" title=\"von Nachteil\" style=\"color: var(--text);\"></i>", 
-                "<i class=\"fa-solid fa-ban\" title=\"verboten\" style=\"color: var(--text);\"></i>"
-                ),
-                $skill
-            );
-           
-    
-            $take = "";
-            $finished = "";
-    
-            if($questboard['players'] == "") {
-                if(is_member($mybb->settings['questboard_allow_groups_take'])) {
                     $take = "";
-                    eval("\$take = \"".$templates->get("questboard_quest_take")."\";");
-                }
-                else {
-                    $take = "";
-                }
-            }
-            else {
-                eval("\$take = \"".$templates->get("questboard_quest_taken")."\";");
-            }
-    
-            if(is_member($mybb->settings['questboard_allow_groups_edit'])) {
-                $edit = "";
-                eval("\$edit .= \"".$templates->get("questboard_edit_button")."\";");
-            }
-            else {
-                $edit = "";
-            }
-    
-            if(is_member($mybb->settings['questboard_allow_groups_lead'])) {
-                $sl_information = "";
-                eval("\$sl_information .= \"".$templates->get("questboard_sl_information")."\";");
-            }
-            else {
-                $sl_information = "";
-            }
+                    $finished = "";
             
-            eval("\$bit .= \"".$templates->get("questboard_quest")."\";");
-        };
-    }
-    else {
-            eval("\$bit = \"".$templates->get("questboard_no_permission")."\";");
-    }
-eval("\$page = \"".$templates->get("questboard")."\";");
-    output_page($page);
-}
+                    if($questboard['players'] == "") {
+                        if(is_member($mybb->settings['questboard_allow_groups_take'])) {
+                            $take = "";
+                            eval("\$take = \"".$templates->get("questboard_quest_take")."\";");
+                        }
+                        else {
+                            $take = "";
+                        }
+                    }
+                    else {
+                        eval("\$take = \"".$templates->get("questboard_quest_taken")."\";");
+                    }
+            
+                    if(is_member($mybb->settings['questboard_allow_groups_edit'])) {
+                        $edit = "";
+                        eval("\$edit .= \"".$templates->get("questboard_edit_button")."\";");
+                    }
+                    else {
+                        $edit = "";
+                    }
+            
+                    if(is_member($mybb->settings['questboard_allow_groups_lead'])) {
+                        $sl_information = "";
+                        eval("\$sl_information .= \"".$templates->get("questboard_sl_information")."\";");
+                    }
+                    else {
+                        $sl_information = "";
+                    }
+                    
+                    eval("\$bit .= \"".$templates->get("questboard_quest")."\";");
+                };
+            }
+            else {
+                    eval("\$bit = \"".$templates->get("questboard_no_permission")."\";");
+            }
+        eval("\$page = \"".$templates->get("questboard")."\";");
+            output_page($page);
+            break;
 
-// Übersicht über Bespielte Quests
+            case "special":
+                if(is_member($mybb->settings['questboard_allow_groups_see'])) {
+                    add_breadcrumb("Specialquests");
+                    eval("\$none = \"".$templates->get("questboard_quest_none")."\";");
+                        $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1 && (players IS NULL OR players = '') && type = 'Specialquest' ORDER BY nid DESC";
+                        $query = $db->query($sql);
+                        eval("\$questtype = \"<h1>Specialquests</h1>\";");
+                        while($questboard = $db->fetch_array($query)) {
+                            $none = "";
+                    
+                            $keywords = '<div>'.str_replace(', ', '</div><div>', $questboard['keywords']).'</div>';
+                    
+                            $skill = '<div>'.str_replace(', ', '</div><div>', $questboard['skills']).'</div>';
+                            $skills = str_replace(
+                                array("1", "0"),
+                                array(
+                                "<i class=\"fa-solid fa-hand-point-up\" title=\"von Nachteil\" style=\"color: var(--text);\"></i>", 
+                                "<i class=\"fa-solid fa-ban\" title=\"verboten\" style=\"color: var(--text);\"></i>"
+                                ),
+                                $skill
+                            );
+                           
+                    
+                            $take = "";
+                            $finished = "";
+                    
+                            if($questboard['players'] == "") {
+                                if(is_member($mybb->settings['questboard_allow_groups_take'])) {
+                                    $take = "";
+                                    eval("\$take = \"".$templates->get("questboard_quest_take")."\";");
+                                }
+                                else {
+                                    $take = "";
+                                }
+                            }
+                            else {
+                                eval("\$take = \"".$templates->get("questboard_quest_taken")."\";");
+                            }
+                    
+                            if(is_member($mybb->settings['questboard_allow_groups_edit'])) {
+                                $edit = "";
+                                eval("\$edit .= \"".$templates->get("questboard_edit_button")."\";");
+                            }
+                            else {
+                                $edit = "";
+                            }
+                    
+                            if(is_member($mybb->settings['questboard_allow_groups_lead'])) {
+                                $sl_information = "";
+                                eval("\$sl_information .= \"".$templates->get("questboard_sl_information")."\";");
+                            }
+                            else {
+                                $sl_information = "";
+                            }
+                            
+                            eval("\$bit .= \"".$templates->get("questboard_quest")."\";");
+                        };
+                    }
+                    else {
+                            eval("\$bit = \"".$templates->get("questboard_no_permission")."\";");
+                    }
+                eval("\$page = \"".$templates->get("questboard")."\";");
+                    output_page($page);
+                    break;
+            
+    case "single":
+        if(is_member($mybb->settings['questboard_allow_groups_see'])) {
+            add_breadcrumb("Singlequests");
+            eval("\$none = \"".$templates->get("questboard_quest_none")."\";");
+                $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1 && (players IS NULL OR players = '') && type = 'Singlequest' ORDER BY nid DESC";
+                $query = $db->query($sql);
+                eval("\$questtype = \"<h1>Singlequests</h1>\";");
+                while($questboard = $db->fetch_array($query)) {
+                    $none = "";
+            
+                    $keywords = '<div>'.str_replace(', ', '</div><div>', $questboard['keywords']).'</div>';
+            
+                    $skill = '<div>'.str_replace(', ', '</div><div>', $questboard['skills']).'</div>';
+                    $skills = str_replace(
+                        array("1", "0"),
+                        array(
+                        "<i class=\"fa-solid fa-hand-point-up\" title=\"von Nachteil\" style=\"color: var(--text);\"></i>", 
+                        "<i class=\"fa-solid fa-ban\" title=\"verboten\" style=\"color: var(--text);\"></i>"
+                        ),
+                        $skill
+                    );
+                   
+            
+                    $take = "";
+                    $finished = "";
+            
+                    if($questboard['players'] == "") {
+                        if(is_member($mybb->settings['questboard_allow_groups_take'])) {
+                            $take = "";
+                            eval("\$take = \"".$templates->get("questboard_quest_take")."\";");
+                        }
+                        else {
+                            $take = "";
+                        }
+                    }
+                    else {
+                        eval("\$take = \"".$templates->get("questboard_quest_taken")."\";");
+                    }
+            
+                    if(is_member($mybb->settings['questboard_allow_groups_edit'])) {
+                        $edit = "";
+                        eval("\$edit .= \"".$templates->get("questboard_edit_button")."\";");
+                    }
+                    else {
+                        $edit = "";
+                    }
+            
+                    if(is_member($mybb->settings['questboard_allow_groups_lead'])) {
+                        $sl_information = "";
+                        eval("\$sl_information .= \"".$templates->get("questboard_sl_information")."\";");
+                    }
+                    else {
+                        $sl_information = "";
+                    }
+                    
+                    eval("\$bit .= \"".$templates->get("questboard_quest")."\";");
+                };
+            }
+            else {
+                    eval("\$bit = \"".$templates->get("questboard_no_permission")."\";");
+            }
+        eval("\$page = \"".$templates->get("questboard")."\";");
+            output_page($page);
+            break;
 
-    if($mybb->input['action'] == "taken") {
+    case "berufsbezogen":
+        if(is_member($mybb->settings['questboard_allow_groups_see'])) {
+            add_breadcrumb("Berufsbezogene Quests");
+            eval("\$none = \"".$templates->get("questboard_quest_none")."\";");
+                $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1 && (players IS NULL OR players = '') && type = 'Berufsbezogene Quest' ORDER BY nid DESC";
+                $query = $db->query($sql);
+                eval("\$questtype = \"<h1>Berufsbezogene Quests</h1>\";");
+                while($questboard = $db->fetch_array($query)) {
+                    $none = "";
+            
+                    $keywords = '<div>'.str_replace(', ', '</div><div>', $questboard['keywords']).'</div>';
+            
+                    $skill = '<div>'.str_replace(', ', '</div><div>', $questboard['skills']).'</div>';
+                    $skills = str_replace(
+                        array("1", "0"),
+                        array(
+                        "<i class=\"fa-solid fa-hand-point-up\" title=\"von Nachteil\" style=\"color: var(--text);\"></i>", 
+                        "<i class=\"fa-solid fa-ban\" title=\"verboten\" style=\"color: var(--text);\"></i>"
+                        ),
+                        $skill
+                    );
+                   
+            
+                    $take = "";
+                    $finished = "";
+            
+                    if($questboard['players'] == "") {
+                        if(is_member($mybb->settings['questboard_allow_groups_take'])) {
+                            $take = "";
+                            eval("\$take = \"".$templates->get("questboard_quest_take")."\";");
+                        }
+                        else {
+                            $take = "";
+                        }
+                    }
+                    else {
+                        eval("\$take = \"".$templates->get("questboard_quest_taken")."\";");
+                    }
+            
+                    if(is_member($mybb->settings['questboard_allow_groups_edit'])) {
+                        $edit = "";
+                        eval("\$edit .= \"".$templates->get("questboard_edit_button")."\";");
+                    }
+                    else {
+                        $edit = "";
+                    }
+            
+                    if(is_member($mybb->settings['questboard_allow_groups_lead'])) {
+                        $sl_information = "";
+                        eval("\$sl_information .= \"".$templates->get("questboard_sl_information")."\";");
+                    }
+                    else {
+                        $sl_information = "";
+                    }
+                    
+                    eval("\$bit .= \"".$templates->get("questboard_quest")."\";");
+                };
+            }
+            else {
+                    eval("\$bit = \"".$templates->get("questboard_no_permission")."\";");
+            }
+        eval("\$page = \"".$templates->get("questboard")."\";");
+            output_page($page);
+            break;
 
+    case "taken":
         add_breadcrumb("Bespielte Quests");
 
         if(is_member($mybb->settings['questboard_allow_groups_see'])) {
@@ -446,135 +439,126 @@ eval("\$page = \"".$templates->get("questboard")."\";");
         
     eval("\$page = \"".$templates->get("questboard")."\";");
         output_page($page);
-}
+        break;
 
-// Übersicht über Auszuwertende Quests
+        case "inEvaluation":
+            if(is_member($mybb->settings['questboard_allow_groups_see'])) {
 
-if($mybb->input['action'] == "inEvaluation") {
-
-    if(is_member($mybb->settings['questboard_allow_groups_see'])) {
-
-    add_breadcrumb("Auszuwertende Quests");
-
-    eval("\$none = \"".$templates->get("questboard_quest_none")."\";");
-
-        $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1 AND status = 'inEvaluation'";
-        $query = $db->query($sql);
-        eval("\$questtype = \"<h1>Auszuwertende Quests</h1>\";");
-        while($questboard = $db->fetch_array($query)) {
-
-            $none = "";
-
-            $keywords = '<div>'.str_replace(', ', '</div><div>', $questboard['keywords']).'</div>';
-
-            $skill = '<div>'.str_replace(', ', '</div><div>', $questboard['skills']).'</div>';
-            $skills = str_replace(
-                array("1", "0"),
-                array(
-                "<i class=\"fa-solid fa-hand-point-up\" title=\"von Nachteil\" style=\"color: var(--text);\"></i>", 
-                "<i class=\"fa-solid fa-ban\" title=\"verboten\" style=\"color: var(--text);\"></i>"
-                ),
-                $skill
-            );
-
-            if(is_member($mybb->settings['questboard_allow_groups_edit'])) {
-                $edit = "";
-                eval("\$edit .= \"".$templates->get("questboard_edit_button")."\";");
-            }
-            else {
-                $edit = "";
-            }
-
-            if(is_member($mybb->settings['questboard_allow_groups_lead'])) {
-                $sl_information = "";
-                eval("\$sl_information .= \"".$templates->get("questboard_sl_information")."\";");
-            }
-            else {
-                $sl_information = "";
-            }
-
-            $take = "";
-            $finished = "";
-          
-            eval("\$finished.= \"".$templates->get("questboard_quest_in_evaluation")."\";");
-            eval("\$bit .= \"".$templates->get("questboard_quest")."\";");
-        };
-
-    }
-    else {
-            eval("\$bit = \"".$templates->get("questboard_no_permission")."\";");
-    }
-    
-eval("\$page = \"".$templates->get("questboard")."\";");
-    output_page($page);
-}
-
-// Übersicht über ausgewertete Quests
-
-    if($mybb->input['action'] == "finished") {
-
-        if(is_member($mybb->settings['questboard_allow_groups_see'])) {
-
-        add_breadcrumb("Ausgewertete Quests");
-
-        eval("\$none = \"".$templates->get("questboard_quest_none")."\";");
-
-            $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1 AND status = 'finished'";
-            $query = $db->query($sql);
-            eval("\$questtype = \"<h1>Ausgewertete Quests</h1>\";");
-            while($questboard = $db->fetch_array($query)) {
-
-                $none = "";
-
-                $keywords = '<div>'.str_replace(', ', '</div><div>', $questboard['keywords']).'</div>';
-
-                $skill = '<div>'.str_replace(', ', '</div><div>', $questboard['skills']).'</div>';
-                $skills = str_replace(
-                    array("1", "0"),
-                    array(
-                    "<i class=\"fa-solid fa-hand-point-up\" title=\"von Nachteil\" style=\"color: var(--text);\"></i>", 
-                    "<i class=\"fa-solid fa-ban\" title=\"verboten\" style=\"color: var(--text);\"></i>"
-                    ),
-                    $skill
-                );
-
-                if(is_member($mybb->settings['questboard_allow_groups_edit'])) {
-                    $edit = "";
-                    eval("\$edit .= \"".$templates->get("questboard_edit_button")."\";");
+                add_breadcrumb("Auszuwertende Quests");
+            
+                eval("\$none = \"".$templates->get("questboard_quest_none")."\";");
+            
+                    $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1 AND status = 'inEvaluation'";
+                    $query = $db->query($sql);
+                    eval("\$questtype = \"<h1>Auszuwertende Quests</h1>\";");
+                    while($questboard = $db->fetch_array($query)) {
+            
+                        $none = "";
+            
+                        $keywords = '<div>'.str_replace(', ', '</div><div>', $questboard['keywords']).'</div>';
+            
+                        $skill = '<div>'.str_replace(', ', '</div><div>', $questboard['skills']).'</div>';
+                        $skills = str_replace(
+                            array("1", "0"),
+                            array(
+                            "<i class=\"fa-solid fa-hand-point-up\" title=\"von Nachteil\" style=\"color: var(--text);\"></i>", 
+                            "<i class=\"fa-solid fa-ban\" title=\"verboten\" style=\"color: var(--text);\"></i>"
+                            ),
+                            $skill
+                        );
+            
+                        if(is_member($mybb->settings['questboard_allow_groups_edit'])) {
+                            $edit = "";
+                            eval("\$edit .= \"".$templates->get("questboard_edit_button")."\";");
+                        }
+                        else {
+                            $edit = "";
+                        }
+            
+                        if(is_member($mybb->settings['questboard_allow_groups_lead'])) {
+                            $sl_information = "";
+                            eval("\$sl_information .= \"".$templates->get("questboard_sl_information")."\";");
+                        }
+                        else {
+                            $sl_information = "";
+                        }
+            
+                        $take = "";
+                        $finished = "";
+                      
+                        eval("\$finished.= \"".$templates->get("questboard_quest_in_evaluation")."\";");
+                        eval("\$bit .= \"".$templates->get("questboard_quest")."\";");
+                    };
+            
                 }
                 else {
-                    $edit = "";
+                        eval("\$bit = \"".$templates->get("questboard_no_permission")."\";");
                 }
+                
+            eval("\$page = \"".$templates->get("questboard")."\";");
+                output_page($page);
+                break;
 
-                if(is_member($mybb->settings['questboard_allow_groups_lead'])) {
-                    $sl_information = "";
-                    eval("\$sl_information .= \"".$templates->get("questboard_sl_information")."\";");
-                }
-                else {
-                    $sl_information = "";
-                }
+        case "finished":
+            if(is_member($mybb->settings['questboard_allow_groups_see'])) {
 
-                $take = "";
-                $finished = "";
-              
-                eval("\$finished.= \"".$templates->get("questboard_quest_finished")."\";");
-                eval("\$bit .= \"".$templates->get("questboard_quest")."\";");
-            };
-
-        }
-        else {
-                eval("\$bit = \"".$templates->get("questboard_no_permission")."\";");
-        }
+                add_breadcrumb("Ausgewertete Quests");
         
-    eval("\$page = \"".$templates->get("questboard")."\";");
-        output_page($page);
-}
+                eval("\$none = \"".$templates->get("questboard_quest_none")."\";");
+        
+                    $sql = "SELECT * FROM ".TABLE_PREFIX."questboard WHERE visible = 1 AND status = 'finished'";
+                    $query = $db->query($sql);
+                    eval("\$questtype = \"<h1>Ausgewertete Quests</h1>\";");
+                    while($questboard = $db->fetch_array($query)) {
+        
+                        $none = "";
+        
+                        $keywords = '<div>'.str_replace(', ', '</div><div>', $questboard['keywords']).'</div>';
+        
+                        $skill = '<div>'.str_replace(', ', '</div><div>', $questboard['skills']).'</div>';
+                        $skills = str_replace(
+                            array("1", "0"),
+                            array(
+                            "<i class=\"fa-solid fa-hand-point-up\" title=\"von Nachteil\" style=\"color: var(--text);\"></i>", 
+                            "<i class=\"fa-solid fa-ban\" title=\"verboten\" style=\"color: var(--text);\"></i>"
+                            ),
+                            $skill
+                        );
+        
+                        if(is_member($mybb->settings['questboard_allow_groups_edit'])) {
+                            $edit = "";
+                            eval("\$edit .= \"".$templates->get("questboard_edit_button")."\";");
+                        }
+                        else {
+                            $edit = "";
+                        }
+        
+                        if(is_member($mybb->settings['questboard_allow_groups_lead'])) {
+                            $sl_information = "";
+                            eval("\$sl_information .= \"".$templates->get("questboard_sl_information")."\";");
+                        }
+                        else {
+                            $sl_information = "";
+                        }
+        
+                        $take = "";
+                        $finished = "";
+                      
+                        eval("\$finished.= \"".$templates->get("questboard_quest_finished")."\";");
+                        eval("\$bit .= \"".$templates->get("questboard_quest")."\";");
+                    };
+        
+                }
+                else {
+                        eval("\$bit = \"".$templates->get("questboard_no_permission")."\";");
+                }
+                
+            eval("\$page = \"".$templates->get("questboard")."\";");
+                output_page($page);
+                break;
 
-    // Übersicht über die unfertigen Quests
-
-    if($mybb->input['action'] == "pending") {
-
-        add_breadcrumb("Unveröffentlichte Quests");
+        case "pending": 
+            add_breadcrumb("Unveröffentlichte Quests");
 
         if(is_member($mybb->settings['questboard_allow_groups_see_all'])) {
 
@@ -626,18 +610,14 @@ eval("\$page = \"".$templates->get("questboard")."\";");
         
     eval("\$page = \"".$templates->get("questboard")."\";");
         output_page($page);
-}
-
-// Quests hinzufügen
-
-    if($mybb->input['action'] == "add") {
-
+        break;
+    
+    case "add":
         add_breadcrumb ($lang->questboard, "questboard.php"); 
         add_breadcrumb($lang->questboard_add, "questboard.php?action=add");
 
         if(is_member($mybb->settings['questboard_allow_groups_add'])) {
-
-            
+          
             if ($mybb->input['submit']) {
 
                 $new_questboard = array(
@@ -694,19 +674,13 @@ eval("\$page = \"".$templates->get("questboard")."\";");
     else {
         eval("\$bit = \"".$templates->get("questboard_no_permission")."\";");
     }
-}
+    break;
 
-
- // Quests bearbeiten
-
-
-    if($mybb->input['action'] == "edit") {
-
+    case "edit":
         add_breadcrumb ($lang->questboard, "questboard.php"); 
         add_breadcrumb($lang->questboard_edit, "questboard.php?action=edit");
 
         if(is_member($mybb->settings['questboard_allow_groups_edit'])) {
-
 
         $nid =  $mybb->input['nid'];
 
@@ -789,12 +763,17 @@ eval("\$page = \"".$templates->get("questboard")."\";");
 
         eval("\$page = \"".$templates->get("questboard_edit")."\";");
         output_page($page);
-        die();
     }
     else {
         eval("\$bit = \"".$templates->get("questboard_no_permission")."\";");
     }
+    break;
+        
+    default: 
+        break;
 }
+
+
 
 // Quest annehmen
 if(is_member($mybb->settings['questboard_allow_groups_take'])) {

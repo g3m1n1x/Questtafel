@@ -149,7 +149,7 @@ rebuild_settings();
  // Templates und CSS erstellen
 require_once MYBB_ADMIN_DIR."inc/functions_themes.php";
 require_once MYBB_ROOT."/inc/adminfunctions_templates.php";
-	
+
 // ## Templategruppe erstellen
 $templategrouparray = array(
     'prefix' => 'questboard',
@@ -439,7 +439,7 @@ $insert_array = array(
     'title'	    => 'questboard_alert',
     'template'	=> $db->escape_string('
     <div class="quest_alert" id="new-quest">
-        Eine neue <a href="https://beta-zone.de/mybb/questboard.php?action=free">Quest</a> wurde ausgeschrieben!
+        Eine neue <a href="{$mybb->settings[\'bburl\']}/questboard.php?action=free">Quest</a> wurde ausgeschrieben!
         {$questboard_read}
     </div>
     '),
@@ -453,7 +453,7 @@ $insert_array = array(
     'title'	    => 'questboard_alert_anmeldung',
     'template'	=> $db->escape_string('
     <div class="quest_alert" id="new-registration">
-        Jemand hat sich für eine <a href="https://beta-zone.de/mybb/questboard.php?action=taken">Quest</a> angemeldet!
+        Jemand hat sich für eine <a href="{$mybb->settings[\'bburl\']}/questboard.php?action=taken">Quest</a> angemeldet!
         {$questboard_read_registration}
     </div>
     '),
@@ -467,7 +467,7 @@ $insert_array = array(
     'title'	    => 'questboard_alert_auswertung',
     'template'	=> $db->escape_string('
     <div class="quest_alert" id="new-evaluation">
-        Eine <a href="https://beta-zone.de/mybb/questboard.php?action=inEvaluation">Quest</a> kann ausgewertet werden!
+        Eine <a href="{$mybb->settings[\'bburl\']}/questboard.php?action=inEvaluation">Quest</a> kann ausgewertet werden!
         {$questboard_read_evaluation}
     </div>
     '),
@@ -780,7 +780,7 @@ $insert_array = array(
            <a href="{$questboard[\'scene\']}">»Link zur Szene«</a>
         </div>
 
-    <script type="text/javascript">    
+    <script type="text/javascript">  
         const players = {$questboard[\'players\']};
         const playerList = document.querySelector(".player-info-list");
 
@@ -1742,43 +1742,47 @@ function questboard_deactivate()
 }
 
 
-// Hook
-$plugins->add_hook('global_start', 'questboard_global');
+$plugins->add_hook('global_start', 'questboard_safe_global');
 
-function questboard_global(){
+function questboard_safe_global(){
+    global $questboard_new, $questboard_new_registration, $questboard_quest_evaluation;
+    global $db, $lang, $mybb, $templates, $headerinclude;
 
-    global $db, $mybb, $templates, $questboard_new, $questboard_new_registration, $questboard_quest_evaluation, $questboard_read, $questboard_read_registration, $questboard_read_evaluation, $lang;
+    if (defined('IN_ADMINCP') || defined('THIS_IS_AN_API_CALL')) {
+        return;
+    }
+    
+    $disallowed_scripts = ['xmlhttp.php', 'misc.php'];
+    if (in_array(THIS_SCRIPT, $disallowed_scripts)) {
+        return;
+    }
 
-    if(is_member($mybb->settings['questboard_allow_groups_see'])) {
+    if (isset($_GET['action']) && in_array($_GET['action'], ['lastpost', 'getlastpost'])) {
+        return;
+    }
 
-        $lang->load('questboard');
 
-        $uid = $mybb->user['uid'];
+    $lang->load('questboard');
 
-        echo "<script type='text/javascript' src='{$mybb->asset_url}/jscripts/questboard.js'></script>";
+    $uid = (int)$mybb->user['uid'];
+
+    if (is_member($mybb->settings['questboard_allow_groups_see'])) {
+        $headerinclude .= "<script type='text/javascript' src='{$mybb->asset_url}/jscripts/questboard.js'></script>";
 
         $questboard_read = "<a href='questboard.php?action=questboard_read&read={$uid}' original-title='Als gelesen markieren' onclick=\"Questboard.dismissNewQuestAlert('{$mybb->settings['bburl']}/', '{$uid}'); return false;\"><i class=\"fas fa-trash\" style=\"float: right;font-size: 14px;padding: 1px;\"></i></a>";
-    
-        $select = $db->query("SELECT * FROM " . TABLE_PREFIX . "questboard WHERE visible = 1");
-        $row_cnt = $select->num_rows;
-        if ($row_cnt > 0) {
-            $select = $db->query("SELECT questboard_new FROM " . TABLE_PREFIX . "users 
-            WHERE uid = '" . $mybb->user['uid'] . "' LIMIT 1");
 
+        $select = $db->query("SELECT * FROM " . TABLE_PREFIX . "questboard WHERE visible = 1");
+        if ($select->num_rows > 0) {
+            $select = $db->query("SELECT questboard_new FROM " . TABLE_PREFIX . "users 
+                WHERE uid = '{$uid}' LIMIT 1");
             $data = $db->fetch_array($select);
             if ($data['questboard_new'] == '0') {
                 eval("\$questboard_new = \"" . $templates->get("questboard_alert") . "\";");
-
             }
-                
         }
     }
     
     if(is_member($mybb->settings['questboard_allow_groups_lead'])) {
-
-        $lang->load('questboard');
-
-        $uid = $mybb->user['uid'];
 
         $questboard_read_registration = "<a href='questboard.php?action=questboard_registration_read&read={$uid}' original-title='Als gelesen markieren' onclick=\"Questboard.dismissNewQuestRegistrationAlert('{$mybb->settings['bburl']}/', '{$uid}'); return false;\"><i class=\"fas fa-trash\" style=\"float: right;font-size: 14px;padding: 1px;\"></i></a>";
 
@@ -1798,10 +1802,6 @@ function questboard_global(){
 
     if(is_member($mybb->settings['questboard_allow_groups_lead'])) {
 
-        $lang->load('questboard');
-
-        $uid = $mybb->user['uid'];
-
         $questboard_read_evaluation = "<a href='questboard.php?action=questboard_evaluation_read&read={$uid}' original-title='Als gelesen markieren' onclick=\"Questboard.dismissNewQuestEvaluationAlert('{$mybb->settings['bburl']}/', '{$uid}'); return false;\"><i class=\"fas fa-trash\" style=\"float: right;font-size: 14px;padding: 1px;\"></i></a>";
     
         $select = $db->query("SELECT * FROM " . TABLE_PREFIX . "questboard WHERE visible = 1 AND players IS NOT NULL");
@@ -1818,7 +1818,6 @@ function questboard_global(){
         }
     }
 }
-
 
 // WER IST ONLINE Anzeige
 

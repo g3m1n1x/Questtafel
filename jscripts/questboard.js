@@ -6,7 +6,7 @@ var Questboard = {
     }
 
     if (use_xmlhttprequest != 1) {
-      return true;
+      return false;
     }
 
     $.ajax(
@@ -27,7 +27,7 @@ var Questboard = {
     }
 
     if (use_xmlhttprequest != 1) {
-      return true;
+      return false;
     }
 
     $.ajax(
@@ -43,15 +43,13 @@ var Questboard = {
 
   dismissNewQuestEvaluationAlert: function (bburl, id) {
     var questboardAlert = $("#new-evaluation");
-    console.log('BLUUUBB')
     if (!questboardAlert.length) {
       return false;
     }
 
     if (use_xmlhttprequest != 1) {
-      return true;
+      return false;
     }
-    console.log('TEEEEEST')
 
     $.ajax(
 		{
